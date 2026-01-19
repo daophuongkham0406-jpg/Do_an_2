@@ -1,0 +1,139 @@
+/* Thiết lập chung */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #ffffff;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- Navbar Style --- */
+.navbar {
+    background-color: #0f172a; /* Màu xanh đen cực tối giống mẫu */
+    color: white;
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+}
+
+.logo-icon {
+    background: #00d1ff;
+    color: #0f172a;
+    padding: 2px 8px;
+    border-radius: 5px;
+    margin-right: 8px;
+}
+
+.nav-menu ul {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+.nav-menu ul li a {
+    text-decoration: none;
+    color: #cbd5e1;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-menu ul li a:hover {
+    color: white;
+}
+
+/* Nút Login / Signup */
+.auth-links a {
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 500;
+}
+
+.btn-login {
+    color: #cbd5e1;
+}
+
+.btn-signup {
+    background-color: white;
+    color: #0f172a;
+    padding: 8px 18px;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.btn-signup:hover {
+    background-color: #00d1ff;
+}
+
+/* --- Main Content --- */
+.main-content {
+    text-align: center;
+    padding: 100px 20px;
+    background-color: #f8fafc;
+}
+
+.main-content h1 {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+/* --- Footer Style --- */
+.footer {
+    background-color: #981d8e;
+    color: #94a3b8;
+    padding: 60px 0 20px 0;
+    margin-top: 50px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Chia cột: Giới thiệu rộng hơn liên hệ */
+    gap: 50px;
+}
+
+.footer h3 {
+    color: rgb(161, 24, 141);
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.footer-info p {
+    max-width: 400px;
+}
+
+.footer-contact p {
+    margin-bottom: 10px;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #470f47;
+    margin-top: 40px;
+    padding-top: 20px;
+    font-size: 14px;
+}
