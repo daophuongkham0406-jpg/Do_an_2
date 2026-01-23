@@ -152,3 +152,22 @@ body {
     margin-top: 30px;
     padding-top: 20px;
 }
+html, body {
+    height: 100%; /* Đảm bảo trình duyệt hiểu chiều cao toàn trang */
+}
+body {
+    display: flex;
+    flex-direction: column; /* Sắp xếp các phần tử theo cột dọc */
+    margin: 0;
+}
+.main-content {
+    flex: 1; /* CỰC KỲ QUAN TRỌNG: Nó sẽ tự giãn ra để đẩy Footer xuống đáy trang */
+    padding: 60px 20px;
+}
+/* Các phần CSS khác giữ nguyên như cũ */
+.footer {
+    background-color: #0f172a;
+    color: #94a3b8;
+    padding: 40px 0 20px;
+    width: 100%;
+}
