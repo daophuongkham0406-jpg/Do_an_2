@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập & Đăng ký</title>
+    <link rel="stylesheet" href="dangnhap.css">
+</head>
+<body>
+
+<div class="container" id="container">
+
+    <!-- ── FORM ĐĂNG KÝ ── -->
+    <div class="form-container sign-up">
+        <form onsubmit="return handleRegister(event)">
+            <h1>Tạo tài khoản</h1>
+            <p class="subtitle">Nhập thông tin để đăng ký</p>
+
+            <!-- Họ tên + Tuổi -->
+            <div class="form-row">
+                <input type="text" id="reg-name" placeholder="Họ và tên" required>
+                <input type="number" id="reg-age" placeholder="Tuổi" min="1" max="120" style="width:80px;" required>
+            </div>
+
+            <!-- Giới tính -->
+            <div class="gender-group">
+                <div class="gender-option">
+                    <input type="radio" name="gender" id="g-male" value="nam">
+                    <label for="g-male">♂ Nam</label>
+                </div>
+                <div class="gender-option">
+                    <input type="radio" name="gender" id="g-female" value="nu">
+                    <label for="g-female">♀ Nữ</label>
+                </div>
+                <div class="gender-option">
+                    <input type="radio" name="gender" id="g-other" value="khac">
+                    <label for="g-other">⊘ Khác</label>
+                </div>
+            </div>
+
+            <!-- Tên tài khoản -->
+            <input type="text" id="reg-username" placeholder="Tên tài khoản" required>
+
+            <!-- Mật khẩu -->
+            <div class="password-wrap">
+                <input type="password" id="reg-pass" placeholder="Mật khẩu (tối thiểu 8 ký tự)" required>
+                <button type="button" class="eye-btn" onclick="togglePass('reg-pass', this)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Xác nhận mật khẩu -->
+            <div class="password-wrap">
+                <input type="password" id="reg-confirm" placeholder="Xác nhận mật khẩu" required>
+                <button type="button" class="eye-btn" onclick="togglePass('reg-confirm', this)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>
+            </div>
+
+            <button type="submit">Đăng ký</button>
+        </form>
+    </div>
+
+    <!-- ── FORM ĐĂNG NHẬP ── -->
+    <div class="form-container sign-in">
+        <form onsubmit="return handleLogin(event)">
+            <h1>Đăng nhập</h1>
+            <p class="subtitle">Chào mừng trở lại!</p>
+
+            <input type="email" id="login-email" placeholder="Địa chỉ Email" required>
+
+            <div class="password-wrap">
+                <input type="password" id="login-pass" placeholder="Mật khẩu" required>
+                <button type="button" class="eye-btn" onclick="togglePass('login-pass', this)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="forgot"><a href="#">Quên mật khẩu?</a></div>
+
+            <button type="submit">Đăng nhập</button>
+
+            <div class="magic-link">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#512da8" stroke-width="2.5">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                Không muốn dùng mật khẩu? <a href="#">Đăng nhập bằng magic link</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ── OVERLAY TÍM ── -->
+    <div class="toggle-container">
+        <div class="toggle">
+
+            <!-- Hiển thị khi đang ở form Đăng ký → nút quay về Đăng nhập -->
+            <div class="toggle-panel toggle-left">
+                <h1>Chào mừng trở lại!</h1>
+                <p>Để quay lại trang đăng nhập, vui lòng nhấn nút bên dưới</p>
+                <button class="hidden" id="login">Đăng nhập</button>
+            </div>
+
+            <!-- Hiển thị khi đang ở form Đăng nhập → nút chuyển sang Đăng ký -->
+            <div class="toggle-panel toggle-right">
+                <h1>Xin chào!</h1>
+                <p>Nhập thông tin cá nhân của bạn để đăng ký tài khoản mới</p>
+                <button class="hidden" id="register">Đăng ký</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="dangnhap.js"></script>
+</body>
+</html>
