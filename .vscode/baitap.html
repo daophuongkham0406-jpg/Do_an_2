@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitMe - Danh sách bài tập</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <h2>Bộ lọc</h2>
+        <div class="filter-group">
+          <h3>Nhóm cơ</h3>
+          <label
+            ><input type="checkbox" value="Chest" class="filter-cb" />
+            Ngực</label
+          >
+          <label
+            ><input type="checkbox" value="Back" class="filter-cb" />
+            Lưng</label
+          >
+          <label
+            ><input type="checkbox" value="Legs" class="filter-cb" />
+            Chân</label
+          >
+          <label
+            ><input type="checkbox" value="Arms" class="filter-cb" /> Tay</label
+          >
+        </div>
+        <div class="filter-group">
+          <h3>Dụng cụ</h3>
+          <label
+            ><input type="checkbox" value="Bodyweight" class="filter-cb" />
+            Không dụng cụ</label
+          >
+          <label
+            ><input type="checkbox" value="Dumbbell" class="filter-cb" /> Tạ
+            đơn</label
+          >
+          <label
+            ><input type="checkbox" value="Barbell" class="filter-cb" /> Tạ
+            đòn</label
+          >
+        </div>
+      </aside>
+
+      <main class="content">
+        <header>
+          <h1>Thư viện bài tập</h1>
+        </header>
+        <div class="grid" id="exercise-grid"></div>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

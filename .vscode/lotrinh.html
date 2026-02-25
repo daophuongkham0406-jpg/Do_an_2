@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitMe - Lộ trình cá nhân</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
+        body { background-color: #f9fafb; color: #111827; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; display: flex; gap: 40px; }
+        
+        .setup-panel { width: 320px; background: #fff; padding: 30px; border-radius: 16px; border: 1px solid #e5e7eb; height: fit-content; position: sticky; top: 40px; }
+        .setup-panel h2 { font-size: 1.5rem; margin-bottom: 24px; font-weight: 800; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 8px; }
+        .form-group select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem; outline: none; }
+        .btn-submit { width: 100%; background: #000; color: #fff; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-submit:hover { background: #333; }
+
+        .plan-content { flex: 1; }
+        .plan-header { margin-bottom: 30px; }
+        .plan-header h1 { font-size: 2.25rem; font-weight: 800; }
+        
+        .day-card { background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; margin-bottom: 24px; overflow: hidden; }
+        .day-header { background: #f3f4f6; padding: 16px 24px; font-weight: 700; font-size: 1.125rem; border-bottom: 1px solid #e5e7eb; }
+        .day-body { padding: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        
+        .exercise-item { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+        .exercise-img { width: 100%; height: 140px; object-fit: cover; background: #f3f4f6; }
+        .exercise-info { padding: 12px; }
+        .exercise-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+        .exercise-tag { display: inline-block; font-size: 0.75rem; padding: 4px 8px; border-radius: 999px; background: #dbeafe; color: #1e40af; font-weight: 600; }
+        
+        .rest-day { padding: 24px; color: #6b7280; font-weight: 500; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="setup-panel">
+            <h2>Thiết lập lộ trình</h2>
+            <div class="form-group">
+                <label>Mục tiêu</label>
+                <select id="goal">
+                    <option value="Tăng cơ">Tăng cơ</option>
+                    <option value="Giảm mỡ">Giảm mỡ</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Kinh nghiệm</label>
+                <select id="level">
+                    <option value="Người mới">Người mới</option>
+                    <option value="Trung bình">Trung bình</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Dụng cụ</label>
+                <select id="equipment">
+                    <option value="All">Tất cả dụng cụ</option>
+                    <option value="Bodyweight">Chỉ trọng lượng cơ thể</option>
+                    <option value="Dumbbell">Tạ đơn</option>
+                </select>
+            </div>
+            <button class="btn-submit" onclick="fetchPlan()">Tạo Lộ Trình</button>
+        </aside>
+
+        <main class="plan-content">
+            <div class="plan-header">
+                <h1 id="plan-title">Chưa có lộ trình</h1>
+                <p style="color: #6b7280; margin-top: 8px;">Vui lòng thiết lập thông số bên trái để tạo lộ trình tập luyện.</p>
+            </div>
+            <div id="plan-container"></div>
+        </main>
+    </div>
+
+    <script src="plan.js"></script>
+</body>
+</html>
