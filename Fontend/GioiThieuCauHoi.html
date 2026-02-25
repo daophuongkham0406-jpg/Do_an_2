@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giới thiệu & Câu hỏi - Pumpd Style</title>
+    <link rel="stylesheet" href="TrangChu.css"> <link rel="stylesheet" href="/Fontend/GioiThieuCauHoi.css"> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="container header-flex">
+            <div class="logo">
+                <span class="logo-icon">P</span> PUMPD
+            </div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="TrangChu.html">Trang chủ</a></li>
+                    <li><a href="#">Bài tập</a></li>
+                    <li><a href="GioiThieuCauHoi.html" class="active">Giới thiệu & Câu hỏi</a></li>
+                    <li><a href="TrangCaNhan.html">Trang cá nhân</a></li>
+                    <li><a href="#">Lộ trình cá nhân</a></li>
+                </ul>
+            </nav>
+            <div class="auth-links">
+                <a href="#" class="btn-signup">Đăng nhập / Đăng ký</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="faq-container">
+        <section class="intro-section">
+            <h1>Về PUMPD</h1>
+            <p>Chúng tôi là nền tảng hỗ trợ tập luyện thông minh, giúp bạn tối ưu hóa quá trình cải thiện vóc dáng dựa trên dữ liệu khoa học.</p>
+        </section>
+
+        <section class="faq-section">
+            <h2>Các câu hỏi thường gặp</h2>
+            <p>Câu trả lời nhanh cho các thắc mắc phổ biến. Để biết thêm chi tiết, hãy xem <a href="#">tài liệu đầy đủ</a>.</p>
+
+            <div class="accordion">
+                <div class="accordion-item">
+                    <button class="accordion-header">PUMPD có miễn phí không? <span>+</span></button>
+                    <div class="accordion-content">
+                        <p>Chúng tôi cung cấp cả gói miễn phí với đầy đủ các bài tập cơ bản và gói Premium dành cho những lộ trình chuyên sâu hơn.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header">Làm thế nào để tạo lộ trình tập luyện? <span>+</span></button>
+                    <div class="accordion-content">
+                        <p>Hệ thống sẽ dựa vào chỉ số cơ thể (BMI, tỷ lệ mỡ) và mục tiêu của bạn để tự động đề xuất bài tập phù hợp nhất.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header">Tôi có thể tự tạo bài tập riêng không? <span>+</span></button>
+                    <div class="accordion-content">
+                        <p>Hoàn toàn được! Bạn có thể lưu các bài tập yêu thích vào danh sách "Lộ trình cá nhân" của mình.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <button class="accordion-header">Bao lâu thì tôi thấy được kết quả? <span>+</span></button>
+                    <div class="accordion-content">
+                        <p>Nếu duy trì đúng lộ trình và chế độ ăn uống, bạn sẽ thấy sự thay đổi rõ rệt sau khoảng 4-8 tuần tập luyện.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Script để đóng mở câu hỏi
+        const acc = document.getElementsByClassName("accordion-header");
+        for (let i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                const panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                    this.querySelector('span').innerText = "+";
+                } else {
+                    panel.style.display = "block";
+                    this.querySelector('span').innerText = "-";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
