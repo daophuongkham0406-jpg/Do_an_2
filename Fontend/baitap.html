@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitMe - Thư viện bài tập</title>
+    <link rel="stylesheet" href="baitap.css" />
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">FitMe.</div>
+            <div class="nav-links">
+                <a href="baitap.html" class="nav-btn active">Thư viện bài tập</a>
+                <a href="lotrinh.html" class="nav-btn">Lộ trình cá nhân</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <h2>Bộ lọc</h2>
+            <div class="filter-group">
+                <h3>Nhóm cơ</h3>
+                <label><input type="checkbox" value="Ngực" class="filter-cb"> Ngực</label>
+                <label><input type="checkbox" value="Lưng" class="filter-cb"> Lưng</label>
+                <label><input type="checkbox" value="Chân" class="filter-cb"> Chân</label>
+                <label><input type="checkbox" value="Tay" class="filter-cb"> Tay / Vai</label>
+            </div>
+            <div class="filter-group">
+                <h3>Dụng cụ</h3>
+                <label><input type="checkbox" value="Bodyweight" class="filter-cb"> Không dụng cụ</label>
+                <label><input type="checkbox" value="Dumbbell" class="filter-cb"> Tạ đơn</label>
+                <label><input type="checkbox" value="Barbell" class="filter-cb"> Tạ đòn</label>
+            </div>
+        </aside>
+        
+        <main class="content">
+            <header class="content-header">
+                <h1>Khám phá bài tập</h1>
+                <p>Tìm kiếm và lọc các bài tập phù hợp với bạn.</p>
+            </header>
+            <div class="grid" id="exercise-grid">
+                </div>
+        </main>
+    </div>
+
+    <script src="baitap.js"></script>
+</body>
+</html>

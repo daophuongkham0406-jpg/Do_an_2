@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitMe - Lộ trình cá nhân</title>
+    <link rel="stylesheet" href="lotrinh.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">FitMe.</div>
+            <div class="nav-links">
+                <a href="baitap.html" class="nav-btn">Thư viện bài tập</a>
+                <a href="lotrinh.html" class="nav-btn active">Lộ trình cá nhân</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-plan">
+        <aside class="setup-panel">
+            <h2>Tạo lộ trình</h2>
+            <div class="form-group">
+                <label>Mục tiêu</label>
+                <select id="goal">
+                    <option value="Tăng cơ">Tăng cơ</option>
+                    <option value="Giảm mỡ">Giảm mỡ</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Kinh nghiệm</label>
+                <select id="level">
+                    <option value="Người mới">Người mới</option>
+                    <option value="Trung bình">Trung bình</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Thiết bị</label>
+                <select id="equipment">
+                    <option value="All">Đầy đủ thiết bị</option>
+                    <option value="Bodyweight">Không dụng cụ</option>
+                    <option value="Dumbbell">Chỉ tạ đơn</option>
+                </select>
+            </div>
+            <button class="btn-submit" id="btn-generate">Tạo Lộ Trình</button>
+        </aside>
+
+        <main class="plan-content">
+            <div class="plan-header">
+                <h1 id="plan-title">Lộ trình của bạn</h1>
+            </div>
+            <div id="plan-container">
+                <div class="empty-state">Vui lòng chọn thông số và bấm tạo lộ trình.</div>
+            </div>
+        </main>
+    </div>
+
+    <script src="lotrinh.js"></script>
+</body>
+</html>
