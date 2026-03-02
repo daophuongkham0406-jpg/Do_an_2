@@ -6,9 +6,16 @@
     font-family: 'Inter', sans-serif;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     background-color: #f9fbff;
     color: #333;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
 }
 
 .container {
@@ -17,14 +24,14 @@ body {
     padding: 0 20px;
 }
 
-/* --- Navbar --- */
 .navbar {
-    background-color: #0f172a;
+    background: linear-gradient(135deg, #6c54e0 0%, #3e2a9e 100%);
     color: white;
     padding: 12px 0;
     position: sticky;
     top: 0;
     z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 .header-flex {
@@ -41,8 +48,8 @@ body {
 }
 
 .logo-icon {
-    background: #00d1ff;
-    color: #0f172a;
+    background: white;
+    color: #5038c9; /* Đổi màu chữ P thành tím */
     padding: 2px 8px;
     border-radius: 4px;
     margin-right: 8px;
@@ -51,7 +58,7 @@ body {
 .nav-menu ul {
     list-style: none;
     display: flex;
-    gap: 20px; /* Khoảng cách giữa các mục menu */
+    gap: 20px;
 }
 
 .nav-menu ul li a {
@@ -66,10 +73,10 @@ body {
     color: white;
 }
 
-/* Nút Đăng ký/Đăng nhập */
+/* Nút Đăng ký/Đăng xuất */
 .btn-signup {
     background-color: white;
-    color: #0f172a;
+    color: #4A3B9C;
     padding: 8px 16px;
     border-radius: 6px;
     text-decoration: none;
@@ -79,10 +86,15 @@ body {
 }
 
 .btn-signup:hover {
-    background-color: #00d1ff;
+    background-color: #e2e8f0;
 }
 
 /* --- Nội dung chính --- */
+.main-content {
+    flex: 1;
+    padding: 60px 20px;
+}
+
 .hero-section {
     text-align: center;
     padding: 60px 20px;
@@ -106,6 +118,7 @@ body {
 
 .card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(74, 59, 156, 0.1);
 }
 
 .card img {
@@ -121,6 +134,7 @@ body {
 .card-info h3 {
     font-size: 16px;
     margin-bottom: 5px;
+    color: #111827;
 }
 
 .card-info span {
@@ -130,9 +144,10 @@ body {
 
 /* --- Footer --- */
 .footer {
-    background-color: #0f172a;
-    color: #94a3b8;
+    background: linear-gradient(135deg, #6c54e0 0%, #3e2a9e 100%);
+    color: #cbd5e1;
     padding: 40px 0 20px;
+    width: 100%;
 }
 
 .footer-grid {
@@ -148,26 +163,8 @@ body {
 
 .footer-bottom {
     text-align: center;
-    border-top: 1px solid #1e293b;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     margin-top: 30px;
     padding-top: 20px;
-}
-html, body {
-    height: 100%; /* Đảm bảo trình duyệt hiểu chiều cao toàn trang */
-}
-body {
-    display: flex;
-    flex-direction: column; /* Sắp xếp các phần tử theo cột dọc */
-    margin: 0;
-}
-.main-content {
-    flex: 1; /* CỰC KỲ QUAN TRỌNG: Nó sẽ tự giãn ra để đẩy Footer xuống đáy trang */
-    padding: 60px 20px;
-}
-/* Các phần CSS khác giữ nguyên như cũ */
-.footer {
-    background-color: #0f172a;
-    color: #94a3b8;
-    padding: 40px 0 20px;
-    width: 100%;
+    font-size: 14px;
 }

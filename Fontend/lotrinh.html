@@ -3,58 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitMe - Lộ trình cá nhân</title>
-    <link rel="stylesheet" href="lotrinh.css">
+    <title>Lộ trình cá nhân - PUMPD</title>
+    <link rel="stylesheet" href="TrangChu.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        .app-layout { display: flex; gap: 30px; margin-top: 30px; margin-bottom: 50px; }
+        .app-sidebar { width: 300px; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: fit-content; }
+        .app-sidebar h2 { font-size: 1.25rem; margin-bottom: 24px; font-weight: 800; color: #111827; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; color: #374151;}
+        .form-group select { width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 1rem; outline: none; background: #f9fafb; font-family: 'Inter', sans-serif;}
+        .form-group select:focus { border-color: #0b132b; }
+        .btn-primary-full { width: 100%; background: #0b132b; color: #fff; padding: 14px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 1rem;}
+        .btn-primary-full:hover { background: #1a295c; }
+        .app-main { flex: 1; }
+        .page-header { margin-bottom: 30px; }
+        .page-header h1 { font-size: 2rem; font-weight: 800; color: #111827; margin-bottom: 10px;}
+        .page-header p { color: #6b7280; font-size: 1.05rem; }
+        .day-card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 24px; overflow: hidden; }
+        .day-header { background: #f9fafb; padding: 16px 24px; font-weight: 800; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; color: #111827; }
+        .day-body { padding: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .routine-item { border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+        .routine-item img { width: 100%; height: 120px; object-fit: cover; }
+        .routine-item-info { padding: 12px; }
+        .routine-item-info h4 { font-size: 0.95rem; margin-bottom: 8px; color: #111827; font-weight: 700;}
+        .tag-muscle { background: #eff6ff; color: #1d4ed8; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 600;}
+        .rest-day { padding: 30px; text-align: center; color: #6b7280; font-weight: 500; }
+        .empty-state { padding: 50px; text-align: center; color: #6b7280; background: #fff; border-radius: 12px; border: 2px dashed #e5e7eb;}
+        @media (max-width: 900px) { .app-layout { flex-direction: column; } .app-sidebar { width: 100%; } }
+    </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">FitMe.</div>
-            <div class="nav-links">
-                <a href="baitap.html" class="nav-btn">Thư viện bài tập</a>
-                <a href="lotrinh.html" class="nav-btn active">Lộ trình cá nhân</a>
+    <header class="navbar">
+        <div class="container header-flex">
+            <div class="logo"><span class="logo-icon">P</span> PUMPD</div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="TrangChu.html">Trang chủ</a></li>
+                    <li><a href="baitap.html">Bài tập</a></li>
+                    <li><a href="GioiThieuCauHoi.html">Giới thiệu & Câu hỏi</a></li>
+                    <li><a href="TrangCaNhan.html">Trang cá nhân</a></li>
+                    <li><a href="lotrinh.html" style="font-weight: bold; color: white;">Lộ trình cá nhân</a></li>
+                </ul>
+            </nav>
+            <div class="auth-links"><a href="#" class="btn-signup">Đăng xuất</a></div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="app-layout">
+                <aside class="app-sidebar">
+                    <h2>Khởi tạo lộ trình</h2>
+                    <div class="form-group">
+                        <label>Mục tiêu của bạn</label>
+                        <select id="goal">
+                            <option value="Tăng cơ">Tăng cơ (Hypertrophy)</option>
+                            <option value="Giảm mỡ">Giảm mỡ (Fat Loss)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Kinh nghiệm tập</label>
+                        <select id="level">
+                            <option value="Người mới">Người mới (Beginner)</option>
+                            <option value="Trung bình">Trung bình (Intermediate)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Thiết bị sẵn có</label>
+                        <select id="equipment">
+                            <option value="All">Phòng Gym (Đầy đủ)</option>
+                            <option value="Bodyweight">Chỉ tại nhà (Không tạ)</option>
+                            <option value="Dumbbell">Chỉ có tạ đơn</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary-full" id="btn-generate">Tạo Lộ Trình Ngay</button>
+                </aside>
+
+                <section class="app-main">
+                    <div class="page-header">
+                        <h1 id="plan-title">Lộ trình chưa được tạo</h1>
+                        <p>Vui lòng điền thông số bên trái để hệ thống PUMPD thiết kế lịch tập riêng cho bạn.</p>
+                    </div>
+                    <div id="plan-container">
+                        <div class="empty-state">Chưa có dữ liệu lộ trình.</div>
+                    </div>
+                </section>
             </div>
         </div>
-    </nav>
+    </main>
 
-    <div class="container-plan">
-        <aside class="setup-panel">
-            <h2>Tạo lộ trình</h2>
-            <div class="form-group">
-                <label>Mục tiêu</label>
-                <select id="goal">
-                    <option value="Tăng cơ">Tăng cơ</option>
-                    <option value="Giảm mỡ">Giảm mỡ</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Kinh nghiệm</label>
-                <select id="level">
-                    <option value="Người mới">Người mới</option>
-                    <option value="Trung bình">Trung bình</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Thiết bị</label>
-                <select id="equipment">
-                    <option value="All">Đầy đủ thiết bị</option>
-                    <option value="Bodyweight">Không dụng cụ</option>
-                    <option value="Dumbbell">Chỉ tạ đơn</option>
-                </select>
-            </div>
-            <button class="btn-submit" id="btn-generate">Tạo Lộ Trình</button>
-        </aside>
+    <script>
+        const dbExercises = [
+            { name: "Barbell Squat", muscle: "Chân", equipment: "Barbell", img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&q=80" },
+            { name: "Push Up", muscle: "Ngực", equipment: "Bodyweight", img: "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=400&q=80" },
+            { name: "Pull Up", muscle: "Lưng", equipment: "Bodyweight", img: "https://images.unsplash.com/photo-1598971484999-6934b4553bce?w=400&q=80" },
+            { name: "Dumbbell Curl", muscle: "Tay", equipment: "Dumbbell", img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&q=80" }
+        ];
 
-        <main class="plan-content">
-            <div class="plan-header">
-                <h1 id="plan-title">Lộ trình của bạn</h1>
-            </div>
-            <div id="plan-container">
-                <div class="empty-state">Vui lòng chọn thông số và bấm tạo lộ trình.</div>
-            </div>
-        </main>
-    </div>
+        const btnGenerate = document.getElementById('btn-generate');
 
-    <script src="lotrinh.js"></script>
+        if (btnGenerate) {
+            btnGenerate.addEventListener('click', () => {
+                const goal = document.getElementById('goal').value;
+                const level = document.getElementById('level').value;
+                const equipment = document.getElementById('equipment').value;
+                
+                document.getElementById('plan-title').innerText = `Lộ trình ${goal} (${level})`;
+                const validEx = dbExercises.filter(ex => equipment === 'All' || ex.equipment === equipment);
+                const schedule = [
+                    { day: "Thứ 2", focus: "Thân trên", req: ["Ngực", "Lưng", "Tay"] },
+                    { day: "Thứ 3", focus: "Thân dưới", req: ["Chân"] },
+                    { day: "Thứ 4", focus: "Phục hồi", req: [] },
+                    { day: "Thứ 5", focus: "Thân trên", req: ["Ngực", "Lưng", "Tay"] }
+                ];
+
+                document.getElementById('plan-container').innerHTML = schedule.map(d => {
+                    const exToday = d.req.length ? validEx.filter(ex => d.req.includes(ex.muscle)).slice(0, 4) : [];
+                    const bodyHtml = exToday.length ? `<div class="day-body">${exToday.map(ex => `
+                        <div class="routine-item"><img src="${ex.img}"><div class="routine-item-info"><h4>${ex.name}</h4><span class="tag tag-muscle">${ex.muscle}</span></div></div>
+                    `).join('')}</div>` : `<div class="rest-day">Nghỉ ngơi.</div>`;
+                    return `<div class="day-card"><div class="day-header"><span>${d.day}</span><span>${d.focus}</span></div>${bodyHtml}</div>`;
+                }).join('');
+            });
+        }
+    </script>
 </body>
 </html>
