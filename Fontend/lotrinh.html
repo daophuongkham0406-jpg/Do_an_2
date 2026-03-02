@@ -4,34 +4,243 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lộ trình cá nhân - PUMPD</title>
-    <link rel="stylesheet" href="TrangChu.css"> 
+    <link rel="stylesheet" href="index.html"> 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        .app-layout { display: flex; gap: 30px; margin-top: 30px; margin-bottom: 50px; }
-        .app-sidebar { width: 300px; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: fit-content; }
-        .app-sidebar h2 { font-size: 1.25rem; margin-bottom: 24px; font-weight: 800; color: #111827; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.95rem; color: #374151;}
-        .form-group select { width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 1rem; outline: none; background: #f9fafb; font-family: 'Inter', sans-serif;}
-        .form-group select:focus { border-color: #0b132b; }
-        .btn-primary-full { width: 100%; background: #0b132b; color: #fff; padding: 14px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 1rem;}
-        .btn-primary-full:hover { background: #1a295c; }
-        .app-main { flex: 1; }
-        .page-header { margin-bottom: 30px; }
-        .page-header h1 { font-size: 2rem; font-weight: 800; color: #111827; margin-bottom: 10px;}
-        .page-header p { color: #6b7280; font-size: 1.05rem; }
-        .day-card { background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 24px; overflow: hidden; }
-        .day-header { background: #f9fafb; padding: 16px 24px; font-weight: 800; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; color: #111827; }
-        .day-body { padding: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .routine-item { border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
-        .routine-item img { width: 100%; height: 120px; object-fit: cover; }
-        .routine-item-info { padding: 12px; }
-        .routine-item-info h4 { font-size: 0.95rem; margin-bottom: 8px; color: #111827; font-weight: 700;}
-        .tag-muscle { background: #eff6ff; color: #1d4ed8; font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 600;}
-        .rest-day { padding: 30px; text-align: center; color: #6b7280; font-weight: 500; }
-        .empty-state { padding: 50px; text-align: center; color: #6b7280; background: #fff; border-radius: 12px; border: 2px dashed #e5e7eb;}
-        @media (max-width: 900px) { .app-layout { flex-direction: column; } .app-sidebar { width: 100%; } }
+        /* --- BIẾN ĐỒNG BỘ PUMPD --- */
+:root {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #111111;
+    --bg-card: #161616;
+    --bg-card-hover: #1e1e1e;
+    --accent: #e8ff47; /* Vàng neon chuẩn */
+    --accent-dim: #b8cc35;
+    --text-primary: #f0f0f0;
+    --text-secondary: #888;
+    --text-muted: #555;
+    --border: #2a2a2a;
+    --border-hover: #444;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Barlow', sans-serif;
+    margin: 0;
+}
+
+/* --- BỐ CỤC CHÍNH (APP LAYOUT) --- */
+.app-layout {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 40px;
+    margin-top: 60px;
+    margin-bottom: 100px;
+    align-items: start;
+}
+
+/* --- SIDEBAR: KHỞI TẠO LỘ TRÌNH --- */
+.app-sidebar {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    position: sticky;
+    top: 100px;
+    transition: all 0.3s ease;
+}
+
+.app-sidebar:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.app-sidebar h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 24px;
+}
+
+.form-group { margin-bottom: 24px; }
+
+.form-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.form-group select, .form-group textarea {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    color: var(--text-primary);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.form-group select:focus, .form-group textarea:focus {
+    border-color: var(--accent);
+    background: var(--bg-card-hover);
+}
+
+.btn-primary-full {
+    width: 100%;
+    background: var(--accent);
+    color: #0a0a0a;
+    padding: 16px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary-full:hover {
+    background: #d4e83e;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(232,255,71,0.2);
+}
+
+/* --- VÙNG HIỂN THỊ LỘ TRÌNH (MAIN CONTENT) --- */
+.page-header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+.page-header p {
+    color: var(--text-secondary);
+    font-weight: 300;
+    font-size: 16px;
+    margin-bottom: 40px;
+}
+
+/* CARD NGÀY TẬP (Day Card) */
+.day-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.day-card:hover {
+    border-color: var(--accent);
+}
+
+.day-header {
+    background: rgba(232,255,71,0.03);
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.day-header span:first-child {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+}
+
+/* GRID BÀI TẬP */
+.day-body {
+    padding: 28px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.routine-item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.routine-item:hover {
+    transform: translateY(-5px);
+    border-color: var(--border-hover);
+}
+
+.routine-item img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    filter: grayscale(0.5);
+    transition: 0.3s;
+}
+
+.routine-item:hover img { filter: grayscale(0); }
+
+.routine-item-info { padding: 18px; }
+
+.routine-item-info h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.tag-muscle {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(232,255,71,0.1);
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+/* TRẠNG THÁI TRỐNG (Empty State) */
+.empty-state {
+    padding: 100px 40px;
+    text-align: center;
+    background: var(--bg-card);
+    border: 2px dashed var(--border);
+    border-radius: 20px;
+    color: var(--text-muted);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(232,255,71,0.1);
+    border-top: 3px solid var(--accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- ĐÁP ỨNG DI ĐỘNG --- */
+@media (max-width: 900px) {
+    .app-layout { grid-template-columns: 1fr; }
+    .app-sidebar { position: static; }
+}
     </style>
 </head>
 <body>
@@ -40,8 +249,12 @@
             <div class="logo"><span class="logo-icon">P</span> PUMPD</div>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="TrangChu.html">Trang chủ</a></li>
+                    <li><a href="index.html">Trang chủ</a></li>
+<<<<<<< HEAD
+                    <li><a href="bt.html">Bài tập</a></li>
+=======
                     <li><a href="baitap.html">Bài tập</a></li>
+>>>>>>> 91c37c819d543ff22a96ff5efec03c87ad660cff
                     <li><a href="GioiThieuCauHoi.html">Giới thiệu & Câu hỏi</a></li>
                     <li><a href="TrangCaNhan.html">Trang cá nhân</a></li>
                     <li><a href="lotrinh.html" style="font-weight: bold; color: white;">Lộ trình cá nhân</a></li>
@@ -73,18 +286,22 @@
                     <div class="form-group">
                         <label>Thiết bị sẵn có</label>
                         <select id="equipment">
-                            <option value="All">Phòng Gym (Đầy đủ)</option>
-                            <option value="Bodyweight">Chỉ tại nhà (Không tạ)</option>
-                            <option value="Dumbbell">Chỉ có tạ đơn</option>
+                            <option value="Phòng Gym (Đầy đủ)">Phòng Gym (Đầy đủ)</option>
+                            <option value="Chỉ tại nhà (Không tạ)">Chỉ tại nhà (Không tạ)</option>
+                            <option value="Chỉ có tạ đơn">Chỉ có tạ đơn</option>
                         </select>
                     </div>
-                    <button class="btn-primary-full" id="btn-generate">Tạo Lộ Trình Ngay</button>
+                    <div class="form-group">
+                        <label>Tình trạng / Chú ý thêm</label>
+                        <textarea id="userInfo" rows="3" placeholder="Ví dụ: Tôi hay đau lưng, rảnh 45p/ngày..."></textarea>
+                    </div>
+                    <button class="btn-primary-full" id="btn-generate">Tạo Lộ Trình Bằng AI</button>
                 </aside>
 
                 <section class="app-main">
                     <div class="page-header">
                         <h1 id="plan-title">Lộ trình chưa được tạo</h1>
-                        <p>Vui lòng điền thông số bên trái để hệ thống PUMPD thiết kế lịch tập riêng cho bạn.</p>
+                        <p>Vui lòng điền thông số bên trái để AI của PUMPD thiết kế lịch tập chuẩn cá nhân hóa cho bạn.</p>
                     </div>
                     <div id="plan-container">
                         <div class="empty-state">Chưa có dữ liệu lộ trình.</div>
@@ -95,37 +312,49 @@
     </main>
 
     <script>
-        const dbExercises = [
-            { name: "Barbell Squat", muscle: "Chân", equipment: "Barbell", img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&q=80" },
-            { name: "Push Up", muscle: "Ngực", equipment: "Bodyweight", img: "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=400&q=80" },
-            { name: "Pull Up", muscle: "Lưng", equipment: "Bodyweight", img: "https://images.unsplash.com/photo-1598971484999-6934b4553bce?w=400&q=80" },
-            { name: "Dumbbell Curl", muscle: "Tay", equipment: "Dumbbell", img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&q=80" }
-        ];
-
         const btnGenerate = document.getElementById('btn-generate');
+        const planContainer = document.getElementById('plan-container');
 
         if (btnGenerate) {
-            btnGenerate.addEventListener('click', () => {
+            btnGenerate.addEventListener('click', async () => {
                 const goal = document.getElementById('goal').value;
                 const level = document.getElementById('level').value;
                 const equipment = document.getElementById('equipment').value;
+                const userInfo = document.getElementById('userInfo').value;
                 
-                document.getElementById('plan-title').innerText = `Lộ trình ${goal} (${level})`;
-                const validEx = dbExercises.filter(ex => equipment === 'All' || ex.equipment === equipment);
-                const schedule = [
-                    { day: "Thứ 2", focus: "Thân trên", req: ["Ngực", "Lưng", "Tay"] },
-                    { day: "Thứ 3", focus: "Thân dưới", req: ["Chân"] },
-                    { day: "Thứ 4", focus: "Phục hồi", req: [] },
-                    { day: "Thứ 5", focus: "Thân trên", req: ["Ngực", "Lưng", "Tay"] }
-                ];
+                document.getElementById('plan-title').innerText = `Lộ trình ${goal} (${level}) - Đề xuất bởi AI`;
+                planContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="loading-spinner"></div>
+                        <p>AI đang phân tích và tạo lộ trình cho riêng bạn. Xin chờ vài giây...</p>
+                    </div>`;
+                
+                btnGenerate.disabled = true;
+                btnGenerate.innerText = "Đang tạo...";
 
-                document.getElementById('plan-container').innerHTML = schedule.map(d => {
-                    const exToday = d.req.length ? validEx.filter(ex => d.req.includes(ex.muscle)).slice(0, 4) : [];
-                    const bodyHtml = exToday.length ? `<div class="day-body">${exToday.map(ex => `
-                        <div class="routine-item"><img src="${ex.img}"><div class="routine-item-info"><h4>${ex.name}</h4><span class="tag tag-muscle">${ex.muscle}</span></div></div>
-                    `).join('')}</div>` : `<div class="rest-day">Nghỉ ngơi.</div>`;
-                    return `<div class="day-card"><div class="day-header"><span>${d.day}</span><span>${d.focus}</span></div>${bodyHtml}</div>`;
-                }).join('');
+                try {
+                    // GỌI SANG MÁY CHỦ PYTHON
+                    const response = await fetch('http://127.0.0.1:5000/api/generate-plan', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ goal, level, equipment, userInfo })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.html) {
+                        planContainer.innerHTML = data.html;
+                    } else if (data.error) {
+                        planContainer.innerHTML = `<div class="empty-state" style="color: red;">Lỗi AI: ${data.error}</div>`;
+                    }
+                } catch (error) {
+                    planContainer.innerHTML = `<div class="empty-state" style="color: red;">Không thể kết nối đến máy chủ Python. Hãy chắc chắn bạn đã chạy file app.py!</div>`;
+                } finally {
+                    btnGenerate.disabled = false;
+                    btnGenerate.innerText = "Tạo Lộ Trình Bằng AI";
+                }
             });
         }
     </script>
