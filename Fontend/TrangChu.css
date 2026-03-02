@@ -25,7 +25,7 @@ body {
 }
 
 .navbar {
-    background: linear-gradient(135deg, #6c54e0 0%, #3e2a9e 100%);
+    background: linear-gradient(to right, #aab1d6, #3f1d8f);
     color: white;
     padding: 12px 0;
     position: sticky;
@@ -144,7 +144,7 @@ body {
 
 /* --- Footer --- */
 .footer {
-    background: linear-gradient(135deg, #6c54e0 0%, #3e2a9e 100%);
+     background: linear-gradient(to right, #aab1d6, #3f1d8f);
     color: #cbd5e1;
     padding: 40px 0 20px;
     width: 100%;
