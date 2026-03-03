@@ -92,9 +92,95 @@ body {
 /* --- Nội dung chính --- */
 .main-content {
     flex: 1;
-    padding: 60px 20px;
+    padding: 3px 2px;
+}
+/* Định dạng phần Hero */
+.hero-container {
+    position: relative;
+    height: 100vh; /* Full màn hình */
+    background-image: url('your-background-image.jpg'); /* Thay bằng link ảnh của bạn */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* Lớp phủ màu xanh đen mờ để chữ dễ đọc hơn */
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Thay đổi: Sử dụng dải màu gradient từ xanh đen sang tím nhẹ để tiệp với Navbar */
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(63, 29, 143, 0.6)); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-content {
+    text-align: center;
+    max-width: 800px;
+    padding: 20px;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    line-height: 1.2;
+}
+
+.hero-description {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: #e2e8f0; /* Màu trắng xám nhẹ */
+    margin-bottom: 30px;
+}
+
+/* Các dòng tích điểm (features) */
+.hero-features {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 0.95rem;
+    color: #a0aec0;
+}
+
+.btn-primary {
+    display: inline-block;
+    padding: 18px 40px;
+    /* Thay đổi: Chuyển từ xám sang màu Tím đậm đặc trưng của thương hiệu */
+    background-color: #4A3B9C; 
+    color: white;
+    text-decoration: none;
+    border-radius: 50px; /* Làm nút bo tròn hơn cho hiện đại */
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 4px 15px rgba(74, 59, 156, 0.4); /* Thêm đổ bóng cho nút */
+}
+
+.btn-primary:hover {
+    /* Thay đổi: Khi hover sẽ sáng hơn một chút và nổi lên */
+    background-color: #5d4bc4;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(74, 59, 156, 0.6);
+}
+
+
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-10px);}
+    60% {transform: translateY(-5px);}
+}
 .hero-section {
     text-align: center;
     padding: 60px 20px;
