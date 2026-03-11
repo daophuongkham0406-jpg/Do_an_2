@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài Tập - PUMPD</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+  <div class="container hflex">
+    <a href="TrangChu.html" class="logo"><span class="logo-icon">P</span>PUMPD</a>
+    <nav class="nav-menu">
+      <ul>
+        <li><a href="TrangChu.html">Trang chủ</a></li>
+        <li><a href="bt.html" class="active">Bài tập</a></li>
+        <li><a href="#">Giới thiệu &amp; Câu hỏi</a></li>
+        <li><a href="#">Trang cá nhân</a></li>
+        <li><a href="#">Lộ trình cá nhân</a></li>
+      </ul>
+    </nav>
+    <a href="#" class="btn-nav">Đăng nhập / Đăng ký</a>
+  </div>
+</header>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="container hero-inner">
+    <div class="breadcrumb"><a href="TrangChu.html">Trang chủ</a> › <span class="cur">Bài tập</span></div>
+    <h1 class="page-title">THƯ VIỆN<br><em>BÀI TẬP</em></h1>
+    <p class="page-sub">Khám phá hàng trăm bài tập theo nhóm cơ, thiết bị và độ khó. Mỗi bài có hướng dẫn chi tiết chuẩn khoa học.</p>
+    <div class="hero-pills">
+      <div class="hero-pill"><span class="hero-pill-num" id="totalCount">26</span><span class="hero-pill-lbl">Bài tập</span></div>
+      <div class="hero-pill"><span class="hero-pill-num">9</span><span class="hero-pill-lbl">Nhóm cơ</span></div>
+      <div class="hero-pill"><span class="hero-pill-num">3</span><span class="hero-pill-lbl">Cấp độ</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- LAYOUT -->
+<div class="page-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="s-search">
+      <input type="text" id="searchInput" placeholder="Tìm bài tập…">
+      <span class="s-search-icon">🔍</span>
+    </div>
+
+    <div class="s-group">
+      <div class="s-label">Nhóm cơ</div>
+      <div class="chips" id="muscleChips">
+        <span class="chip on" data-val="all">Tất cả</span>
+        <span class="chip" data-val="Ngực">Ngực</span>
+        <span class="chip" data-val="Lưng">Lưng</span>
+        <span class="chip" data-val="Vai">Vai</span>
+        <span class="chip" data-val="Tay trước">Tay trước</span>
+        <span class="chip" data-val="Tay sau">Tay sau</span>
+        <span class="chip" data-val="Chân">Chân</span>
+        <span class="chip" data-val="Mông">Mông</span>
+        <span class="chip" data-val="Bụng">Bụng</span>
+        <span class="chip" data-val="Toàn thân">Toàn thân</span>
+      </div>
+    </div>
+
+    <div class="s-group">
+      <div class="s-label">Độ khó</div>
+      <ul class="s-list" id="diffList">
+        <li class="on" data-val="all"><span class="s-box">✓</span>Tất cả</li>
+        <li data-val="B"><span class="s-box"></span>Người mới<span class="diff-row"><span class="dd f"></span><span class="dd"></span><span class="dd"></span></span></li>
+        <li data-val="I"><span class="s-box"></span>Trung bình<span class="diff-row"><span class="dd f"></span><span class="dd f"></span><span class="dd"></span></span></li>
+        <li data-val="A"><span class="s-box"></span>Nâng cao<span class="diff-row"><span class="dd f"></span><span class="dd f"></span><span class="dd f"></span></span></li>
+      </ul>
+    </div>
+
+    <div class="s-group">
+      <div class="s-label">Thiết bị</div>
+      <ul class="s-list" id="equipList">
+        <li class="on" data-val="all"><span class="s-box">✓</span>Tất cả</li>
+        <li data-val="Barbell"><span class="s-box"></span>Barbell</li>
+        <li data-val="Dumbbell"><span class="s-box"></span>Dumbbell</li>
+        <li data-val="Cable"><span class="s-box"></span>Cáp / Cable</li>
+        <li data-val="Machine"><span class="s-box"></span>Máy</li>
+        <li data-val="Bodyweight"><span class="s-box"></span>Thể trọng</li>
+        <li data-val="Kettlebell"><span class="s-box"></span>Kettlebell</li>
+      </ul>
+    </div>
+
+    <button class="clear-btn" id="clearBtn">✕  Xóa bộ lọc</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="toolbar">
+      <div class="res-count">Hiển thị <strong id="resNum">0</strong> bài tập</div>
+      <div class="toolbar-r">
+        <select class="sort-sel" id="sortSel">
+          <option value="default">Mặc định</option>
+          <option value="az">Tên A–Z</option>
+          <option value="za">Tên Z–A</option>
+          <option value="easy">Dễ trước</option>
+          <option value="hard">Khó trước</option>
+        </select>
+        <div class="vbtn on" id="gridBtn" title="Lưới">⊞</div>
+        <div class="vbtn" id="listBtn" title="Danh sách">☰</div>
+      </div>
+    </div>
+    <div class="active-filters" id="activeFilters"></div>
+    <div class="ex-grid" id="exerciseGrid"></div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-hero">
+      <div class="mh-pattern"></div>
+      <div class="mh-glow"></div>
+      <span class="modal-hero-icon" id="mIcon"></span>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-muscle" id="mMuscle"></div>
+      <div class="modal-name" id="mName"></div>
+      <div class="modal-badges" id="mBadges"></div>
+      <div class="modal-stats" id="mStats"></div>
+      <div class="modal-tabs">
+        <button class="m-tab on" data-t="steps">Hướng dẫn</button>
+        <button class="m-tab" data-t="muscles">Nhóm cơ</button>
+        <button class="m-tab" data-t="tips">Lưu ý</button>
+      </div>
+      <div class="tab-pane on" id="pane-steps"></div>
+      <div class="tab-pane" id="pane-muscles"></div>
+      <div class="tab-pane" id="pane-tips"></div>
+      <div class="modal-footer">
+        <button class="btn-acc">＋ Thêm vào lộ trình</button>
+        <button class="btn-ghost" id="mFavBtn">♡  Yêu thích</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <a href="#" class="logo" style="font-size:22px;"><span class="logo-icon" style="width:28px;height:28px;font-size:16px;">P</span>PUMPD</a>
+    <p class="footer-copy">© 2024 PUMPD. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const EX = [
+  {id:1,name:"Barbell Bench Press",muscle:"Ngực",icon:"🏋️",diff:"I",equip:"Barbell",sets:"4",reps:"6-8",rest:"2-3 phút",
+   sec:["Vai trước","Tay sau"],
+   steps:[{t:"Nằm ngửa trên bench",d:"Lưng thẳng, hai chân đặt phẳng trên sàn. <strong>Kéo xương bả vai</strong> lại với nhau và ép xuống bench để tạo nền vững."},
+          {t:"Cầm tạ đúng cách",d:"Hai tay rộng hơn vai một chút. Dùng <strong>Full Grip</strong> — ngón cái vòng quanh tạ. Cổ tay thẳng, không gập."},
+          {t:"Hạ tạ xuống ngực",d:"Hít vào, hạ thanh tạ <strong>chậm rãi 2-3 giây</strong> về phía ngực giữa/dưới. Khuỷu tay hợp 45-75° với thân."},
+          {t:"Đẩy tạ lên mạnh",d:"Thở ra, <strong>đẩy mạnh</strong> tạ lên theo đường cung nhẹ. Không khóa khuỷu hoàn toàn ở đỉnh."}],
+   tips:["⚡ Không nhấc mông khỏi bench","🎯 Căng cơ ngực xuyên suốt động tác","🔒 Luôn có người bảo hộ khi dùng nặng","💨 Thở ra lúc đẩy, hít vào lúc hạ"]},
+
+  {id:2,name:"Incline Dumbbell Press",muscle:"Ngực",icon:"💪",diff:"B",equip:"Dumbbell",sets:"3",reps:"10-12",rest:"90 giây",
+   sec:["Vai trước","Tay sau"],
+   steps:[{t:"Điều chỉnh ghế 30-45°",d:"Góc 30° tập trung ngực trên tốt nhất. <strong>Không nghiêng quá 45°</strong> — sẽ chuyển sang tập vai nhiều hơn."},
+          {t:"Đưa tạ lên tư thế ban đầu",d:"Đặt tạ trên đùi, dùng đùi hất lên khi ngả người ra. Hai tạ ở <strong>ngang ngực trên</strong>."},
+          {t:"Hạ tạ sang hai bên",d:"Hạ tạ chậm, khuỷu tay thấp hơn vai. <strong>Căng ngực</strong> cảm nhận được ở điểm thấp nhất."},
+          {t:"Đẩy và siết ngực",d:"Đẩy tạ lên, <strong>siết nhẹ cơ ngực</strong> ở đỉnh. Không chạm hai tạ vào nhau để giữ căng cơ."}],
+   tips:["🎯 Tập trung co cơ ngực, không chỉ di chuyển tạ","📐 Giữ cổ tay trung lập suốt bài","🔁 Kiểm soát tốc độ hạ tạ — đừng để rơi tự do"]},
+
+  {id:3,name:"Cable Fly",muscle:"Ngực",icon:"🔗",diff:"B",equip:"Cable",sets:"3",reps:"12-15",rest:"60 giây",
+   sec:["Vai trước"],
+   steps:[{t:"Đặt cáp ở vị trí cao",d:"Hai cáp ở vị trí cao ngang đầu. Đứng giữa máy, <strong>bước một chân ra trước</strong> để ổn định trọng tâm."},
+          {t:"Cầm tay cáp, cong nhẹ khuỷu",d:"Hai tay cầm tay cầm, duỗi sang hai bên. <strong>Cong nhẹ khuỷu tay</strong> và giữ nguyên vị trí đó suốt bài."},
+          {t:"Kéo xuống theo cung tròn",d:"Kéo hai tay về phía nhau <strong>theo hình vòng cung</strong> xuống dưới. Hình dung đang ôm một cái cây to."},
+          {t:"Siết cơ ở điểm gặp nhau",d:"Khi hai tay gặp ở phía trước, <strong>siết cơ ngực 1 giây</strong> trước khi thả ra có kiểm soát."}],
+   tips:["💡 Không dùng lực tay — hãy để cơ ngực làm việc","📏 Khuỷu tay hơi cong cố định suốt bài","🐌 Hạ chậm để tối đa co duỗi cơ"]},
+
+  {id:4,name:"Push-Up",muscle:"Ngực",icon:"🤸",diff:"B",equip:"Bodyweight",sets:"3",reps:"15-20",rest:"60 giây",
+   sec:["Vai trước","Tay sau","Bụng"],
+   steps:[{t:"Tư thế tấm ván (Plank)",d:"Hai tay rộng hơn vai, <strong>cơ thể thẳng</strong> từ đầu đến gót. Không võng lưng hay nhô mông."},
+          {t:"Hạ ngực chạm sàn",d:"Hạ ngực về phía sàn, khuỷu tay hợp <strong>45° với cơ thể</strong>. Hít vào khi xuống."},
+          {t:"Đẩy người lên mạnh",d:"Đẩy tay vào sàn, <strong>thở ra</strong> khi lên. Tưởng tượng đẩy sàn ra xa khỏi bạn."}],
+   tips:["💪 Tay hẹp = tay sau nhiều hơn; tay rộng = ngực ngoài","🎯 Siết bụng và mông suốt bài","⬆️ Nâng cao: đặt chân lên ghế để tập ngực trên"]},
+
+  {id:5,name:"Deadlift",muscle:"Lưng",icon:"🔱",diff:"A",equip:"Barbell",sets:"4",reps:"4-6",rest:"3-5 phút",
+   sec:["Mông","Chân","Tay trước","Bụng"],
+   steps:[{t:"Đứng gần thanh tạ",d:"Hai chân rộng bằng hông. Ngón chân hướng ra ngoài nhẹ. <strong>Thanh tạ cách ống chân 2-3cm</strong>."},
+          {t:"Xuống tư thế kéo",d:"Hông xuống, ngực lên, lưng phẳng. <strong>Tay cầm rộng hơn vai</strong>. Hít sâu, siết bụng tạo áp lực trong bụng."},
+          {t:"Kéo tạ lên",d:"Đẩy sàn bằng gót chân. Tạ trượt <strong>sát ống chân</strong>. Hông và vai lên đồng thời — tuyệt đối không cong lưng."},
+          {t:"Đứng thẳng và siết",d:"Ở trên: hông đẩy ra trước, <strong>siết mông và lưng</strong>. Không ưỡn lưng quá mức."},
+          {t:"Hạ tạ xuống",d:"Hạ tạ theo lộ trình ngược lại. Khi tạ qua đầu gối, <strong>hông ngồi xuống</strong> để hạ tiếp."}],
+   tips:["⚠️ Bài tập nguy hiểm nếu sai tư thế — học kỹ trước khi thêm nặng","🫁 Valsalva maneuver: hít sâu nín thở khi kéo, thở ra khi đứng thẳng","👟 Giày đế phẳng hoặc đi chân trần","🔒 Khởi động kỹ lưng và gân kheo"]},
+
+  {id:6,name:"Pull-Up",muscle:"Lưng",icon:"🧲",diff:"I",equip:"Bodyweight",sets:"4",reps:"Max",rest:"2 phút",
+   sec:["Tay trước","Vai sau"],
+   steps:[{t:"Bắt đầu từ dead hang",d:"Cầm xà rộng hơn vai, <strong>duỗi thẳng hoàn toàn</strong>. Thả vai xuống, không co vai."},
+          {t:"Kích hoạt lưng trước",d:"Trước khi kéo, <strong>kéo xương bả vai xuống</strong>. Tưởng tượng bẻ gãy thanh xà để kích hoạt lưng."},
+          {t:"Kéo cằm qua xà",d:"Kéo khuỷu tay <strong>xuống phía hông</strong>, không phải về sau. Ngực hướng lên xà."},
+          {t:"Hạ người chậm rãi",d:"Hạ người <strong>trong 2-3 giây</strong>. Giai đoạn này quan trọng như kéo lên."}],
+   tips:["🔰 Người mới: dùng resistance band trợ lực","💡 Tay sấp (overhand) tập lưng nhiều hơn tay ngửa","📈 Thêm tạ vào đai khi đã làm được 12+ rep"]},
+
+  {id:7,name:"Barbell Row",muscle:"Lưng",icon:"⚓",diff:"I",equip:"Barbell",sets:"4",reps:"8-10",rest:"2 phút",
+   sec:["Tay trước","Vai sau"],
+   steps:[{t:"Gập người 45°",d:"Cầm tạ, gập người ra trước khoảng 45°. <strong>Lưng thẳng</strong>, không cong. Đầu gối hơi cong."},
+          {t:"Kéo tạ lên bụng",d:"Kéo tạ về phía rốn, <strong>khuỷu tay kéo ra sau</strong>. Giữ tạ sát thân người suốt động tác."},
+          {t:"Siết xương bả vai ở đỉnh",d:"Giữ 1 giây ở trên cùng, <strong>siết xương bả vai</strong> lại với nhau thật mạnh."},
+          {t:"Hạ tạ kiểm soát",d:"Hạ tạ <strong>chậm 2 giây</strong>. Không để tạ rơi tự do — đây là giai đoạn xây cơ."}],
+   tips:["🎯 Kéo bằng khuỷu tay, không phải bàn tay","🚫 Không đung đưa cơ thể để lấy đà","📏 Giữ cột sống trung lập suốt bài"]},
+
+  {id:8,name:"Lat Pulldown",muscle:"Lưng",icon:"🌊",diff:"B",equip:"Machine",sets:"3",reps:"10-12",rest:"90 giây",
+   sec:["Tay trước","Vai sau"],
+   steps:[{t:"Ngồi vào máy, điều chỉnh gối",d:"Gối giữ chặt đùi. Cầm thanh <strong>rộng hơn vai</strong>, ngực ngẩng lên, ngả người ra sau nhẹ 15°."},
+          {t:"Kéo xuống ngực trên",d:"Kéo thanh <strong>về phía ngực trên</strong>. Hình dung kéo khuỷu tay về phía túi quần."},
+          {t:"Siết lưng ở cuối hành trình",d:"Khi thanh chạm ngực trên, <strong>siết xương bả vai</strong> 1 giây."},
+          {t:"Thả lên có kiểm soát",d:"Thả tay lên <strong>chậm rãi</strong>. Cho vai mở rộng và căng lưng hoàn toàn."}],
+   tips:["💡 Tưởng tượng kéo khuỷu tay, không phải bàn tay","🚫 Không kéo sau gáy — nguy hiểm cho cổ","🎯 Thử cầm trung lập (V-bar) để tập lưng giữa"]},
+
+  {id:9,name:"Overhead Press",muscle:"Vai",icon:"☀️",diff:"I",equip:"Barbell",sets:"4",reps:"6-8",rest:"2-3 phút",
+   sec:["Tay sau","Bụng","Lưng trên"],
+   steps:[{t:"Đứng cầm tạ ngang vai",d:"Thanh tạ đặt trên <strong>cơ delta trước</strong>. Hai bàn chân rộng bằng hông, hai tay rộng hơn vai."},
+          {t:"Siết bụng và mông",d:"Hít sâu, <strong>siết bụng và mông</strong> để ổn định cột sống. Đây là bước bảo vệ lưng quan trọng nhất."},
+          {t:"Đẩy tạ thẳng lên trên",d:"Đẩy tạ <strong>thẳng lên</strong>, đầu ngả nhẹ ra trước để tạ đi qua. Sau khi qua đầu, đẩy tiếp thẳng."},
+          {t:"Hạ tạ về vai có kiểm soát",d:"Hạ tạ <strong>chậm 2-3 giây</strong> về vị trí ban đầu. Khuỷu tay không quá xa ra trước."}],
+   tips:["⚠️ Không ưỡn lưng dưới để bù — dấu hiệu quá nặng","🎯 Giữ cẳng tay thẳng đứng trong suốt bài","💡 Seated OHP dễ học hơn cho người mới bắt đầu"]},
+
+  {id:10,name:"Lateral Raise",muscle:"Vai",icon:"🦅",diff:"B",equip:"Dumbbell",sets:"4",reps:"12-15",rest:"60 giây",
+   sec:["Vai trước","Vai sau"],
+   steps:[{t:"Đứng thẳng cầm tạ dọc thân",d:"Hai tạ cầm dọc thân. <strong>Hơi cong khuỷu tay</strong> và giữ nguyên góc đó suốt bài."},
+          {t:"Nâng tạ ra hai bên",d:"Nâng hai tay lên cao <strong>bằng vai</strong>. Tưởng tượng đổ nước từ ấm trà — ngón út cao hơn ngón cái."},
+          {t:"Giữ đỉnh và hạ chậm",d:"Giữ 1 giây ở đỉnh. <strong>Hạ chậm trong 3 giây</strong> — đây là phần xây cơ vai quan trọng nhất."}],
+   tips:["💡 Cheating rất phổ biến — hãy dùng tạ nhẹ và làm đúng","🐌 Eccentric (hạ xuống) là chìa khóa phát triển cơ vai","🔄 Cable lateral raise cho lực căng đều hơn dumbbell"]},
+
+  {id:11,name:"Face Pull",muscle:"Vai",icon:"🎯",diff:"B",equip:"Cable",sets:"3",reps:"15-20",rest:"60 giây",
+   sec:["Vai sau","Tay sau"],
+   steps:[{t:"Gắn dây thừng ở cáp cao",d:"Cáp ở độ cao <strong>ngang mặt</strong>. Bước ra xa, cầm hai đầu dây thừng."},
+          {t:"Kéo về phía mặt",d:"Kéo dây về phía mặt, hai khuỷu tay <strong>lên cao ngang vai</strong>. Không hạ khuỷu xuống."},
+          {t:"Xoay khuỷu ra sau ở đỉnh",d:"Ở điểm cuối, <strong>xoay khuỷu tay ra sau</strong> để siết cơ vai sau. Giữ 1 giây rồi thả."}],
+   tips:["🔑 Quan trọng nhất để giữ khớp vai khỏe mạnh lâu dài","📐 Khuỷu tay phải ở ngang vai, không được thấp hơn","💊 Tập đều đặn giúp phòng ngừa chấn thương vai hiệu quả"]},
+
+  {id:12,name:"Barbell Curl",muscle:"Tay trước",icon:"💥",diff:"B",equip:"Barbell",sets:"3",reps:"10-12",rest:"90 giây",
+   sec:["Cẳng tay","Brachialis"],
+   steps:[{t:"Đứng thẳng, cầm tạ ngửa tay",d:"Cầm thanh tạ <strong>ngửa tay</strong>, rộng bằng vai. Khuỷu tay ép sát thân người."},
+          {t:"Curl tạ lên về phía vai",d:"Gập khuỷu tay, <strong>kéo tạ về phía vai</strong>. Khuỷu tay không di chuyển ra trước."},
+          {t:"Siết ở đỉnh",d:"Siết tay trước <strong>mạnh nhất có thể</strong> ở đỉnh, giữ 1 giây rồi hạ."},
+          {t:"Hạ tạ chậm 3 giây",d:"Hạ tạ <strong>chậm trong 3 giây</strong>. Đây là phần quan trọng nhất để phát triển cơ."}],
+   tips:["🚫 Không đung đưa cơ thể — hủy bỏ hoàn toàn hiệu quả bài tập","📏 Phạm vi chuyển động đầy đủ = phát triển tối đa","💡 EZ-bar thân thiện hơn với cổ tay so với straight bar"]},
+
+  {id:13,name:"Hammer Curl",muscle:"Tay trước",icon:"🔨",diff:"B",equip:"Dumbbell",sets:"3",reps:"12",rest:"60 giây",
+   sec:["Cẳng tay","Brachialis"],
+   steps:[{t:"Cầm tạ theo hướng búa",d:"Cầm tạ đôi theo <strong>hướng búa đóng đinh</strong> — ngón cái hướng lên, không xoay cổ tay."},
+          {t:"Curl lên giữ nguyên hướng tay",d:"Curl tạ lên <strong>giữ nguyên hướng tay</strong>. Không xoay cổ tay như Bicep Curl thông thường."},
+          {t:"Hạ chậm có kiểm soát",d:"Hạ tạ <strong>chậm và kiểm soát</strong>. Cảm nhận cơ brachialis căng ra ở điểm dưới."}],
+   tips:["🎯 Tập trung Brachialis — tạo chiều dày cho cánh tay","🔄 Xen kẽ hai tay để tăng kiểm soát từng bên","💪 Kết hợp Bicep Curl + Hammer Curl để phát triển toàn diện"]},
+
+  {id:14,name:"Tricep Pushdown",muscle:"Tay sau",icon:"⬇️",diff:"B",equip:"Cable",sets:"3",reps:"12-15",rest:"60 giây",
+   sec:["Cẳng tay"],
+   steps:[{t:"Đứng trước máy cáp cao",d:"Cáp ở vị trí cao. Cầm thanh hoặc dây. <strong>Khuỷu tay ép vào sườn</strong> — đây là điểm tựa cố định."},
+          {t:"Đẩy tay xuống bằng tay sau",d:"Đẩy tay xuống hoàn toàn bằng <strong>lực cơ tay sau</strong>. Khuỷu tay không di chuyển."},
+          {t:"Xoay cổ tay ra ngoài ở dưới",d:"Ở dưới cùng, <strong>xoay cổ tay nhẹ ra ngoài</strong> để siết tay sau tối đa."},
+          {t:"Thả lên có kiểm soát",d:"Thả lên chậm để <strong>căng tay sau hoàn toàn</strong> trước rep tiếp theo."}],
+   tips:["📏 Khuỷu tay cố định là điểm tựa — không để đổ ra trước","💡 V-bar cho đầu ngoài, dây thừng cho phạm vi chuyển động rộng hơn","🔒 Không ngả người để đẩy xuống — đó là cheat"]},
+
+  {id:15,name:"Skull Crusher",muscle:"Tay sau",icon:"💀",diff:"I",equip:"Barbell",sets:"3",reps:"10-12",rest:"90 giây",
+   sec:["Tay sau đầu dài"],
+   steps:[{t:"Nằm ngửa, cầm EZ-bar thẳng lên",d:"Nằm trên bench. Cầm EZ-bar thẳng lên trên ngực. <strong>Khuỷu tay hướng vào nhau</strong>, không đổ ra ngoài."},
+          {t:"Hạ tạ về phía trán",d:"Gập chỉ khuỷu tay, hạ tạ về phía <strong>trán hoặc sau đầu</strong>. Phần thân tay trên cố định."},
+          {t:"Duỗi khuỷu tay lên",d:"Duỗi khuỷu tay, <strong>đẩy tạ lên</strong>. Siết tay sau ở điểm duỗi thẳng, giữ 1 giây."}],
+   tips:["⚠️ Tên nghe đáng sợ — nhưng chỉ cần kiểm soát tốt là hoàn toàn an toàn","🔒 Khuỷu tay không được đổ ra ngoài suốt bài","💡 Dùng EZ-bar thay straight bar để giảm áp lực cổ tay"]},
+
+  {id:16,name:"Squat",muscle:"Chân",icon:"🦵",diff:"I",equip:"Barbell",sets:"4",reps:"6-8",rest:"2-3 phút",
+   sec:["Mông","Lưng dưới","Bụng","Bắp chân"],
+   steps:[{t:"Đặt tạ trên bẫy cơ (traps)",d:"Thanh tạ đặt trên <strong>bẫy cơ phần giữa</strong>. Hai bàn tay cầm gần vai để ổn định và kéo tạ xuống."},
+          {t:"Bước ra, chân rộng hơn vai",d:"Bước ra khỏi rack, hai chân <strong>rộng hơn vai</strong>. Ngón chân hướng ra ngoài 15-30° tùy cấu trúc hông."},
+          {t:"Squat xuống",d:"Hít vào, <strong>ngồi xuống như ngồi ghế</strong>. Gối theo hướng ngón chân. Đùi ít nhất song song sàn."},
+          {t:"Đứng lên mạnh mẽ",d:"Đẩy sàn bằng toàn bàn chân. <strong>Đầu gối và hông lên cùng lúc</strong>. Không để gối đổ vào trong."}],
+   tips:["🦶 Trọng tâm ở gót chân — không nhấc gót","📐 Giữ ngực và lưng thẳng suốt bài","🔑 Mobility hông và mắt cá ảnh hưởng lớn đến tư thế squat","💡 Goblet squat là bài học tư thế tốt nhất cho người mới"]},
+
+  {id:17,name:"Romanian Deadlift",muscle:"Chân",icon:"🎣",diff:"I",equip:"Barbell",sets:"3",reps:"10",rest:"90 giây",
+   sec:["Mông","Lưng dưới","Gân kheo"],
+   steps:[{t:"Đứng cầm tạ ngang hông",d:"Cầm thanh tạ rộng bằng vai. <strong>Vai lùi ra sau</strong>, ngực ra trước, lưng thẳng."},
+          {t:"Đẩy hông về phía sau",d:"Giữ lưng thẳng, <strong>đẩy hông về phía sau</strong>. Đây là hip hinge — không phải cúi lưng."},
+          {t:"Hạ tạ dọc chân",d:"Tạ trượt <strong>sát mặt trước ống chân</strong>. Hạ đến khi cảm thấy căng gân kheo mạnh."},
+          {t:"Đẩy hông ra trước để đứng lên",d:"Đẩy hông ra trước để đứng lên. <strong>Siết mông</strong> mạnh ở điểm trên cùng."}],
+   tips:["🎯 Cảm nhận căng gân kheo là dấu hiệu đúng tư thế","⚠️ Không squat xuống — đây thuần túy là hip hinge","📏 Đầu gối hơi cong nhẹ, cố định suốt bài"]},
+
+  {id:18,name:"Leg Press",muscle:"Chân",icon:"🚀",diff:"B",equip:"Machine",sets:"4",reps:"12",rest:"90 giây",
+   sec:["Mông","Gân kheo"],
+   steps:[{t:"Ngồi vào máy, điều chỉnh ghế",d:"Lưng ép vào ghế. Đặt hai chân lên sàn đẩy <strong>rộng bằng vai</strong>, mũi chân hướng ra ngoài nhẹ."},
+          {t:"Hạ sàn xuống kiểm soát",d:"Mở khóa an toàn. Hạ sàn chậm <strong>cho đến khi đùi gần song song</strong> với sàn."},
+          {t:"Đẩy sàn ra hoàn toàn",d:"Đẩy mạnh bằng <strong>toàn bàn chân</strong>. Không khóa gối hoàn toàn ở điểm trên."}],
+   tips:["🦶 Chân cao trên sàn = tập mông nhiều hơn","🦶 Chân thấp = tập đùi trước (quads) nhiều hơn","⚠️ Không khóa gối hoàn toàn — giữ hơi cong để bảo vệ khớp"]},
+
+  {id:19,name:"Calf Raise",muscle:"Chân",icon:"🏔️",diff:"B",equip:"Machine",sets:"4",reps:"20",rest:"45 giây",
+   sec:["Bắp chân trong","Bắp chân ngoài"],
+   steps:[{t:"Đứng mũi chân trên đế",d:"Đặt mũi bàn chân lên đế nâng. <strong>Hạ gót hoàn toàn</strong> để cảm nhận căng bắp chân tối đa."},
+          {t:"Nhón gót lên cao nhất",d:"Nhón gót <strong>cao nhất có thể</strong>. Siết bắp chân mạnh ở điểm cao nhất, giữ 1 giây."},
+          {t:"Hạ gót chậm 3 giây",d:"Hạ gót <strong>chậm trong 3 giây</strong> về vị trí thấp nhất. Đây là phần quan trọng nhất."}],
+   tips:["🔑 Bắp chân cần nhiều rep và siết mạnh hơn là tạ nặng","🐌 Tempo chậm hiệu quả hơn rep nhanh rất nhiều","💡 Chân thẳng = gastrocnemius; hơi cong gối = soleus"]},
+
+  {id:20,name:"Hip Thrust",muscle:"Mông",icon:"🍑",diff:"B",equip:"Barbell",sets:"4",reps:"10-12",rest:"90 giây",
+   sec:["Chân","Lưng dưới","Gân kheo"],
+   steps:[{t:"Dựa lưng vào mép bench",d:"Xương bả vai dựa vào mép bench. Đặt tạ qua hông với miếng đệm bảo vệ. <strong>Hai chân rộng bằng vai</strong>."},
+          {t:"Đẩy hông lên cao",d:"Đẩy hông lên cao, <strong>siết mông mạnh</strong> ở điểm trên cùng. Đùi song song với sàn."},
+          {t:"Giữ 2 giây và hạ xuống",d:"Giữ vị trí trên <strong>2 giây</strong>. Hạ hông xuống chậm. Không để hông chạm sàn giữa các rep."}],
+   tips:["🎯 Bài tập hiệu quả nhất cho gluteus maximus theo nghiên cứu EMG","📐 Cằm hướng vào ngực để giữ cột sống trung lập","💡 Glute Bridge (không tạ) là bước đầu tốt cho người mới"]},
+
+  {id:21,name:"Glute Kickback",muscle:"Mông",icon:"⬆️",diff:"B",equip:"Cable",sets:"3",reps:"15",rest:"60 giây",
+   sec:["Gân kheo","Cơ mông nhỏ"],
+   steps:[{t:"Đứng trước máy cáp thấp",d:"Gắn dây vào mắt cá. Đứng sát máy, <strong>giữ tay lên khung</strong> để ổn định thân người."},
+          {t:"Đá chân ra sau và lên cao",d:"Đá chân ra sau và lên cao, <strong>siết mông</strong> ở điểm cao nhất. Không xoay hông."},
+          {t:"Hạ chân có kiểm soát",d:"Hạ chân <strong>chậm và có kiểm soát</strong>. Không để chân chạm sàn giữa các rep."}],
+   tips:["🎯 Giữ hông cố định — chỉ mình chân di chuyển","💡 Machine kickback cũng rất hiệu quả","🔄 Resistance band tập tại nhà cũng cho kết quả tốt"]},
+
+  {id:22,name:"Plank",muscle:"Bụng",icon:"📏",diff:"B",equip:"Bodyweight",sets:"3",reps:"60 giây",rest:"45 giây",
+   sec:["Vai","Lưng","Mông","Gân kheo"],
+   steps:[{t:"Tư thế chống cẳng tay",d:"Chống hai cẳng tay. <strong>Khuỷu tay thẳng dưới vai</strong>. Người thẳng từ đầu đến gót."},
+          {t:"Siết toàn bộ cơ thể",d:"Siết bụng, mông, đùi cùng lúc. <strong>Không võng lưng</strong> hay nhô mông lên."},
+          {t:"Thở đều, nhìn xuống sàn",d:"Thở đều đặn, <strong>không nín thở</strong>. Nhìn xuống sàn, cổ thẳng tự nhiên."}],
+   tips:["⏱️ Chất lượng quan trọng hơn thời gian — dừng nếu mất tư thế","💡 Side plank cho obliques (bụng bên)","📈 Nâng cao: plank với leg raise hoặc arm reach"]},
+
+  {id:23,name:"Hanging Leg Raise",muscle:"Bụng",icon:"🌀",diff:"I",equip:"Bodyweight",sets:"3",reps:"12",rest:"60 giây",
+   sec:["Tay trước","Vai","Bụng nghiêng"],
+   steps:[{t:"Treo thẳng người trên xà",d:"Cầm xà, <strong>duỗi thẳng hoàn toàn</strong>. Siết bụng ngay từ vị trí ban đầu."},
+          {t:"Nâng chân lên song song sàn",d:"Nâng <strong>hai chân thẳng</strong> lên song song với sàn hoặc cao hơn. Không lắc lư."},
+          {t:"Hạ chân chậm rãi",d:"Hạ chân <strong>chậm và kiểm soát</strong>. Không để rơi tự do — đây là phần xây cơ."}],
+   tips:["🔰 Người mới: gập gối thay vì duỗi thẳng chân","🚫 Không lắc lư — dùng quán tính là sai tư thế","🎯 Thở ra khi nâng lên để siết bụng tốt hơn"]},
+
+  {id:24,name:"Cable Crunch",muscle:"Bụng",icon:"⚡",diff:"B",equip:"Cable",sets:"3",reps:"15",rest:"60 giây",
+   sec:["Bụng trên","Bụng dưới"],
+   steps:[{t:"Quỳ trước máy cáp cao",d:"Cáp ở vị trí cao với dây thừng. <strong>Quỳ xuống</strong> cách máy 1-2 bước. Cầm hai đầu dây bên tai."},
+          {t:"Gập người bằng lực bụng",d:"Gập người <strong>chỉ bằng lực cơ bụng</strong>. Khuỷu tay hướng về phía gối."},
+          {t:"Siết mạnh và duỗi lên chậm",d:"Siết bụng <strong>mạnh ở dưới</strong>. Duỗi người lên chậm cho bụng căng ra hoàn toàn."}],
+   tips:["🎯 Hông không di chuyển — chỉ cột sống cong lại","💡 Cho phép tập bụng với tải trọng thực — hiệu quả hơn crunch thông thường","📏 Giữ cổ trung lập, không kéo cổ về phía trước"]},
+
+  {id:25,name:"Kettlebell Swing",muscle:"Toàn thân",icon:"🔔",diff:"I",equip:"Kettlebell",sets:"4",reps:"15",rest:"90 giây",
+   sec:["Mông","Lưng dưới","Bụng","Vai","Gân kheo"],
+   steps:[{t:"Đứng chân rộng hơn vai",d:"Kettlebell trước chân. Cầm bằng hai tay. <strong>Gập hông về sau</strong> — không phải squat xuống."},
+          {t:"Đẩy hông ra trước mạnh và nhanh",d:"Đẩy hông ra trước <strong>mạnh và bùng nổ</strong>. Lực từ hông đưa kettlebell lên — không phải cánh tay."},
+          {t:"Để kettlebell đung đưa lên",d:"Kettlebell đung đưa lên ngang vai. <strong>Siết mông và bụng</strong> ở điểm cao nhất."},
+          {t:"Gập hông khi kettlebell rơi",d:"Khi rơi xuống, <strong>gập hông ngay</strong> để đón và tiếp tục rep tiếp theo một cách liền mạch."}],
+   tips:["🔑 Đây là hip hinge thuần túy — không phải squat hay bent-over row","💥 Tất cả lực phải xuất phát từ hông","⚠️ Học hip hinge kỹ trước khi tập để tránh chấn thương lưng"]},
+
+  {id:26,name:"Burpee",muscle:"Toàn thân",icon:"🌪️",diff:"I",equip:"Bodyweight",sets:"4",reps:"10",rest:"90 giây",
+   sec:["Tim mạch","Ngực","Vai","Bụng","Chân"],
+   steps:[{t:"Đứng thẳng ban đầu",d:"Bắt đầu đứng thẳng, chân rộng bằng hông. Sẵn sàng thực hiện động tác liên tục."},
+          {t:"Squat xuống, đặt tay xuống sàn",d:"Squat xuống nhanh, <strong>đặt hai tay xuống sàn</strong> trước chân."},
+          {t:"Nhảy chân ra sau vào tư thế plank",d:"Nhảy hai chân ra sau vào <strong>tư thế plank thẳng</strong>. Không để lưng võng."},
+          {t:"Push-up (tùy chọn)",d:"Thực hiện <strong>1 rep push-up</strong> để tăng cường độ và tập ngực."},
+          {t:"Nhảy chân về và bật lên cao",d:"Nhảy chân về gần tay, <strong>bật nhảy lên cao</strong>. Vỗ tay qua đầu ở điểm cao nhất."}],
+   tips:["💨 Kết hợp cardio + sức mạnh — đốt calo cực cao","🔰 Người mới: bỏ qua phần bật nhảy và push-up","⏱️ Dùng cho HIIT: 20 giây tập / 10 giây nghỉ — 8 rounds"]},
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const state = {muscle:"all", diff:"all", equip:"all", search:"", sort:"default"};
+const favs = new Set();
+let currentEx = null;
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+const diffMap = {B:"Beginner",I:"Intermediate",A:"Advanced"};
+const diffLabel = {B:"Người mới",I:"Trung bình",A:"Nâng cao"};
+const diffCls = {B:"badge-b",I:"badge-i",A:"badge-a"};
+const diffOrder = {B:0,I:1,A:2};
+
+function getFiltered(){
+  let d = [...EX];
+  if(state.muscle!=="all") d=d.filter(e=>e.muscle===state.muscle);
+  if(state.diff!=="all")   d=d.filter(e=>e.diff===state.diff);
+  if(state.equip!=="all")  d=d.filter(e=>e.equip===state.equip);
+  if(state.search.trim())  d=d.filter(e=>e.name.toLowerCase().includes(state.search.toLowerCase()));
+  if(state.sort==="az") d.sort((a,b)=>a.name.localeCompare(b.name));
+  if(state.sort==="za") d.sort((a,b)=>b.name.localeCompare(a.name));
+  if(state.sort==="easy") d.sort((a,b)=>diffOrder[a.diff]-diffOrder[b.diff]);
+  if(state.sort==="hard") d.sort((a,b)=>diffOrder[b.diff]-diffOrder[a.diff]);
+  return d;
+}
+
+// ─── RENDER GRID ─────────────────────────────────────────────────────────────
+function render(){
+  const data = getFiltered();
+  document.getElementById("resNum").textContent = data.length;
+  const g = document.getElementById("exerciseGrid");
+  if(!data.length){
+    g.innerHTML=`<div class="no-results"><span class="nr-icon">🔍</span><p>Không tìm thấy bài tập nào phù hợp bộ lọc.</p></div>`;
+    return;
+  }
+  g.innerHTML = data.map((e,i)=>`
+    <div class="ex-card" style="animation-delay:${i*35}ms" onclick="openModal(${e.id})">
+      <div class="card-img">
+        <div class="card-glow"></div>
+        <span class="big-icon">${e.icon}</span>
+        <span class="card-badge ${diffCls[e.diff]}">${diffLabel[e.diff]}</span>
+        <span class="card-fav ${favs.has(e.id)?'on':''}" onclick="toggleFav(event,${e.id})">♡</span>
+      </div>
+      <div class="card-body">
+        <div class="card-muscle">${e.muscle}</div>
+        <div class="card-name">${e.name}</div>
+        <div class="card-tags">
+          <span class="ctag">${e.equip}</span>
+          <span class="ctag">${e.sets}×${e.reps}</span>
+          <span class="ctag">${e.rest}</span>
+        </div>
+      </div>
+      <div class="card-action-list"><span class="list-arr">›</span></div>
+    </div>
+  `).join("");
+  renderActiveTags();
+}
+
+function renderActiveTags(){
+  const div = document.getElementById("activeFilters");
+  const tags=[];
+  if(state.muscle!=="all") tags.push({l:state.muscle, k:"muscle"});
+  if(state.diff!=="all")   tags.push({l:diffLabel[state.diff], k:"diff"});
+  if(state.equip!=="all")  tags.push({l:state.equip, k:"equip"});
+  if(state.search.trim())  tags.push({l:`"${state.search.trim()}"`, k:"search"});
+  div.innerHTML = tags.map(t=>`<span class="af-tag">${t.l}<button onclick="clearTag('${t.k}')">✕</button></span>`).join("");
+}
+
+function clearTag(k){
+  if(k==="search"){state.search="";document.getElementById("searchInput").value="";}
+  else state[k]="all";
+  syncUI(); render();
+}
+
+function syncUI(){
+  document.querySelectorAll("#muscleChips .chip").forEach(c=>c.classList.toggle("on",c.dataset.val===state.muscle));
+  document.querySelectorAll("#diffList li").forEach(li=>{
+    const on=li.dataset.val===state.diff;
+    li.classList.toggle("on",on);
+    li.querySelector(".s-box").textContent=on?"✓":"";
+  });
+  document.querySelectorAll("#equipList li").forEach(li=>{
+    const on=li.dataset.val===state.equip;
+    li.classList.toggle("on",on);
+    li.querySelector(".s-box").textContent=on?"✓":"";
+  });
+}
+
+// ─── EVENTS ──────────────────────────────────────────────────────────────────
+document.querySelectorAll("#muscleChips .chip").forEach(c=>{
+  c.onclick=()=>{state.muscle=c.dataset.val;syncUI();render();};
+});
+document.querySelectorAll("#diffList li").forEach(li=>{
+  li.onclick=()=>{state.diff=li.dataset.val;syncUI();render();};
+});
+document.querySelectorAll("#equipList li").forEach(li=>{
+  li.onclick=()=>{state.equip=li.dataset.val;syncUI();render();};
+});
+document.getElementById("searchInput").addEventListener("input",e=>{state.search=e.target.value;render();});
+document.getElementById("sortSel").addEventListener("change",e=>{state.sort=e.target.value;render();});
+document.getElementById("clearBtn").onclick=()=>{
+  state.muscle="all";state.diff="all";state.equip="all";state.search="";state.sort="default";
+  document.getElementById("searchInput").value="";
+  document.getElementById("sortSel").value="default";
+  syncUI();render();
+};
+document.getElementById("gridBtn").onclick=()=>{
+  document.getElementById("exerciseGrid").classList.remove("list");
+  document.getElementById("gridBtn").classList.add("on");
+  document.getElementById("listBtn").classList.remove("on");
+};
+document.getElementById("listBtn").onclick=()=>{
+  document.getElementById("exerciseGrid").classList.add("list");
+  document.getElementById("listBtn").classList.add("on");
+  document.getElementById("gridBtn").classList.remove("on");
+};
+
+// ─── FAVORITES ───────────────────────────────────────────────────────────────
+function toggleFav(e,id){
+  e.stopPropagation();
+  favs.has(id)?favs.delete(id):favs.add(id);
+  render();
+  if(currentEx&&currentEx.id===id)
+    document.getElementById("mFavBtn").innerHTML=favs.has(id)?"❤️  Đã yêu thích":"♡  Yêu thích";
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+function openModal(id){
+  const ex=EX.find(e=>e.id===id);
+  if(!ex) return;
+  currentEx=ex;
+
+  document.getElementById("mIcon").textContent=ex.icon;
+  document.getElementById("mMuscle").textContent=ex.muscle.toUpperCase();
+  document.getElementById("mName").textContent=ex.name;
+  document.getElementById("mBadges").innerHTML=`
+    <span class="card-badge ${diffCls[ex.diff]}">${diffLabel[ex.diff]}</span>
+    <span class="card-badge" style="background:rgba(77,160,255,.12);color:#4da0ff;border:1px solid rgba(77,160,255,.25)">${ex.equip}</span>
+  `;
+  document.getElementById("mStats").innerHTML=`
+    <div class="m-stat"><div class="m-stat-num">${ex.sets}</div><div class="m-stat-lbl">Sets</div></div>
+    <div class="m-stat"><div class="m-stat-num">${ex.reps}</div><div class="m-stat-lbl">Reps</div></div>
+    <div class="m-stat"><div class="m-stat-num">${ex.rest}</div><div class="m-stat-lbl">Nghỉ giữa set</div></div>
+  `;
+  document.getElementById("pane-steps").innerHTML=`<ol class="steps">${
+    ex.steps.map((s,i)=>`<li class="step"><span class="step-num">0${i+1}</span><div class="step-text"><strong>${s.t}</strong><br><br>${s.d}</div></li>`).join("")
+  }</ol>`;
+  const allM=[{role:"Cơ chính",name:ex.muscle},...ex.sec.map(s=>({role:"Cơ phụ",name:s}))];
+  document.getElementById("pane-muscles").innerHTML=`<div class="muscle-groups">${
+    allM.map(m=>`<div class="mg-item"><div class="mg-role">${m.role}</div><div class="mg-name">${m.name}</div></div>`).join("")
+  }</div>`;
+  document.getElementById("pane-tips").innerHTML=`<ul class="tips-list">${
+    ex.tips.map(t=>`<li class="tip-item"><span class="tip-icon">${[...t][0]}</span><span class="tip-text">${t.slice(2).trim()}</span></li>`).join("")
+  }</ul>`;
+  document.getElementById("mFavBtn").innerHTML=favs.has(ex.id)?"❤️  Đã yêu thích":"♡  Yêu thích";
+
+  // Reset tabs
+  document.querySelectorAll(".m-tab").forEach(t=>t.classList.remove("on"));
+  document.querySelectorAll(".tab-pane").forEach(t=>t.classList.remove("on"));
+  document.querySelector(".m-tab[data-t='steps']").classList.add("on");
+  document.getElementById("pane-steps").classList.add("on");
+
+  document.querySelector(".modal").scrollTop=0;
+  document.getElementById("modalOverlay").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+
+document.getElementById("modalClose").onclick=closeModal;
+document.getElementById("modalOverlay").onclick=e=>{if(e.target===e.currentTarget)closeModal();};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+function closeModal(){
+  document.getElementById("modalOverlay").classList.remove("open");
+  document.body.style.overflow="";
+}
+
+document.querySelectorAll(".m-tab").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".m-tab").forEach(t=>t.classList.remove("on"));
+    document.querySelectorAll(".tab-pane").forEach(t=>t.classList.remove("on"));
+    btn.classList.add("on");
+    document.getElementById("pane-"+btn.dataset.t).classList.add("on");
+  };
+});
+
+document.getElementById("mFavBtn").onclick=()=>{
+  if(!currentEx) return;
+  favs.has(currentEx.id)?favs.delete(currentEx.id):favs.add(currentEx.id);
+  document.getElementById("mFavBtn").innerHTML=favs.has(currentEx.id)?"❤️  Đã yêu thích":"♡  Yêu thích";
+  render();
+};
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>

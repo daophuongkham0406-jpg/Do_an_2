@@ -4,30 +4,371 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Chủ - Pumpd Style</title>
-    <link rel="stylesheet" href="TrangChu.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="container header-flex">
-            <div class="logo">
-                <span class="logo-icon">P</span> PUMPD
-            </div>
-            
-            <nav class="nav-menu">
-                <ul>
-                    <li><a href="#">Trang chủ</a></li>
-                    <li><a href="baitap.html">Bài tập</a></li>
-                    <li><a href="GioiThieuCauHoi.html">Giới thiệu & Câu hỏi</a></li>
-                    <li><a href="TrangCaNhan.html">Trang cá nhân</a></li>
-                    <li><a href="lotrinh.html">Lộ trình cá nhân</a></li>
-                </ul>
-            </nav>
-            <div class="auth-links">
-                <a href="dangnhap.html" class="btn-signup">Đăng nhập / Đăng ký</a>
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="container header-flex">
+        <a href="#" class="logo">
+            <span class="logo-icon">P</span> PUMPD
+        </a>
+        <nav class="nav-menu">
+            <ul>
+                <li><a href="index.html">Trang chủ</a></li>
+                <li><a href="bt.html">Bài tập</a></li>
+                <li><a href="GioiThieuCauHoi.html">Giới thiệu & Câu hỏi</a></li>
+                <li><a href="Tcn.html">Trang cá nhân</a></li>
+                <li><a href="lotrinh.html">Lộ trình cá nhân</a></li>
+            </ul>
+        </nav>
+        <a href="dangnhap.html" class="btn-signup">Đăng nhập / Đăng ký</a>
+    </div>
+</header>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+    <div class="ticker-track">
+        <span class="ticker-item"><span class="ticker-dot"></span>SỨC MẠNH</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>THỂ HÌNH</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>VÓC DÁNG</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>DINH DƯỠNG</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>PHỤC HỒI</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>HIỆU SUẤT</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>SỨC MẠNH</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>THỂ HÌNH</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>VÓC DÁNG</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>DINH DƯỠNG</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>PHỤC HỒI</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>HIỆU SUẤT</span>
+    </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="container" style="position:relative; width:100%;">
+        <div class="hero-content">
+            <div class="hero-tag">Nền tảng tập luyện #1 Việt Nam</div>
+            <h1>RÈN LUYỆN<span>KHÔNG NGỪNG</span></h1>
+            <p class="hero-desc">Khám phá hàng trăm bài tập, lộ trình cá nhân hóa và kiến thức sức khỏe khoa học — tất cả trong một nền tảng duy nhất.</p>
+            <div class="hero-cta">
+                <a href="#" class="btn-primary">Bắt đầu ngay →</a>
+                <a href="#topics" class="btn-outline">Khám phá</a>
             </div>
         </div>
+        <div class="hero-stats">
+            <div class="stat-card">
+                <div class="stat-num">500+</div>
+                <div class="stat-label">Bài tập</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num">50K+</div>
+                <div class="stat-label">Người dùng</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num">98%</div>
+                <div class="stat-label">Hài lòng</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TOPICS -->
+<section class="section" id="topics">
+    <div class="container">
+        <div class="section-header reveal">
+            <div>
+                <div class="section-label">Khám phá</div>
+                <h2 class="section-title">Nội dung nổi bật</h2>
+            </div>
+            <a href="#" class="section-link">Xem tất cả →</a>
+        </div>
+        <div class="topics-grid">
+            <!-- Card 1 -->
+            <div class="topic-card reveal reveal-delay-1">
+                <span class="topic-icon">💪</span>
+                <div class="topic-tag">Sức mạnh</div>
+                <h3>Tăng cơ bắp hiệu quả</h3>
+                <p>Hypertrophy — quá trình tăng kích thước cơ — xảy ra khi bạn tập với tải trọng đủ để gây tổn thương vi mô cho sợi cơ. Nghỉ ngơi và dinh dưỡng đóng vai trò bằng 50% so với buổi tập.</p>
+                <div class="topic-arrow">↗</div>
+            </div>
+            <!-- Card 2 -->
+            <div class="topic-card reveal reveal-delay-2">
+                <span class="topic-icon">🔥</span>
+                <div class="topic-tag">Vóc dáng</div>
+                <h3>Đốt mỡ & định hình cơ thể</h3>
+                <p>Giảm mỡ không chỉ là cardio — kết hợp tập kháng lực với thâm hụt calo vừa phải (300–500 kcal/ngày) giúp giữ cơ trong khi đốt mỡ. Quá trình này cần sự kiên nhẫn và nhất quán trong nhiều tuần.</p>
+                <div class="topic-arrow">↗</div>
+            </div>
+            <!-- Card 3 -->
+            <div class="topic-card reveal reveal-delay-1">
+                <span class="topic-icon">🧬</span>
+                <div class="topic-tag">Sức khỏe</div>
+                <h3>Sức khỏe tim mạch</h3>
+                <p>Tập cardio đều đặn 150 phút/tuần giảm nguy cơ bệnh tim tới 35%. Zone 2 training là phương pháp tối ưu: nhịp tim 60–70% tối đa, duy trì được cuộc trò chuyện trong lúc tập.</p>
+                <div class="topic-arrow">↗</div>
+            </div>
+            <!-- Card 4 -->
+            <div class="topic-card reveal reveal-delay-2">
+                <span class="topic-icon">🥗</span>
+                <div class="topic-tag">Dinh dưỡng</div>
+                <h3>Dinh dưỡng thể thao</h3>
+                <p>Protein là vua: 1.6–2.2g/kg cân nặng mỗi ngày để tối ưu tăng cơ. Bữa ăn trước tập (1–2h) nên có carb dễ tiêu hóa. Sau tập 30 phút là cửa sổ vàng để nạp protein.</p>
+                <div class="topic-arrow">↗</div>
+            </div>
+            <!-- Card 5 -->
+            <div class="topic-card reveal reveal-delay-3">
+                <span class="topic-icon">😴</span>
+                <div class="topic-tag">Phục hồi</div>
+                <h3>Phục hồi & giấc ngủ</h3>
+                <p>Cơ phát triển khi bạn ngủ, không phải khi tập. Ngủ đủ 7–9 tiếng tăng tiết GH (hormone tăng trưởng) tự nhiên. Không đủ giấc ngủ làm tăng cortisol và phá hủy cơ bắp.</p>
+                <div class="topic-arrow">↗</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MUSCLE MAP -->
+<section class="section muscles-section">
+    <div class="container">
+        <div class="section-header reveal">
+            <div>
+                <div class="section-label">Thư viện</div>
+                <h2 class="section-title">Nhóm cơ & Bài tập</h2>
+            </div>
+            <a href="#" class="section-link">Xem tất cả →</a>
+        </div>
+        <div class="muscles-grid">
+            <div class="muscle-item reveal reveal-delay-1">
+                <span class="muscle-emoji">🏋️</span>
+                <div class="muscle-name">Ngực</div>
+                <div class="muscle-count">42 bài tập</div>
+            </div>
+            <div class="muscle-item reveal reveal-delay-1">
+                <span class="muscle-emoji">💪</span>
+                <div class="muscle-name">Tay trước</div>
+                <div class="muscle-count">28 bài tập</div>
+            </div>
+            <div class="muscle-item reveal reveal-delay-2">
+                <span class="muscle-emoji">🔱</span>
+                <div class="muscle-name">Tay sau</div>
+                <div class="muscle-count">31 bài tập</div>
+            </div>
+            <div class="muscle-item reveal reveal-delay-2">
+                <span class="muscle-emoji">🦈</span>
+                <div class="muscle-name">Lưng</div>
+                <div class="muscle-count">55 bài tập</div>
+            </div>
+            <div class="muscle-item reveal reveal-delay-3">
+                <span class="muscle-emoji">⬆️</span>
+                <div class="muscle-name">Vai</div>
+                <div class="muscle-count">38 bài tập</div>
+            </div>
+            <div class="muscle-item reveal reveal-delay-3">
+                <span class="muscle-emoji">🏃</span>
+                <div class="muscle-name">Đùi trước</div>
+                <div class="muscle-count">24 bài tập</div>
+            </div>
+            <div class="muscle-item reveal reveal-delay-1">
+                <span class="muscle-emoji">🦵</span>
+                <div class="muscle-name">Đùi sau</div>
+                <div class="muscle-count">19 bài tập</div>
+            </div>
+            <div class="muscle-item reveal reveal-delay-2">
+                <span class="muscle-emoji">🍑</span>
+                <div class="muscle-name">Mông</div>
+                <div class="muscle-count">33 bài tập</div>
+            </div>
+            <div class="muscle-item reveal reveal-delay-3">
+                <span class="muscle-emoji">⚡</span>
+                <div class="muscle-name">Bắp chân</div>
+                <div class="muscle-count">16 bài tập</div>
+            </div>
+            <div class="muscle-item reveal reveal-delay-1">
+                <span class="muscle-emoji">🎯</span>
+                <div class="muscle-name">Bụng</div>
+                <div class="muscle-count">47 bài tập</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TIPS -->
+<section class="section">
+    <div class="container">
+        <div class="section-header reveal">
+            <div>
+                <div class="section-label">Kiến thức</div>
+                <h2 class="section-title">Mẹo tập luyện</h2>
+            </div>
+        </div>
+        <div class="tips-grid">
+            <div class="tip-card reveal reveal-delay-1">
+                <div class="tip-number">01</div>
+                <div class="tip-content">
+                    <h4>Progressive Overload — Nguyên tắc số một</h4>
+                    <p>Tăng dần tải trọng, số rep hoặc thời gian mỗi tuần. Cơ thể chỉ phát triển khi bị thách thức vượt mức quen thuộc. Không tăng được nữa? Hãy giảm thời gian nghỉ giữa set.</p>
+                </div>
+            </div>
+            <div class="tip-card reveal reveal-delay-2">
+                <div class="tip-number">02</div>
+                <div class="tip-content">
+                    <h4>Mind-Muscle Connection</h4>
+                    <p>Tập trung vào cơ đang co thắt, không chỉ di chuyển tạ từ A đến B. Nghiên cứu cho thấy tập với sự tập trung cao tăng EMG của cơ mục tiêu lên đến 20%.</p>
+                </div>
+            </div>
+            <div class="tip-card reveal reveal-delay-1">
+                <div class="tip-number">03</div>
+                <div class="tip-content">
+                    <h4>Deload — Tuần giảm tải định kỳ</h4>
+                    <p>Cứ 4–6 tuần, hãy dành một tuần tập với 50% cường độ bình thường. Deload giúp phục hồi hệ thần kinh trung ương, giảm chấn thương và thường đi kèm với bước nhảy về sức mạnh.</p>
+                </div>
+            </div>
+            <div class="tip-card reveal reveal-delay-2">
+                <div class="tip-number">04</div>
+                <div class="tip-content">
+                    <h4>Hydration — Nước và hiệu suất tập</h4>
+                    <p>Mất 2% trọng lượng cơ thể do mất nước làm giảm hiệu suất tới 10–20%. Uống 500ml nước trước tập 2 tiếng, và 150–250ml mỗi 15–20 phút trong suốt buổi tập.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- WORKOUT PLAN -->
+<section class="section plan-section">
+    <div class="container">
+        <div class="section-header reveal">
+            <div>
+                <div class="section-label">Lộ trình</div>
+                <h2 class="section-title">Lịch tập mẫu</h2>
+            </div>
+        </div>
+        <div class="plan-tabs reveal">
+            <button class="plan-tab active" onclick="switchTab(this, 'split')">Push / Pull / Legs</button>
+            <button class="plan-tab" onclick="switchTab(this, 'fullbody')">Full Body</button>
+            <button class="plan-tab" onclick="switchTab(this, 'upper')">Upper / Lower</button>
+        </div>
+        <div class="plan-grid" id="plan-grid">
+            <div class="plan-day reveal reveal-delay-1">
+                <div class="day-label">Thứ Hai</div>
+                <div class="day-title">PUSH — Ngực / Vai / Tay sau</div>
+                <ul class="day-exercises">
+                    <li>Bench Press <span>4×8</span></li>
+                    <li>Overhead Press <span>3×10</span></li>
+                    <li>Incline Dumbbell <span>3×12</span></li>
+                    <li>Lateral Raise <span>4×15</span></li>
+                    <li>Tricep Pushdown <span>3×15</span></li>
+                </ul>
+            </div>
+            <div class="plan-day reveal reveal-delay-2">
+                <div class="day-label">Thứ Ba</div>
+                <div class="day-title">PULL — Lưng / Tay trước</div>
+                <ul class="day-exercises">
+                    <li>Deadlift <span>4×6</span></li>
+                    <li>Pull-Up <span>3×max</span></li>
+                    <li>Barbell Row <span>3×8</span></li>
+                    <li>Face Pull <span>3×15</span></li>
+                    <li>Bicep Curl <span>3×12</span></li>
+                </ul>
+            </div>
+            <div class="plan-day reveal reveal-delay-3">
+                <div class="day-label">Thứ Tư</div>
+                <div class="day-title">LEGS — Chân toàn bộ</div>
+                <ul class="day-exercises">
+                    <li>Squat <span>4×8</span></li>
+                    <li>Romanian DL <span>3×10</span></li>
+                    <li>Leg Press <span>3×12</span></li>
+                    <li>Leg Curl <span>3×12</span></li>
+                    <li>Calf Raise <span>4×20</span></li>
+                </ul>
+            </div>
+            <div class="plan-day rest reveal reveal-delay-4">
+                <div class="day-label">Thứ Năm</div>
+                <div class="day-title">REST — Phục hồi</div>
+                <ul class="day-exercises">
+                    <li>Stretching <span>20ph</span></li>
+                    <li>Foam Roll <span>15ph</span></li>
+                    <li>Đi bộ nhẹ <span>30ph</span></li>
+                </ul>
+            </div>
+            <div class="plan-day reveal reveal-delay-1">
+                <div class="day-label">Thứ Sáu</div>
+                <div class="day-title">PUSH — Biến thể</div>
+                <ul class="day-exercises">
+                    <li>Dips <span>4×10</span></li>
+                    <li>DB Shoulder Press <span>3×10</span></li>
+                    <li>Cable Fly <span>3×15</span></li>
+                    <li>Skull Crusher <span>3×12</span></li>
+                    <li>Arnold Press <span>3×12</span></li>
+                </ul>
+            </div>
+            <div class="plan-day reveal reveal-delay-2">
+                <div class="day-label">Thứ Bảy</div>
+                <div class="day-title">PULL — Biến thể</div>
+                <ul class="day-exercises">
+                    <li>Rack Pull <span>4×6</span></li>
+                    <li>Lat Pulldown <span>3×12</span></li>
+                    <li>Seated Cable Row <span>3×12</span></li>
+                    <li>Hammer Curl <span>3×12</span></li>
+                    <li>Shrug <span>3×15</span></li>
+                </ul>
+            </div>
+            <div class="plan-day rest reveal reveal-delay-3">
+                <div class="day-label">Chủ Nhật</div>
+                <div class="day-title">REST — Nghỉ ngơi hoàn toàn</div>
+                <ul class="day-exercises">
+                    <li>Ngủ đủ giấc <span>8h+</span></li>
+                    <li>Ăn đủ dinh dưỡng</li>
+                </ul>
+            </div>
+        </div>
+<<<<<<< HEAD
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="logo" style="font-size:24px;">
+                    <span class="logo-icon">P</span> PUMPD
+                </a>
+                <p>Nền tảng tập luyện khoa học hàng đầu Việt Nam. Chúng tôi giúp bạn đạt mục tiêu thể hình nhanh hơn với lộ trình cá nhân hóa.</p>
+            </div>
+            <div>
+                <h4>Khám phá</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Thư viện bài tập</a></li>
+                    <li><a href="#">Lộ trình tập luyện</a></li>
+                    <li><a href="#">Tính TDEE</a></li>
+                    <li><a href="#">Blog sức khỏe</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Liên hệ</h4>
+                <ul class="footer-links">
+                    <li><a href="#">contact@pumpd.vn</a></li>
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">YouTube</a></li>
+                </ul>
+=======
     </header>
     <main class="main-content">
     <section class="hero-container">
@@ -65,12 +406,74 @@
                 <p><strong>Họ tên:</strong> Nguyễn Văn A</p>
                 <p><strong>Địa chỉ:</strong> 123 Đường ABC, Quận 1, TP. Hồ Chí Minh</p>
                 <p><strong>Email:</strong> contact@yourdomain.com</p>
+>>>>>>> 91c37c819d543ff22a96ff5efec03c87ad660cff
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2024 Bản quyền thuộc về PUMPD Clone.
+            <p>© 2024 PUMPD. All rights reserved.</p>
+            <p>Thiết kế cho người Việt yêu thể thao 🇻🇳</p>
         </div>
-    </footer>
+    </div>
+</footer>
 
+<script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.12 });
+
+    reveals.forEach(el => observer.observe(el));
+
+    // Plan tabs
+    const plans = {
+        split: [
+            { day: 'Thứ Hai', title: 'PUSH — Ngực / Vai / Tay sau', ex: [['Bench Press','4×8'],['Overhead Press','3×10'],['Incline Dumbbell','3×12'],['Lateral Raise','4×15'],['Tricep Pushdown','3×15']], rest: false },
+            { day: 'Thứ Ba', title: 'PULL — Lưng / Tay trước', ex: [['Deadlift','4×6'],['Pull-Up','3×max'],['Barbell Row','3×8'],['Face Pull','3×15'],['Bicep Curl','3×12']], rest: false },
+            { day: 'Thứ Tư', title: 'LEGS — Chân toàn bộ', ex: [['Squat','4×8'],['Romanian DL','3×10'],['Leg Press','3×12'],['Leg Curl','3×12'],['Calf Raise','4×20']], rest: false },
+            { day: 'Thứ Năm', title: 'REST — Phục hồi', ex: [['Stretching','20ph'],['Foam Roll','15ph'],['Đi bộ nhẹ','30ph']], rest: true },
+            { day: 'Thứ Sáu', title: 'PUSH — Biến thể', ex: [['Dips','4×10'],['DB Shoulder Press','3×10'],['Cable Fly','3×15'],['Skull Crusher','3×12'],['Arnold Press','3×12']], rest: false },
+            { day: 'Thứ Bảy', title: 'PULL — Biến thể', ex: [['Rack Pull','4×6'],['Lat Pulldown','3×12'],['Seated Cable Row','3×12'],['Hammer Curl','3×12'],['Shrug','3×15']], rest: false },
+            { day: 'Chủ Nhật', title: 'REST — Nghỉ ngơi hoàn toàn', ex: [['Ngủ đủ giấc','8h+'],['Ăn đủ dinh dưỡng','']], rest: true },
+        ],
+        fullbody: [
+            { day: 'Thứ Hai', title: 'FULL BODY A', ex: [['Squat','3×8'],['Bench Press','3×8'],['Row','3×10'],['OHP','3×10'],['Core','3×15']], rest: false },
+            { day: 'Thứ Ba', title: 'REST — Cardio nhẹ', ex: [['Đạp xe','30ph'],['Đi bộ','20ph']], rest: true },
+            { day: 'Thứ Tư', title: 'FULL BODY B', ex: [['Deadlift','3×6'],['Incline Press','3×10'],['Pull-Up','3×max'],['Lunges','3×12'],['Plank','3×1ph']], rest: false },
+            { day: 'Thứ Năm', title: 'REST — Phục hồi', ex: [['Stretching','20ph'],['Massage','15ph']], rest: true },
+            { day: 'Thứ Sáu', title: 'FULL BODY C', ex: [['Front Squat','3×8'],['Dips','3×10'],['Chin-Up','3×8'],['Romanian DL','3×10'],['Cable Core','3×15']], rest: false },
+            { day: 'Thứ Bảy', title: 'Cardio / Sport', ex: [['Bóng rổ / Bơi','60ph'],['Tự chọn','']], rest: false },
+            { day: 'Chủ Nhật', title: 'REST hoàn toàn', ex: [['Nghỉ ngơi',''],['Nạp dinh dưỡng','']], rest: true },
+        ],
+        upper: [
+            { day: 'Thứ Hai', title: 'UPPER — Sức mạnh', ex: [['Bench Press','4×5'],['Barbell Row','4×5'],['OHP','3×8'],['Chin-Up','3×6'],['Face Pull','3×15']], rest: false },
+            { day: 'Thứ Ba', title: 'LOWER — Sức mạnh', ex: [['Squat','4×5'],['Romanian DL','3×8'],['Leg Press','3×10'],['Leg Curl','3×10'],['Calf Raise','4×15']], rest: false },
+            { day: 'Thứ Tư', title: 'REST — Phục hồi', ex: [['Yoga nhẹ','20ph'],['Đi bộ','20ph']], rest: true },
+            { day: 'Thứ Năm', title: 'UPPER — Thể hình', ex: [['Incline Press','4×10'],['Lat Pulldown','4×10'],['Cable Fly','3×15'],['Curl','3×12'],['Tricep','3×12']], rest: false },
+            { day: 'Thứ Sáu', title: 'LOWER — Thể hình', ex: [['Hack Squat','4×10'],['Stiff-Leg DL','3×12'],['Leg Extension','3×15'],['Leg Curl','3×15'],['Calf Raise','4×20']], rest: false },
+            { day: 'Thứ Bảy', title: 'Cardio / Linh hoạt', ex: [['HIIT','20ph'],['Core','20ph']], rest: false },
+            { day: 'Chủ Nhật', title: 'REST', ex: [['Nghỉ ngơi',''],['Ngủ đủ giấc','8h']], rest: true },
+        ]
+    };
+
+    function switchTab(btn, key) {
+        document.querySelectorAll('.plan-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        const grid = document.getElementById('plan-grid');
+        grid.innerHTML = plans[key].map((d, i) => `
+            <div class="plan-day ${d.rest ? 'rest' : ''} reveal visible">
+                <div class="day-label">${d.day}</div>
+                <div class="day-title">${d.title}</div>
+                <ul class="day-exercises">
+                    ${d.ex.map(e => `<li>${e[0]} ${e[1] ? `<span>${e[1]}</span>` : ''}</li>`).join('')}
+                </ul>
+            </div>
+        `).join('');
+    }
+</script>
 </body>
 </html>

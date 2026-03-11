@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trang Cá Nhân — PUMPD</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=Barlow+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- style.css: shared design system (dùng chung toàn dự án) -->
+<link rel="stylesheet" href="style.css">
+<!-- TrangCaNhan.css: styles riêng của trang này -->
+<link rel="stylesheet" href="TrangCaNhan.css">
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<header class="navbar">
+  <div class="container header-flex">
+    <a href="TrangChu.html" class="logo"><span class="logo-icon">P</span>PUMPD</a>
+    <nav class="nav-menu">
+      <ul>
+        <li><a href="TrangChu.html">Trang chủ</a></li>
+        <li><a href="bt.html">Bài tập</a></li>
+        <li><a href="GioiThieuCauHoi.html">Giới thiệu & FAQ</a></li>
+        <li><a href="TrangCaNhan.html" class="active">Cá nhân</a></li>
+        <li><a href="#">Lộ trình</a></li>
+      </ul>
+    </nav>
+    <a href="#" class="btn-nav">Đăng xuất</a>
+  </div>
+</header>
+
+<!-- ══ PAGE HERO ══ -->
+<section class="page-hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="container hero-inner">
+    <div class="breadcrumb"><a href="TrangChu.html">Trang chủ</a> › <span class="cur">Trang cá nhân</span></div>
+
+    <div class="profile-strip">
+      <div class="avatar-wrap">
+        <div class="avatar" id="avatarEl">N</div>
+        <div class="streak-badge" id="streakBadge">🔥 Streak 14</div>
+      </div>
+
+      <div class="profile-info">
+        <div class="level-pill"><span class="level-dot"></span><span id="levelLbl">Trung bình</span></div>
+        <div class="profile-name" id="profileName">NGUYỄN VĂN A</div>
+        <div class="meta-row">
+          <span class="meta-chip">🎂 <span id="metaAge">24</span> tuổi</span>
+          <span class="meta-chip">⚖️ <span id="metaWeight">72</span> kg</span>
+          <span class="meta-chip">📏 <span id="metaHeight">175</span> cm</span>
+          <span class="meta-chip accent-chip" id="metaBMI">BMI 23.5</span>
+        </div>
+        <div class="join-line">Thành viên từ tháng 1/2024 · <strong id="metaWorkouts">38</strong> buổi tập hoàn thành</div>
+      </div>
+
+      <div class="profile-ctas">
+        <button class="btn-edit" onclick="openEdit()">✏️ Chỉnh sửa</button>
+        <button class="btn-log" onclick="openLog()">＋ Cập nhật chỉ số</button>
+      </div>
+    </div>
+
+    <div class="hero-pills">
+      <div class="hero-pill"><span class="pill-num" id="pWorkouts">38</span><span class="pill-lbl">Buổi tập</span></div>
+      <div class="hero-pill"><span class="pill-num" id="pWeightChange">−3.2</span><span class="pill-lbl">kg thay đổi</span></div>
+      <div class="hero-pill"><span class="pill-num" id="pStreak">14</span><span class="pill-lbl">Ngày streak</span></div>
+      <div class="hero-pill"><span class="pill-num" id="pRoutines">3</span><span class="pill-lbl">Lộ trình xong</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ MAIN GRID ══ -->
+<div class="container">
+<div class="main-grid">
+
+  <!-- ═ LEFT ═ -->
+  <div class="col">
+
+    <!-- BODY STATS -->
+    <div class="card reveal">
+      <div class="card-hd">
+        <div><div class="card-label">Sức khỏe</div><div class="card-title">Chỉ số cơ thể</div></div>
+        <span class="card-meta" id="lastUpdated">Hôm nay</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-icon">⚖️</div>
+          <div class="stat-val" id="sv-w">72 kg</div>
+          <div class="stat-lbl">Cân nặng</div>
+          <div id="sv-wd" class="stat-delta d-down">▼ 3.2 kg</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon">📏</div>
+          <div class="stat-val" id="sv-h">175 cm</div>
+          <div class="stat-lbl">Chiều cao</div>
+          <div class="stat-delta d-neu">— ổn định</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon">🧮</div>
+          <div class="stat-val" id="sv-bmi">23.5</div>
+          <div class="stat-lbl">BMI</div>
+          <div id="sv-bmid" class="stat-delta d-down">▼ 1.1</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-icon">💪</div>
+          <div class="stat-val" id="sv-m">34%</div>
+          <div class="stat-lbl">Tỷ lệ cơ (ước tính)</div>
+          <div class="stat-delta d-up" id="sv-md">▲ 2.1%</div>
+        </div>
+      </div>
+      <!-- BMI gauge -->
+      <div class="bmi-wrap">
+        <div class="bmi-row">
+          <span style="font-size:10px;color:var(--text-muted);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Phân loại BMI</span>
+          <span class="bmi-cat bmi-normal" id="bmiCatChip">Bình thường</span>
+        </div>
+        <div class="bmi-track">
+          <div class="bmi-bar">
+            <div class="bmi-seg" style="background:#4da8ff;flex:2.5"></div>
+            <div class="bmi-seg" style="background:#4dff91;flex:3.8"></div>
+            <div class="bmi-seg" style="background:#e8ff47;flex:2.5"></div>
+            <div class="bmi-seg" style="background:#ff6060;flex:3"></div>
+          </div>
+          <div class="bmi-needle" id="bmiNeedle" style="left:46%"></div>
+        </div>
+        <div class="bmi-scale"><span>Thiếu cân</span><span>Bình thường</span><span>Thừa cân</span><span>Béo phì</span></div>
+      </div>
+    </div>
+
+    <!-- COMPLETED ROUTINES -->
+    <div class="card reveal rd1">
+      <div class="card-hd">
+        <div><div class="card-label">Thành tích</div><div class="card-title">Lộ trình đã hoàn thành</div></div>
+        <span class="count-pill" id="routineCount">3</span>
+      </div>
+      <div class="routine-list" id="routineList"></div>
+    </div>
+
+    <!-- RECENT WORKOUTS -->
+    <div class="card reveal rd2">
+      <div class="card-hd">
+        <div><div class="card-label">Lịch sử</div><div class="card-title">Buổi tập gần đây</div></div>
+        <a href="#" style="font-size:11px;color:var(--text-muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);">Xem tất cả</a>
+      </div>
+      <div class="wlog-list" id="wlogList"></div>
+    </div>
+
+  </div>
+
+  <!-- ═ RIGHT ═ -->
+  <div class="col">
+
+    <!-- WEIGHT CHART -->
+    <div class="card reveal">
+      <div class="card-hd">
+        <div><div class="card-label">Theo dõi</div><div class="card-title">Biến động cân nặng</div></div>
+        <div class="chart-tabs" id="wtTabs">
+          <button class="ctab active" data-p="3m">3T</button>
+          <button class="ctab" data-p="6m">6T</button>
+          <button class="ctab" data-p="all">Tất cả</button>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="weightChart" height="230"></canvas></div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span>Cân nặng (kg)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:transparent;border:1.5px dashed var(--accent);width:10px;height:10px;border-radius:50%;"></span>Mục tiêu</span>
+      </div>
+    </div>
+
+    <!-- FREQ CHART -->
+    <div class="card reveal rd1">
+      <div class="card-hd">
+        <div><div class="card-label">Tần suất</div><div class="card-title">Buổi tập theo tuần</div></div>
+        <div class="chart-tabs" id="freqTabs">
+          <button class="ctab active" data-p="8">8 tuần</button>
+          <button class="ctab" data-p="12">12 tuần</button>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="freqChart" height="200"></canvas></div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>Số buổi tập</span>
+        <span class="legend-item"><span class="legend-dot" style="background:rgba(77,168,255,.3)"></span>Mục tiêu (4/tuần)</span>
+      </div>
+    </div>
+
+    <!-- RADAR -->
+    <div class="card reveal rd2">
+      <div class="card-hd">
+        <div><div class="card-label">Phân tích</div><div class="card-title">Phân bổ nhóm cơ</div></div>
+      </div>
+      <div style="display:flex;justify-content:center;">
+        <canvas id="radarChart" width="280" height="280"></canvas>
+      </div>
+    </div>
+
+    <!-- GOALS -->
+    <div class="card reveal rd3">
+      <div class="card-hd">
+        <div><div class="card-label">Mục tiêu</div><div class="card-title">Tiến độ</div></div>
+      </div>
+      <div class="goals-list" id="goalsList"></div>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo" style="font-size:24px;"><span class="logo-icon">P</span>PUMPD</a>
+        <p>Nền tảng tập luyện khoa học hàng đầu Việt Nam.</p>
+      </div>
+      <div><h4>Khám phá</h4><ul class="footer-links"><li><a href="bt.html">Thư viện bài tập</a></li><li><a href="#">Lộ trình</a></li><li><a href="#">Blog</a></li></ul></div>
+      <div><h4>Liên hệ</h4><ul class="footer-links"><li><a href="#">contact@pumpd.vn</a></li><li><a href="#">Facebook</a></li><li><a href="#">Instagram</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2024 PUMPD. All rights reserved.</p><p>Thiết kế cho người Việt yêu thể thao 🇻🇳</p></div>
+  </div>
+</footer>
+
+<!-- ══ MODAL: EDIT PROFILE ══ -->
+<div class="overlay" id="editOverlay">
+  <div class="modal">
+    <div class="modal-hd">
+      <div><div class="card-label" style="margin-bottom:4px;">Hồ sơ</div><div class="modal-title">CHỈNH SỬA THÔNG TIN</div></div>
+      <button class="modal-close" onclick="closeEdit()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="frow s2"><label>Họ và tên <span class="req">*</span></label><input type="text" id="f_name" placeholder="Nguyễn Văn A"></div>
+        <div class="frow"><label>Tuổi <span class="req">*</span></label><input type="number" id="f_age" min="10" max="100" placeholder="24"></div>
+        <div class="frow"><label>Giới tính</label><select id="f_gender"><option value="male">Nam</option><option value="female">Nữ</option><option value="other">Khác</option></select></div>
+        <div class="frow"><label>Cân nặng (kg) <span class="req">*</span></label><input type="number" id="f_weight" step="0.1" placeholder="72"></div>
+        <div class="frow"><label>Chiều cao (cm) <span class="req">*</span></label><input type="number" id="f_height" step="0.1" placeholder="175"></div>
+        <div class="frow"><label>Mục tiêu cân nặng (kg)</label><input type="number" id="f_gw" step="0.1" placeholder="68"></div>
+        <div class="frow"><label>Trình độ</label><select id="f_level"><option value="B">Người mới</option><option value="I" selected>Trung bình</option><option value="A">Nâng cao</option></select></div>
+        <div class="frow s2"><label>Mục tiêu chính</label><select id="f_gtype"><option value="lose">Giảm mỡ</option><option value="gain">Tăng cơ</option><option value="maintain">Duy trì</option><option value="endurance">Sức bền</option></select></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-ghost" onclick="closeEdit()">Hủy</button>
+      <button class="btn-primary" onclick="saveProfile()">💾 Lưu thay đổi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: LOG ENTRY ══ -->
+<div class="overlay" id="logOverlay">
+  <div class="modal">
+    <div class="modal-hd">
+      <div><div class="card-label" style="margin-bottom:4px;">Nhật ký</div><div class="modal-title">CẬP NHẬT CHỈ SỐ</div></div>
+      <button class="modal-close" onclick="closeLog()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="log-date-chip" id="logDateChip"></div>
+      <div class="form-grid">
+        <div class="frow"><label>Cân nặng hôm nay (kg)</label><input type="number" id="l_w" step="0.1" placeholder="72.0"></div>
+        <div class="frow"><label>Tỷ lệ mỡ (%) <span style="color:var(--text-muted);font-size:9px;">nếu có</span></label><input type="number" id="l_f" step="0.1" min="3" max="60" placeholder="18.5"></div>
+        <div class="frow"><label>Vòng eo (cm)</label><input type="number" id="l_waist" step="0.5" placeholder="78"></div>
+        <div class="frow"><label>Buổi tập tuần này</label><input type="number" id="l_s" min="0" max="14" placeholder="4"></div>
+        <div class="frow s2"><label>Ghi chú</label><textarea id="l_note" placeholder="Cảm giác, chế độ ăn, giấc ngủ…"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn-ghost" onclick="closeLog()">Hủy</button>
+      <button class="btn-primary" onclick="saveLog()">📊 Lưu chỉ số</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ── DEFAULT DATA ──────────────────────────────────────────
+const DEF_PROFILE={name:'Nguyễn Văn A',age:24,gender:'male',weight:72,height:175,goalWeight:68,level:'I',goalType:'lose',joinDate:'1/2024',totalWorkouts:38,streak:14};
+const DEF_HISTORY=[
+  {date:'2024-01-05',weight:75.2,fat:21.5,waist:84},{date:'2024-01-20',weight:74.8,fat:21.2,waist:83},
+  {date:'2024-02-04',weight:74.2,fat:20.9,waist:82},{date:'2024-02-18',weight:73.6,fat:20.4,waist:81},
+  {date:'2024-03-03',weight:73.0,fat:19.9,waist:80},{date:'2024-03-17',weight:72.5,fat:19.4,waist:79},
+  {date:'2024-04-01',weight:72.2,fat:19.0,waist:78},{date:'2024-04-15',weight:72.0,fat:18.7,waist:78},
+];
+const DEF_WEEKLY=[
+  {w:'T1',n:3},{w:'T2',n:4},{w:'T3',n:5},{w:'T4',n:3},{w:'T5',n:4},
+  {w:'T6',n:5},{w:'T7',n:4},{w:'T8',n:4},{w:'T9',n:3},{w:'T10',n:5},{w:'T11',n:4},{w:'T12',n:5},
+];
+const ROUTINES=[
+  {icon:'🏆',name:'Push / Pull / Legs — Nền tảng',dur:'8 tuần',end:'01/03/2024',sess:24},
+  {icon:'💪',name:'Full Body Hypertrophy',dur:'6 tuần',end:'15/04/2024',sess:18},
+  {icon:'⚡',name:'Upper / Lower Split',dur:'4 tuần',end:'10/05/2024',sess:16},
+];
+const WORKOUTS=[
+  {date:'10/05',type:'PUSH',muscles:'Ngực · Vai · Tay sau',dur:'65 phút',diff:'A'},
+  {date:'08/05',type:'PULL',muscles:'Lưng · Tay trước',dur:'55 phút',diff:'I'},
+  {date:'06/05',type:'LEGS',muscles:'Chân · Mông',dur:'70 phút',diff:'A'},
+  {date:'04/05',type:'PUSH',muscles:'Ngực · Vai',dur:'60 phút',diff:'I'},
+  {date:'02/05',type:'PULL',muscles:'Lưng · Bụng',dur:'50 phút',diff:'B'},
+];
+const RADAR={labels:['Ngực','Lưng','Vai','Tay trước','Tay sau','Chân','Mông','Bụng'],values:[18,22,14,10,10,16,5,5]};
+const GOALS=[
+  {label:'Đạt cân nặng mục tiêu',cur:72,target:68,start:75.2,unit:'kg',rev:true},
+  {label:'Hoàn thành 50 buổi tập',cur:38,target:50,start:0,unit:'buổi',rev:false},
+  {label:'Giảm vòng eo xuống 75 cm',cur:78,target:75,start:84,unit:'cm',rev:true},
+  {label:'Streak 30 ngày liên tiếp',cur:14,target:30,start:0,unit:'ngày',rev:false},
+];
+
+// ── STORAGE ───────────────────────────────────────────────
+const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}};
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+let profile=load('pumpd_profile',DEF_PROFILE);
+let history=load('pumpd_history',DEF_HISTORY);
+
+// ── HELPERS ───────────────────────────────────────────────
+const calcBMI=(w,h)=>+(w/((h/100)**2)).toFixed(1);
+const fmtDate=d=>{const x=new Date(d);return `${x.getDate()}/${x.getMonth()+1}/${x.getFullYear()}`;};
+const levelName=l=>({B:'Người mới',I:'Trung bình',A:'Nâng cao'}[l]||l);
+function bmiInfo(v){
+  if(v<18.5)return{label:'Thiếu cân',cls:'bmi-under',pct:v/30*100};
+  if(v<25)  return{label:'Bình thường',cls:'bmi-normal',pct:(v-15)/20*100};
+  if(v<30)  return{label:'Thừa cân',cls:'bmi-over',pct:(v-15)/20*100};
+  return{label:'Béo phì',cls:'bmi-obese',pct:95};
+}
+
+// ── RENDER PROFILE ────────────────────────────────────────
+function renderProfile(){
+  const p=profile,B=calcBMI(p.weight,p.height),bi=bmiInfo(B);
+  document.getElementById('avatarEl').textContent=p.name.charAt(0).toUpperCase();
+  document.getElementById('streakBadge').textContent=`🔥 Streak ${p.streak}`;
+  document.getElementById('levelLbl').textContent=levelName(p.level);
+  document.getElementById('profileName').textContent=p.name.toUpperCase();
+  document.getElementById('metaAge').textContent=p.age;
+  document.getElementById('metaWeight').textContent=p.weight;
+  document.getElementById('metaHeight').textContent=p.height;
+  document.getElementById('metaBMI').textContent=`BMI ${B}`;
+  document.getElementById('metaWorkouts').textContent=p.totalWorkouts;
+  document.getElementById('pWorkouts').textContent=p.totalWorkouts;
+  document.getElementById('pStreak').textContent=p.streak;
+  document.getElementById('pRoutines').textContent=ROUTINES.length;
+  const wd=(p.weight-history[0].weight).toFixed(1);
+  document.getElementById('pWeightChange').textContent=wd>0?`+${wd}`:wd;
+  document.getElementById('sv-w').textContent=`${p.weight} kg`;
+  document.getElementById('sv-h').textContent=`${p.height} cm`;
+  document.getElementById('sv-bmi').textContent=B;
+  // lean mass estimate
+  const ffm=p.gender==='female'?(0.252*p.weight+0.473*p.height-48.3):(0.407*p.weight+0.267*p.height-19.2);
+  document.getElementById('sv-m').textContent=`${Math.min(99,Math.max(20,+(ffm/p.weight*100).toFixed(1)))}%`;
+  // deltas
+  if(history.length>=2){
+    const prev=history[history.length-2];
+    const dw=(p.weight-prev.weight).toFixed(1);
+    const dB=(B-calcBMI(prev.weight,p.height)).toFixed(1);
+    const wdEl=document.getElementById('sv-wd');
+    wdEl.className=`stat-delta ${dw<0?'d-down':dw>0?'d-up':'d-neu'}`;
+    wdEl.textContent=dw<0?`▼ ${Math.abs(dw)} kg`:dw>0?`▲ ${dw} kg`:'— không đổi';
+    const bdEl=document.getElementById('sv-bmid');
+    bdEl.className=`stat-delta ${dB<0?'d-down':dB>0?'d-up':'d-neu'}`;
+    bdEl.textContent=dB<0?`▼ ${Math.abs(dB)}`:dB>0?`▲ ${dB}`:'— không đổi';
+  }
+  // BMI gauge
+  const chip=document.getElementById('bmiCatChip');
+  chip.textContent=bi.label;chip.className=`bmi-cat ${bi.cls}`;
+  document.getElementById('bmiNeedle').style.left=`${Math.min(95,Math.max(3,bi.pct))}%`;
+  // last updated
+  const last=history[history.length-1];
+  document.getElementById('lastUpdated').textContent=`Cập nhật: ${fmtDate(last.date)}`;
+}
+
+function renderRoutines(){
+  document.getElementById('routineList').innerHTML=ROUTINES.map(r=>`
+    <div class="routine-item">
+      <div class="r-icon">${r.icon}</div>
+      <div class="r-info"><div class="r-name">${r.name}</div><div class="r-meta">${r.dur} · ${r.sess} buổi · Xong ${r.end}</div></div>
+      <div class="r-done">✓</div>
+    </div>`).join('');
+  document.getElementById('routineCount').textContent=ROUTINES.length;
+}
+
+function renderWorkouts(){
+  const m={A:{cls:'badge-a',lbl:'Mạnh'},I:{cls:'badge-i',lbl:'Vừa'},B:{cls:'badge-b',lbl:'Dễ'}};
+  document.getElementById('wlogList').innerHTML=WORKOUTS.map(w=>`
+    <div class="wlog-item">
+      <div class="wlog-date">${w.date}</div>
+      <div class="wlog-info"><div class="wlog-type">${w.type}</div><div class="wlog-muscles">${w.muscles}</div></div>
+      <div class="wlog-right"><span class="wlog-dur">⏱ ${w.dur}</span><span class="badge ${m[w.diff].cls}">${m[w.diff].lbl}</span></div>
+    </div>`).join('');
+}
+
+function renderGoals(){
+  document.getElementById('goalsList').innerHTML=GOALS.map(g=>{
+    const total=Math.abs(g.target-g.start),done=Math.abs(g.cur-g.start);
+    const pct=Math.min(100,Math.round(done/total*100));
+    const col=pct>=100?'var(--green)':pct>=60?'var(--accent)':'var(--blue)';
+    return `<div class="goal-item">
+      <div class="goal-top"><span class="goal-lbl">${g.label}</span><span class="goal-pct" style="color:${col}">${pct}%</span></div>
+      <div class="goal-track"><div class="goal-fill" style="width:${pct}%;background:${col}"></div></div>
+      <div class="goal-bot"><span>Hiện tại: <strong>${g.cur} ${g.unit}</strong></span><span>Mục tiêu: <strong>${g.target} ${g.unit}</strong></span></div>
+    </div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════
+// CHARTS — pure Canvas
+// ════════════════════════════════════════════════════
+function drawWeight(period='3m'){
+  const cv=document.getElementById('weightChart');
+  const W=cv.offsetWidth||580,H=230;
+  cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  let data=[...history];
+  if(period==='3m'){const d=new Date();d.setMonth(d.getMonth()-3);data=data.filter(x=>new Date(x.date)>=d);}
+  else if(period==='6m'){const d=new Date();d.setMonth(d.getMonth()-6);data=data.filter(x=>new Date(x.date)>=d);}
+  if(data.length<2)data=history.slice(-4);
+
+  const PAD={t:24,r:24,b:40,l:52};
+  const cW=W-PAD.l-PAD.r,cH=H-PAD.t-PAD.b;
+  const vals=data.map(d=>d.weight);
+  const gw=profile.goalWeight;
+  const minV=Math.min(...vals,gw||999)-1.5;
+  const maxV=Math.max(...vals)+1.5;
+  const rng=maxV-minV;
+  const xOf=i=>PAD.l+(i/(data.length-1))*cW;
+  const yOf=v=>PAD.t+cH-((v-minV)/rng)*cH;
+
+  // grid
+  for(let i=0;i<=5;i++){
+    const y=PAD.t+(cH/5)*i;
+    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cW,y);ctx.stroke();
+    ctx.fillStyle='rgba(150,150,170,.55)';ctx.font='10px Barlow,sans-serif';ctx.textAlign='right';
+    ctx.fillText((maxV-rng/5*i).toFixed(1),PAD.l-8,y+4);
+  }
+
+  // goal dashed line
+  if(gw&&gw>=minV&&gw<=maxV){
+    const gy=yOf(gw);
+    ctx.strokeStyle='rgba(232,255,71,.28)';ctx.lineWidth=1.5;ctx.setLineDash([7,5]);
+    ctx.beginPath();ctx.moveTo(PAD.l,gy);ctx.lineTo(PAD.l+cW,gy);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(232,255,71,.5)';ctx.font='10px Barlow,sans-serif';ctx.textAlign='left';
+    ctx.fillText(`⟶ ${gw} kg`,PAD.l+5,gy-5);
+  }
+
+  // area fill
+  const g1=ctx.createLinearGradient(0,PAD.t,0,PAD.t+cH);
+  g1.addColorStop(0,'rgba(232,255,71,.16)');g1.addColorStop(1,'rgba(232,255,71,0)');
+  ctx.beginPath();
+  ctx.moveTo(xOf(0),yOf(data[0].weight));
+  for(let i=1;i<data.length;i++){
+    const px=xOf(i-1),py=yOf(data[i-1].weight),cx2=xOf(i),cy2=yOf(data[i].weight),mx=(px+cx2)/2;
+    ctx.bezierCurveTo(mx,py,mx,cy2,cx2,cy2);
+  }
+  ctx.lineTo(xOf(data.length-1),PAD.t+cH);ctx.lineTo(xOf(0),PAD.t+cH);ctx.closePath();
+  ctx.fillStyle=g1;ctx.fill();
+
+  // smooth line
+  ctx.strokeStyle='#e8ff47';ctx.lineWidth=2.5;ctx.lineJoin='round';
+  ctx.beginPath();
+  data.forEach((d,i)=>{
+    const x=xOf(i),y=yOf(d.weight);
+    if(i===0){ctx.moveTo(x,y);return;}
+    const px=xOf(i-1),py=yOf(data[i-1].weight),mx=(px+x)/2;
+    ctx.bezierCurveTo(mx,py,mx,y,x,y);
+  });
+  ctx.stroke();
+
+  // dots
+  data.forEach((d,i)=>{
+    const x=xOf(i),y=yOf(d.weight);
+    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle='#e8ff47';ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fillStyle='#1a1a1f';ctx.fill();
+    // x-axis label
+    const dt=new Date(d.date);
+    ctx.fillStyle='rgba(150,150,170,.65)';ctx.font='10px Barlow,sans-serif';ctx.textAlign='center';
+    ctx.fillText(`${dt.getDate()}/${dt.getMonth()+1}`,x,H-PAD.b+15);
+    // value on endpoints
+    if(i===0||i===data.length-1){
+      ctx.fillStyle='#e8ff47';ctx.font='bold 11px Barlow,sans-serif';ctx.textAlign='center';
+      ctx.fillText(`${d.weight}`,x,y-11);
+    }
+  });
+}
+
+function drawFreq(count=8){
+  const cv=document.getElementById('freqChart');
+  const W=cv.offsetWidth||580,H=200;
+  cv.width=W;cv.height=H;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+
+  const data=DEF_WEEKLY.slice(0,count);
+  const PAD={t:22,r:16,b:36,l:38};
+  const cW=W-PAD.l-PAD.r,cH=H-PAD.t-PAD.b;
+  const maxV=Math.max(...data.map(d=>d.n),5);
+  const bW=(cW/data.length)*0.56,gap=cW/data.length;
+  const xOf=i=>PAD.l+i*gap+gap/2-bW/2;
+  const yOf=v=>PAD.t+cH-(v/maxV)*cH;
+  const hOf=v=>(v/maxV)*cH;
+
+  // grid
+  for(let i=0;i<=5;i++){
+    const y=PAD.t+(cH/5)*i;
+    ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cW,y);ctx.stroke();
+    ctx.fillStyle='rgba(150,150,170,.5)';ctx.font='10px Barlow,sans-serif';ctx.textAlign='right';
+    ctx.fillText(Math.round(maxV-maxV/5*i),PAD.l-5,y+4);
+  }
+
+  // target dashed
+  ctx.strokeStyle='rgba(77,168,255,.35)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.beginPath();ctx.moveTo(PAD.l,yOf(4));ctx.lineTo(PAD.l+cW,yOf(4));ctx.stroke();
+  ctx.setLineDash([]);
+
+  // bars
+  data.forEach((d,i)=>{
+    const x=xOf(i),y=yOf(d.n),h=hOf(d.n),over=d.n>=4;
+    const bg=ctx.createLinearGradient(0,y,0,y+h);
+    bg.addColorStop(0,over?'rgba(77,168,255,.95)':'rgba(77,168,255,.5)');
+    bg.addColorStop(1,over?'rgba(77,168,255,.25)':'rgba(77,168,255,.1)');
+    const r=5;
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);ctx.lineTo(x+bW-r,y);
+    ctx.quadraticCurveTo(x+bW,y,x+bW,y+r);
+    ctx.lineTo(x+bW,y+h);ctx.lineTo(x,y+h);ctx.lineTo(x,y+r);
+    ctx.quadraticCurveTo(x,y,x+r,y);
+    ctx.fillStyle=bg;ctx.fill();
+    ctx.fillStyle=over?'#4da8ff':'rgba(77,168,255,.6)';ctx.font='bold 11px Barlow,sans-serif';ctx.textAlign='center';
+    ctx.fillText(d.n,x+bW/2,y-5);
+    ctx.fillStyle='rgba(150,150,170,.65)';ctx.font='10px Barlow,sans-serif';
+    ctx.fillText(d.w,x+bW/2,H-PAD.b+14);
+  });
+}
+
+function drawRadar(){
+  const cv=document.getElementById('radarChart');
+  const S=280;cv.width=S;cv.height=S;
+  const ctx=cv.getContext('2d');ctx.clearRect(0,0,S,S);
+  const cx=S/2,cy=S/2,R=96,{labels,values}=RADAR,n=labels.length,step=(Math.PI*2)/n,maxV=Math.max(...values);
+
+  // web + spokes
+  for(let ring=1;ring<=4;ring++){
+    ctx.beginPath();
+    for(let i=0;i<n;i++){const a=step*i-Math.PI/2;ctx.lineTo(cx+Math.cos(a)*R*ring/4,cy+Math.sin(a)*R*ring/4);}
+    ctx.closePath();ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;ctx.stroke();
+  }
+  for(let i=0;i<n;i++){
+    const a=step*i-Math.PI/2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);
+    ctx.strokeStyle='rgba(255,255,255,.07)';ctx.stroke();
+  }
+
+  // data polygon
+  ctx.beginPath();
+  values.forEach((v,i)=>{
+    const a=step*i-Math.PI/2,r=(v/maxV)*R;
+    ctx[i===0?'moveTo':'lineTo'](cx+Math.cos(a)*r,cy+Math.sin(a)*r);
+  });
+  ctx.closePath();
+  ctx.fillStyle='rgba(232,255,71,.12)';ctx.fill();
+  ctx.strokeStyle='rgba(232,255,71,.65)';ctx.lineWidth=2;ctx.stroke();
+
+  // dots
+  values.forEach((v,i)=>{
+    const a=step*i-Math.PI/2,r=(v/maxV)*R;
+    ctx.beginPath();ctx.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,4,0,Math.PI*2);
+    ctx.fillStyle='#e8ff47';ctx.fill();
+  });
+
+  // labels
+  ctx.font='600 11px Barlow,sans-serif';ctx.textAlign='center';
+  labels.forEach((lbl,i)=>{
+    const a=step*i-Math.PI/2,lr=R+20;
+    ctx.fillStyle='rgba(154,154,170,.9)';
+    ctx.fillText(lbl,cx+Math.cos(a)*lr,cy+Math.sin(a)*lr+4);
+  });
+}
+
+// ── Tab switching ───────────────────────────────
+document.querySelectorAll('#wtTabs .ctab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#wtTabs .ctab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');drawWeight(btn.dataset.p);
+  });
+});
+document.querySelectorAll('#freqTabs .ctab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#freqTabs .ctab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');drawFreq(parseInt(btn.dataset.p));
+  });
+});
+let _rt;
+window.addEventListener('resize',()=>{clearTimeout(_rt);_rt=setTimeout(()=>{drawWeight();drawFreq();},180);});
+
+// ── MODALS ──────────────────────────────────────
+function openEdit(){
+  const p=profile;
+  ['f_name','f_age','f_gender','f_weight','f_height','f_gw','f_level','f_gtype'].forEach(id=>{
+    const el=document.getElementById(id);
+    const map={f_name:p.name,f_age:p.age,f_gender:p.gender,f_weight:p.weight,f_height:p.height,f_gw:p.goalWeight||'',f_level:p.level,f_gtype:p.goalType};
+    el.value=map[id];
+  });
+  document.getElementById('editOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeEdit(){document.getElementById('editOverlay').classList.remove('open');document.body.style.overflow='';}
+
+function saveProfile(){
+  const name=document.getElementById('f_name').value.trim();
+  const age=parseInt(document.getElementById('f_age').value);
+  const w=parseFloat(document.getElementById('f_weight').value);
+  const h=parseFloat(document.getElementById('f_height').value);
+  if(!name||!age||!w||!h){toast('Vui lòng điền đầy đủ thông tin bắt buộc','err');return;}
+  profile={...profile,name,age,gender:document.getElementById('f_gender').value,weight:w,height:h,
+    goalWeight:parseFloat(document.getElementById('f_gw').value)||null,
+    level:document.getElementById('f_level').value,goalType:document.getElementById('f_gtype').value};
+  save('pumpd_profile',profile);
+  renderProfile();drawWeight();
+  closeEdit();toast('✅ Đã lưu thông tin cá nhân','ok');
+}
+
+function openLog(){
+  const d=new Date();
+  document.getElementById('logDateChip').textContent=`📅 ${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
+  ['l_w','l_f','l_waist','l_s','l_note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('logOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLog(){document.getElementById('logOverlay').classList.remove('open');document.body.style.overflow='';}
+
+function saveLog(){
+  const w=parseFloat(document.getElementById('l_w').value);
+  if(!w){toast('Vui lòng nhập cân nặng hôm nay','err');return;}
+  const entry={
+    date:new Date().toISOString().split('T')[0],weight:w,
+    fat:parseFloat(document.getElementById('l_f').value)||null,
+    waist:parseFloat(document.getElementById('l_waist').value)||null,
+    sessions:parseInt(document.getElementById('l_s').value)||null,
+    note:document.getElementById('l_note').value.trim()||null
+  };
+  profile.weight=w;save('pumpd_profile',profile);
+  history=history.filter(h=>h.date!==entry.date);
+  history.push(entry);history.sort((a,b)=>a.date.localeCompare(b.date));
+  save('pumpd_history',history);
+  renderProfile();drawWeight();
+  closeLog();toast('📊 Đã cập nhật chỉ số!','ok');
+}
+
+['editOverlay','logOverlay'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget){closeEdit();closeLog();}});
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeEdit();closeLog();}});
+
+// ── TOAST ───────────────────────────────────────
+function toast(msg,type='inf'){
+  const el=document.createElement('div');
+  el.className=`toast ${type}`;el.textContent=msg;
+  document.getElementById('toastWrap').appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),400);},3200);
+}
+
+// ── SCROLL REVEAL ───────────────────────────────
+const ro=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+// ── INIT ────────────────────────────────────────
+renderProfile();
+renderRoutines();
+renderWorkouts();
+renderGoals();
+requestAnimationFrame(()=>setTimeout(()=>{drawWeight('3m');drawFreq(8);drawRadar();},60));
+</script>
+</body>
+</html>
