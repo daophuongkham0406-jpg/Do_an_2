@@ -1,0 +1,130 @@
+/* --- NÚT BẤM CHATBOT GÓC TRÁI --- */
+.chatbot-toggler {
+    position: fixed;
+    bottom: 30px;
+    left: 30px; /* Đặt ở góc trái */
+    outline: none;
+    border: none;
+    height: 55px;
+    width: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    background: #512da8; /* Màu tím chủ đạo */
+    color: #fff;
+    transition: all 0.2s ease;
+    z-index: 9999;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    padding: 0;
+}
+.chatbot-toggler:hover {
+    transform: scale(1.1);
+    background: #3f1d8f;
+}
+
+/* --- KHUNG CHAT AI --- */
+.chatbot-box {
+    position: fixed;
+    bottom: 100px;
+    left: 30px;
+    width: 340px;
+    background: #fff;
+    border-radius: 15px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.5);
+    transform-origin: bottom left;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    border: 1px solid #eee;
+}
+
+/* Hiển thị chatbot khi body có class 'show-chatbot' */
+body.show-chatbot .chatbot-box {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+.chatbot-box header {
+    padding: 16px 20px;
+    text-align: center;
+    color: #fff;
+    background: #512da8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chatbot-box header h2 { font-size: 16px; margin: 0; font-weight: 600; }
+.chatbot-box header .close-btn { cursor: pointer; display: flex; align-items: center; transition: 0.2s; }
+.chatbot-box header .close-btn:hover { transform: rotate(90deg); }
+
+/* --- KHU VỰC HIỂN THỊ TIN NHẮN --- */
+.chatbox {
+    padding: 15px 20px;
+    height: 300px;
+    overflow-y: auto;
+    list-style: none;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.chat { display: flex; }
+.chat p {
+    color: #fff;
+    font-size: 13.5px;
+    padding: 10px 14px;
+    border-radius: 12px 12px 12px 0;
+    background: #512da8;
+    max-width: 85%;
+    margin: 0;
+    line-height: 1.4;
+}
+.chat.outgoing { justify-content: flex-end; }
+.chat.outgoing p {
+    background: #f1f1f1;
+    color: #333;
+    border-radius: 12px 12px 0 12px;
+}
+
+/* --- KHU VỰC GỢI Ý CÂU HỎI --- */
+.chat-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 15px 15px;
+}
+.suggestion-btn {
+    background: #fff;
+    border: 1px solid #512da8;
+    color: #512da8;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin: 0;
+}
+.suggestion-btn:hover { background: #512da8; color: #fff; }
+
+/* --- KHU VỰC NHẬP LIỆU --- */
+.chat-input {
+    display: flex;
+    gap: 5px;
+    padding: 12px 15px;
+    border-top: 1px solid #eee;
+    background: #fff;
+}
+.chat-input input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+}
+.chat-input span { cursor: pointer; display: flex; align-items: center; }

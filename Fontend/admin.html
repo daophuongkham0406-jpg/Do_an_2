@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Quản lý Bài Tập | PUMPD</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #111114;
+  --bg2: #1a1a1f;
+  --bg3: #222228;
+  --card: #2a2a32;
+  --card-hover: #32323c;
+  --accent: #e8ff47;
+  --accent-dim: rgba(232,255,71,0.12);
+  --accent-border: rgba(232,255,71,0.3);
+  --text: #f0f0f0;
+  --text2: #9a9aaa;
+  --text3: #606070;
+  --border: #38383f;
+  --border2: #48484f;
+  --red: #ff4d4d;
+  --red-dim: rgba(255,77,77,0.1);
+  --green: #4dff91;
+  --green-dim: rgba(77,255,145,0.1);
+  --blue: #4da8ff;
+  --blue-dim: rgba(77,168,255,0.1);
+  --radius: 12px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:rgba(26,26,31,0.95);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:0 28px;
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.tb-left{display:flex;align-items:center;gap:20px;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;display:flex;align-items:center;gap:8px;color:var(--text);text-decoration:none;}
+.logo-icon{background:var(--accent);color:#0a0a0a;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:15px;font-weight:900;}
+.admin-badge{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:100px;}
+.tb-right{display:flex;align-items:center;gap:12px;}
+.btn-back{background:transparent;border:1px solid var(--border);color:var(--text2);padding:7px 16px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.5px;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+.btn-back:hover{border-color:var(--accent);color:var(--accent);}
+.api-status{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text3);}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--text3);animation:none;}
+.status-dot.connected{background:var(--green);box-shadow:0 0 6px rgba(77,255,145,0.5);animation:pulse 2s infinite;}
+.status-dot.error{background:var(--red);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 60px);}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:24px 20px;display:flex;flex-direction:column;gap:8px;}
+.s-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);padding:8px 12px 4px;}
+.s-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;cursor:pointer;color:var(--text2);font-size:14px;font-weight:500;transition:all 0.2s;border:1px solid transparent;}
+.s-item:hover{background:var(--bg3);color:var(--text);}
+.s-item.active{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent);}
+.s-item .s-icon{font-size:18px;width:24px;text-align:center;}
+.s-badge{margin-left:auto;background:var(--bg3);border:1px solid var(--border);color:var(--text3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;min-width:28px;text-align:center;}
+.s-item.active .s-badge{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent);}
+.s-divider{height:1px;background:var(--border);margin:8px 0;}
+.s-info{background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:10px;padding:14px;margin-top:auto;}
+.s-info p{font-size:12px;color:var(--accent);line-height:1.6;}
+.s-info strong{display:block;font-size:13px;margin-bottom:4px;}
+
+/* ── MAIN ── */
+.main{padding:28px;overflow-y:auto;}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;}
+.page-title-wrap .page-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+.page-title-wrap h1{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2px;line-height:1;}
+.header-actions{display:flex;gap:10px;align-items:center;}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;transition:border-color 0.2s;}
+.stat:hover{border-color:var(--border2);}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--accent);line-height:1;margin-bottom:4px;}
+.stat-lbl{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;}
+.stat-sub{font-size:12px;color:var(--text2);margin-top:6px;}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+.search-wrap{position:relative;flex:1;min-width:200px;}
+.search-wrap input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 36px 9px 14px;color:var(--text);font-family:'Barlow',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
+.search-wrap input::placeholder{color:var(--text3);}
+.search-wrap input:focus{border-color:var(--accent);}
+.search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:14px;}
+.sel{background:var(--card);border:1px solid var(--border);color:var(--text2);padding:9px 12px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;cursor:pointer;outline:none;transition:border-color 0.2s;}
+.sel:focus{border-color:var(--accent);}
+.btn{padding:9px 18px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.5px;cursor:pointer;border:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:7px;}
+.btn-primary{background:var(--accent);color:#0a0a0a;}
+.btn-primary:hover{background:#d4e83e;transform:translateY(-1px);}
+.btn-danger{background:var(--red-dim);border:1px solid rgba(255,77,77,0.3);color:var(--red);}
+.btn-danger:hover{background:rgba(255,77,77,0.2);}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2);}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);}
+.btn-sm{padding:6px 12px;font-size:12px;}
+
+/* ── TABLE ── */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.table-head{display:grid;grid-template-columns:50px 60px 1fr 100px 110px 90px 120px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);gap:12px;}
+.th{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.table-body{max-height:520px;overflow-y:auto;}
+.tr{display:grid;grid-template-columns:50px 60px 1fr 100px 110px 90px 120px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center;gap:12px;transition:background 0.15s;cursor:pointer;}
+.tr:last-child{border-bottom:none;}
+.tr:hover{background:var(--card-hover);}
+.td{font-size:13px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.td.name{color:var(--text);font-weight:600;}
+.td.icon-cell{font-size:24px;text-align:center;}
+.td.id-cell{font-family:monospace;font-size:11px;color:var(--text3);}
+.badge{display:inline-flex;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.badge-B{background:rgba(100,220,100,0.12);border:1px solid rgba(100,220,100,0.25);color:#5de085;}
+.badge-I{background:var(--accent-dim);border:1px solid var(--accent-border);color:var(--accent);}
+.badge-A{background:rgba(255,77,77,0.12);border:1px solid rgba(255,77,77,0.25);color:#ff6b6b;}
+.actions{display:flex;gap:6px;}
+.icon-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s;}
+.icon-btn:hover.edit{border-color:var(--blue);color:var(--blue);background:var(--blue-dim);}
+.icon-btn:hover.del{border-color:var(--red);color:var(--red);background:var(--red-dim);}
+.empty-row{padding:60px 20px;text-align:center;color:var(--text3);font-size:14px;}
+
+/* ── MODAL OVERLAY ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:18px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;transform:translateY(20px) scale(0.97);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.overlay.open .modal{transform:none;}
+.modal-header{padding:24px 28px 0;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;}
+.modal-close{width:32px;height:32px;background:transparent;border:1px solid var(--border);border-radius:50%;color:var(--text2);cursor:pointer;font-size:14px;transition:all 0.2s;}
+.modal-close:hover{border-color:var(--red);color:var(--red);}
+.modal-body{padding:0 28px 28px;}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-grid.full{grid-template-columns:1fr;}
+.form-row{display:flex;flex-direction:column;gap:6px;}
+.form-row.span2{grid-column:span 2;}
+label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);}
+label span.req{color:var(--accent);}
+input[type=text],input[type=number],select,textarea{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 14px;
+  color:var(--text);
+  font-family:'Barlow',sans-serif;
+  font-size:13px;
+  outline:none;
+  transition:border-color 0.2s;
+  width:100%;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+input::placeholder,textarea::placeholder{color:var(--text3);}
+textarea{resize:vertical;min-height:80px;line-height:1.6;}
+.form-section{margin-top:20px;}
+.form-section-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.dynamic-list{display:flex;flex-direction:column;gap:8px;}
+.dynamic-item{display:flex;gap:8px;align-items:flex-start;}
+.dynamic-item input,.dynamic-item textarea{flex:1;}
+.dynamic-item .remove-btn{width:32px;height:36px;flex-shrink:0;background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--text3);cursor:pointer;font-size:14px;transition:all 0.2s;margin-top:0;}
+.dynamic-item .remove-btn:hover{border-color:var(--red);color:var(--red);}
+.add-row-btn{background:transparent;border:1px dashed var(--border2);color:var(--text3);padding:8px;border-radius:8px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;cursor:pointer;width:100%;transition:all 0.2s;margin-top:4px;}
+.add-row-btn:hover{border-color:var(--accent);color:var(--accent);}
+.step-item{display:grid;grid-template-columns:auto 1fr 1fr auto;gap:8px;align-items:start;}
+.step-num-label{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--border2);line-height:1;padding-top:6px;min-width:28px;}
+.modal-footer{padding:0 28px 28px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--border);padding-top:20px;margin-top:20px;}
+
+/* ── CONFIRM MODAL ── */
+.confirm-modal{max-width:400px;}
+.confirm-icon{font-size:48px;text-align:center;margin-bottom:16px;}
+.confirm-msg{font-size:15px;color:var(--text2);line-height:1.6;text-align:center;margin-bottom:20px;}
+.confirm-msg strong{color:var(--text);}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;transform:translateX(120%);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);min-width:240px;}
+.toast.show{transform:translateX(0);}
+.toast.success{border-color:rgba(77,255,145,0.3);color:var(--green);}
+.toast.error{border-color:rgba(255,77,77,0.3);color:var(--red);}
+.toast.info{border-color:var(--accent-border);color:var(--accent);}
+
+/* ── API HINT BANNER ── */
+.api-banner{background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:var(--radius);padding:14px 18px;margin-bottom:24px;display:flex;align-items:flex-start;gap:12px;}
+.api-banner .banner-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.api-banner-text{font-size:13px;color:var(--text2);line-height:1.6;}
+.api-banner-text strong{color:var(--accent);}
+.api-banner-text code{background:rgba(0,0,0,0.3);border:1px solid var(--border);padding:1px 7px;border-radius:4px;font-size:12px;color:var(--accent);font-family:monospace;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:700px){
+  .table-head,.tr{grid-template-columns:44px 1fr 80px 80px;}
+  .td.id-cell,.td.equip,.td.sets-reps{display:none;}
+  .th:nth-child(1),.th:nth-child(4),.th:nth-child(5){display:none;}
+  .main{padding:16px;}
+  .form-grid{grid-template-columns:1fr;}
+  .form-row.span2{grid-column:span 1;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="tb-left">
+    <a href="TrangChu.html" class="logo"><span class="logo-icon">P</span>PUMPD</a>
+    <span class="admin-badge">Admin Panel</span>
+  </div>
+  <div class="tb-right">
+    <div class="api-status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Chưa kết nối</span>
+    </div>
+    <a href="bt.html" class="btn-back">← Xem thư viện</a>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="s-title">Quản lý</div>
+    <div class="s-item active" onclick="showSection('exercises')">
+      <span class="s-icon">🏋️</span> Bài tập
+      <span class="s-badge" id="exCountBadge">0</span>
+    </div>
+    <div class="s-divider"></div>
+    <div class="s-title">Cấu hình API</div>
+    <div class="s-item" onclick="showSection('api')">
+      <span class="s-icon">⚙️</span> Cài đặt API
+    </div>
+    <div class="s-info" style="margin-top:16px;">
+      <strong>💡 Hướng dẫn</strong>
+      <p>Nhập URL MongoDB API vào phần Cài đặt để đồng bộ dữ liệu thật. Hiện tại dùng dữ liệu tạm (localStorage).</p>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ── SECTION: EXERCISES ── -->
+    <section id="section-exercises">
+
+      <div class="page-header">
+        <div class="page-title-wrap">
+          <div class="page-label">Quản lý nội dung</div>
+          <h1>Danh sách Bài Tập</h1>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="openAdd()">＋ Thêm bài tập</button>
+        </div>
+      </div>
+
+      <!-- API HINT -->
+      <div class="api-banner">
+        <span class="banner-icon">🔌</span>
+        <div class="api-banner-text">
+          <strong>Kết nối MongoDB:</strong> Thay thế các hàm <code>apiGet()</code>, <code>apiPost()</code>, <code>apiPut()</code>, <code>apiDelete()</code> bằng fetch tới backend Express/Node của bạn. Schema MongoDB đã được định nghĩa sẵn theo cấu trúc form này.
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-num" id="statTotal">0</div>
+          <div class="stat-lbl">Tổng bài tập</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="statBeginner">0</div>
+          <div class="stat-lbl">Người mới</div>
+          <div class="stat-sub">Beginner</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="statInter">0</div>
+          <div class="stat-lbl">Trung bình</div>
+          <div class="stat-sub">Intermediate</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" id="statAdv">0</div>
+          <div class="stat-lbl">Nâng cao</div>
+          <div class="stat-sub">Advanced</div>
+        </div>
+      </div>
+
+      <!-- TOOLBAR -->
+      <div class="toolbar">
+        <div class="search-wrap">
+          <input type="text" id="adminSearch" placeholder="Tìm bài tập theo tên…" oninput="renderTable()">
+          <span class="search-icon">🔍</span>
+        </div>
+        <select class="sel" id="filterMuscle" onchange="renderTable()">
+          <option value="">Tất cả nhóm cơ</option>
+          <option>Ngực</option><option>Lưng</option><option>Vai</option>
+          <option>Tay trước</option><option>Tay sau</option><option>Chân</option>
+          <option>Mông</option><option>Bụng</option><option>Toàn thân</option>
+        </select>
+        <select class="sel" id="filterDiff" onchange="renderTable()">
+          <option value="">Tất cả độ khó</option>
+          <option value="B">Người mới</option>
+          <option value="I">Trung bình</option>
+          <option value="A">Nâng cao</option>
+        </select>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-wrap">
+        <div class="table-head">
+          <div class="th">Icon</div>
+          <div class="th">ID</div>
+          <div class="th">Tên bài tập</div>
+          <div class="th">Nhóm cơ</div>
+          <div class="th">Thiết bị</div>
+          <div class="th">Độ khó</div>
+          <div class="th">Thao tác</div>
+        </div>
+        <div class="table-body" id="tableBody">
+          <div class="empty-row">Đang tải…</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── SECTION: API SETTINGS ── -->
+    <section id="section-api" style="display:none;">
+      <div class="page-header">
+        <div class="page-title-wrap">
+          <div class="page-label">Cấu hình</div>
+          <h1>Cài đặt API</h1>
+        </div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;max-width:600px;">
+        <div class="form-grid full">
+          <div class="form-row">
+            <label>URL API Backend <span class="req">*</span></label>
+            <input type="text" id="apiUrl" placeholder="http://localhost:3000/api" value="">
+            <small style="color:var(--text3);font-size:12px;margin-top:4px;">Ví dụ: https://your-server.com/api hoặc http://localhost:3000/api</small>
+          </div>
+          <div class="form-row">
+            <label>API Key (nếu có)</label>
+            <input type="text" id="apiKey" placeholder="Bearer token hoặc API key…">
+          </div>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="saveApiConfig()">Lưu cấu hình</button>
+          <button class="btn btn-ghost" onclick="testConnection()">🔌 Test kết nối</button>
+        </div>
+        <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+          <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:16px;">MongoDB Schema mẫu</p>
+          <pre style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;font-size:12px;color:var(--text2);overflow-x:auto;line-height:1.7;">{
+  _id: ObjectId,          // MongoDB tự tạo
+  name: String,           // Tên bài tập (bắt buộc)
+  muscle: String,         // Nhóm cơ chính
+  icon: String,           // Emoji icon
+  diff: "B"|"I"|"A",     // Độ khó
+  equip: String,          // Thiết bị
+  sets: String,           // Số sets
+  reps: String,           // Số reps
+  rest: String,           // Thời gian nghỉ
+  sec: [String],          // Cơ phụ (mảng)
+  steps: [{               // Hướng dẫn (mảng)
+    t: String,            //   Tiêu đề bước
+    d: String             //   Mô tả bước
+  }],
+  tips: [String],         // Lưu ý (mảng)
+  createdAt: Date,
+  updatedAt: Date
+}</pre>
+        </div>
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
+          <p style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:12px;">API Endpoints cần có</p>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;font-family:monospace;">
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 14px;display:flex;gap:12px;align-items:center;">
+              <span style="background:var(--green-dim);color:var(--green);padding:2px 8px;border-radius:4px;font-weight:700;">GET</span>
+              <span style="color:var(--text2);">/api/exercises</span>
+              <span style="color:var(--text3);margin-left:auto;">Lấy toàn bộ bài tập</span>
+            </div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 14px;display:flex;gap:12px;align-items:center;">
+              <span style="background:var(--blue-dim);color:var(--blue);padding:2px 8px;border-radius:4px;font-weight:700;">POST</span>
+              <span style="color:var(--text2);">/api/exercises</span>
+              <span style="color:var(--text3);margin-left:auto;">Thêm bài tập mới</span>
+            </div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 14px;display:flex;gap:12px;align-items:center;">
+              <span style="background:var(--accent-dim);color:var(--accent);padding:2px 8px;border-radius:4px;font-weight:700;">PUT</span>
+              <span style="color:var(--text2);">/api/exercises/:id</span>
+              <span style="color:var(--text3);margin-left:auto;">Sửa bài tập</span>
+            </div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 14px;display:flex;gap:12px;align-items:center;">
+              <span style="background:var(--red-dim);color:var(--red);padding:2px 8px;border-radius:4px;font-weight:700;">DELETE</span>
+              <span style="color:var(--text2);">/api/exercises/:id</span>
+              <span style="color:var(--text3);margin-left:auto;">Xóa bài tập</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ── ADD/EDIT MODAL ── -->
+<div class="overlay" id="formOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="formTitle">THÊM BÀI TẬP</div>
+      <button class="modal-close" onclick="closeForm()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+
+        <!-- Tên -->
+        <div class="form-row span2">
+          <label>Tên bài tập <span class="req">*</span></label>
+          <input type="text" id="f_name" placeholder="VD: Barbell Bench Press">
+        </div>
+
+        <!-- Nhóm cơ chính -->
+        <div class="form-row">
+          <label>Nhóm cơ chính <span class="req">*</span></label>
+          <select id="f_muscle">
+            <option value="">Chọn nhóm cơ…</option>
+            <option>Ngực</option><option>Lưng</option><option>Vai</option>
+            <option>Tay trước</option><option>Tay sau</option><option>Chân</option>
+            <option>Mông</option><option>Bụng</option><option>Toàn thân</option>
+          </select>
+        </div>
+
+        <!-- Icon -->
+        <div class="form-row">
+          <label>Icon (Emoji) <span class="req">*</span></label>
+          <input type="text" id="f_icon" placeholder="VD: 🏋️" maxlength="4">
+        </div>
+
+        <!-- Độ khó -->
+        <div class="form-row">
+          <label>Độ khó <span class="req">*</span></label>
+          <select id="f_diff">
+            <option value="">Chọn độ khó…</option>
+            <option value="B">Người mới (Beginner)</option>
+            <option value="I">Trung bình (Intermediate)</option>
+            <option value="A">Nâng cao (Advanced)</option>
+          </select>
+        </div>
+
+        <!-- Thiết bị -->
+        <div class="form-row">
+          <label>Thiết bị <span class="req">*</span></label>
+          <select id="f_equip">
+            <option value="">Chọn thiết bị…</option>
+            <option>Barbell</option><option>Dumbbell</option><option>Cable</option>
+            <option>Machine</option><option>Bodyweight</option><option>Kettlebell</option>
+          </select>
+        </div>
+
+        <!-- Sets -->
+        <div class="form-row">
+          <label>Sets <span class="req">*</span></label>
+          <input type="text" id="f_sets" placeholder="VD: 4">
+        </div>
+
+        <!-- Reps -->
+        <div class="form-row">
+          <label>Reps <span class="req">*</span></label>
+          <input type="text" id="f_reps" placeholder="VD: 8-12">
+        </div>
+
+        <!-- Rest -->
+        <div class="form-row span2">
+          <label>Thời gian nghỉ <span class="req">*</span></label>
+          <input type="text" id="f_rest" placeholder="VD: 90 giây">
+        </div>
+
+      </div>
+
+      <!-- Cơ phụ -->
+      <div class="form-section">
+        <div class="form-section-title">Cơ phụ (Secondary muscles)</div>
+        <div class="dynamic-list" id="secList"></div>
+        <button class="add-row-btn" onclick="addSec()">＋ Thêm nhóm cơ phụ</button>
+      </div>
+
+      <!-- Hướng dẫn -->
+      <div class="form-section">
+        <div class="form-section-title">Hướng dẫn thực hiện (Steps)</div>
+        <div class="dynamic-list" id="stepList"></div>
+        <button class="add-row-btn" onclick="addStep()">＋ Thêm bước</button>
+      </div>
+
+      <!-- Lưu ý -->
+      <div class="form-section">
+        <div class="form-section-title">Lưu ý / Tips</div>
+        <div class="dynamic-list" id="tipList"></div>
+        <button class="add-row-btn" onclick="addTip()">＋ Thêm lưu ý</button>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeForm()">Hủy</button>
+      <button class="btn btn-primary" onclick="submitForm()">💾 Lưu bài tập</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFIRM DELETE MODAL ── -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal confirm-modal">
+    <div class="modal-body" style="padding:28px;text-align:center;">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-msg">Bạn có chắc muốn xóa bài tập<br><strong id="confirmName"></strong>?<br>Hành động này không thể hoàn tác.</div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button class="btn btn-ghost" onclick="closeConfirm()">Hủy</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// ██  API LAYER — THAY THẾ BẰNG FETCH THẬT TỚI MONGODB
+// ═══════════════════════════════════════════════════════
+
+let API_URL = localStorage.getItem('pumpd_api_url') || '';
+let API_KEY  = localStorage.getItem('pumpd_api_key')  || '';
+
+function getHeaders(){
+  const h = {'Content-Type':'application/json'};
+  if(API_KEY) h['Authorization'] = API_KEY.startsWith('Bearer') ? API_KEY : `Bearer ${API_KEY}`;
+  return h;
+}
+
+// ── Khi có backend thật: bỏ comment các hàm dưới, xóa phần localStorage mock ──
+
+async function apiGet(){
+  if(!API_URL) return localGet();
+  try{
+    const r = await fetch(`${API_URL}/exercises`,{headers:getHeaders()});
+    if(!r.ok) throw new Error(r.status);
+    return await r.json();
+  }catch(e){ showToast('Lỗi kết nối API — dùng dữ liệu local','error'); return localGet(); }
+}
+
+async function apiPost(data){
+  if(!API_URL) return localPost(data);
+  try{
+    const r = await fetch(`${API_URL}/exercises`,{method:'POST',headers:getHeaders(),body:JSON.stringify(data)});
+    if(!r.ok) throw new Error(r.status);
+    return await r.json();
+  }catch(e){ showToast('Lỗi POST — lưu local','error'); return localPost(data); }
+}
+
+async function apiPut(id,data){
+  if(!API_URL) return localPut(id,data);
+  try{
+    const r = await fetch(`${API_URL}/exercises/${id}`,{method:'PUT',headers:getHeaders(),body:JSON.stringify(data)});
+    if(!r.ok) throw new Error(r.status);
+    return await r.json();
+  }catch(e){ showToast('Lỗi PUT — lưu local','error'); return localPut(id,data); }
+}
+
+async function apiDelete(id){
+  if(!API_URL) return localDelete(id);
+  try{
+    const r = await fetch(`${API_URL}/exercises/${id}`,{method:'DELETE',headers:getHeaders()});
+    if(!r.ok) throw new Error(r.status);
+    return true;
+  }catch(e){ showToast('Lỗi DELETE — lưu local','error'); return localDelete(id); }
+}
+
+// ═══════════════════════════════════════════════════════
+// ██  LOCAL STORAGE MOCK (fallback khi chưa có backend)
+// ═══════════════════════════════════════════════════════
+
+const SEED = [
+  {id:"ex_1",name:"Barbell Bench Press",muscle:"Ngực",icon:"🏋️",diff:"I",equip:"Barbell",sets:"4",reps:"6-8",rest:"2-3 phút",sec:["Vai trước","Tay sau"],steps:[{t:"Nằm ngửa trên bench",d:"Lưng thẳng, hai chân đặt phẳng trên sàn. <strong>Kéo xương bả vai</strong> lại với nhau và ép xuống bench."},{t:"Cầm tạ đúng cách",d:"Hai tay rộng hơn vai. Dùng <strong>Full Grip</strong> — ngón cái vòng quanh tạ."},{t:"Hạ tạ xuống ngực",d:"Hít vào, hạ tạ <strong>chậm rãi 2-3 giây</strong> về phía ngực giữa."},{t:"Đẩy tạ lên mạnh",d:"Thở ra, <strong>đẩy mạnh</strong> tạ lên."}],tips:["⚡ Không nhấc mông khỏi bench","🎯 Căng cơ ngực xuyên suốt động tác","🔒 Luôn có người bảo hộ khi dùng nặng"]},
+  {id:"ex_2",name:"Pull-Up",muscle:"Lưng",icon:"🧲",diff:"I",equip:"Bodyweight",sets:"4",reps:"Max",rest:"2 phút",sec:["Tay trước","Vai sau"],steps:[{t:"Bắt đầu từ dead hang",d:"Cầm xà rộng hơn vai, <strong>duỗi thẳng hoàn toàn</strong>."},{t:"Kéo cằm qua xà",d:"Kéo khuỷu tay <strong>xuống phía hông</strong>."}],tips:["🔰 Người mới: dùng resistance band trợ lực","💡 Tay sấp tập lưng nhiều hơn tay ngửa"]},
+  {id:"ex_3",name:"Squat",muscle:"Chân",icon:"🦵",diff:"I",equip:"Barbell",sets:"4",reps:"6-8",rest:"2-3 phút",sec:["Mông","Bụng"],steps:[{t:"Đặt tạ trên traps",d:"Hai chân rộng hơn vai."},{t:"Squat xuống",d:"Ngồi như ngồi ghế, đùi song song sàn."}],tips:["🦶 Trọng tâm ở gót chân","📐 Giữ ngực thẳng suốt bài"]},
+];
+
+function localGet(){
+  const d=localStorage.getItem('pumpd_ex');
+  return d?JSON.parse(d):JSON.parse(JSON.stringify(SEED));
+}
+function localPost(data){
+  const list=localGet();
+  const item={...data,id:'ex_'+Date.now(),createdAt:new Date().toISOString()};
+  list.push(item);
+  localStorage.setItem('pumpd_ex',JSON.stringify(list));
+  return item;
+}
+function localPut(id,data){
+  let list=localGet();
+  list=list.map(e=>e.id===id?{...e,...data,updatedAt:new Date().toISOString()}:e);
+  localStorage.setItem('pumpd_ex',JSON.stringify(list));
+  return list.find(e=>e.id===id);
+}
+function localDelete(id){
+  let list=localGet().filter(e=>e.id!==id);
+  localStorage.setItem('pumpd_ex',JSON.stringify(list));
+  return true;
+}
+
+// ═══════════════════════════════════════════════════════
+// ██  STATE & INIT
+// ═══════════════════════════════════════════════════════
+
+let exercises=[];
+let editingId=null;
+let deleteId=null;
+
+async function init(){
+  exercises = await apiGet();
+  updateStatus();
+  renderStats();
+  renderTable();
+  document.getElementById('apiUrl').value=API_URL;
+  document.getElementById('apiKey').value=API_KEY;
+}
+
+function updateStatus(){
+  const dot=document.getElementById('statusDot');
+  const txt=document.getElementById('statusText');
+  if(API_URL){dot.className='status-dot connected';txt.textContent='Đã cấu hình API';}
+  else{dot.className='status-dot';txt.textContent='Dùng Local Storage';}
+}
+
+function renderStats(){
+  const t=exercises.length;
+  document.getElementById('statTotal').textContent=t;
+  document.getElementById('statBeginner').textContent=exercises.filter(e=>e.diff==='B').length;
+  document.getElementById('statInter').textContent=exercises.filter(e=>e.diff==='I').length;
+  document.getElementById('statAdv').textContent=exercises.filter(e=>e.diff==='A').length;
+  document.getElementById('exCountBadge').textContent=t;
+  document.getElementById('totalCount')&&(document.getElementById('totalCount').textContent=t);
+}
+
+// ═══════════════════════════════════════════════════════
+// ██  TABLE RENDER
+// ═══════════════════════════════════════════════════════
+
+const diffLabel={B:'Người mới',I:'Trung bình',A:'Nâng cao'};
+
+function renderTable(){
+  const q=document.getElementById('adminSearch').value.toLowerCase();
+  const m=document.getElementById('filterMuscle').value;
+  const d=document.getElementById('filterDiff').value;
+  let data=[...exercises];
+  if(q) data=data.filter(e=>e.name.toLowerCase().includes(q));
+  if(m) data=data.filter(e=>e.muscle===m);
+  if(d) data=data.filter(e=>e.diff===d);
+  const tbody=document.getElementById('tableBody');
+  if(!data.length){tbody.innerHTML='<div class="empty-row">Không tìm thấy bài tập nào.</div>';return;}
+  tbody.innerHTML=data.map(e=>`
+    <div class="tr" onclick="openEdit('${e.id}')">
+      <div class="td icon-cell">${e.icon||'❓'}</div>
+      <div class="td id-cell">${String(e.id).slice(-6)}</div>
+      <div class="td name">${e.name}</div>
+      <div class="td equip">${e.muscle}</div>
+      <div class="td equip">${e.equip}</div>
+      <div class="td"><span class="badge badge-${e.diff}">${diffLabel[e.diff]||e.diff}</span></div>
+      <div class="td actions" onclick="event.stopPropagation()">
+        <button class="icon-btn edit" onclick="openEdit('${e.id}')" title="Sửa">✏️</button>
+        <button class="icon-btn del" onclick="askDelete('${e.id}')" title="Xóa">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// ██  FORM — ADD / EDIT
+// ═══════════════════════════════════════════════════════
+
+function openAdd(){
+  editingId=null;
+  document.getElementById('formTitle').textContent='THÊM BÀI TẬP MỚI';
+  clearForm();
+  addStep(); addStep();  // 2 steps mặc định
+  addTip();              // 1 tip mặc định
+  document.getElementById('formOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function openEdit(id){
+  const ex=exercises.find(e=>e.id===id);
+  if(!ex) return;
+  editingId=id;
+  document.getElementById('formTitle').textContent='SỬA BÀI TẬP';
+  clearForm();
+  document.getElementById('f_name').value=ex.name||'';
+  document.getElementById('f_muscle').value=ex.muscle||'';
+  document.getElementById('f_icon').value=ex.icon||'';
+  document.getElementById('f_diff').value=ex.diff||'';
+  document.getElementById('f_equip').value=ex.equip||'';
+  document.getElementById('f_sets').value=ex.sets||'';
+  document.getElementById('f_reps').value=ex.reps||'';
+  document.getElementById('f_rest').value=ex.rest||'';
+  (ex.sec||[]).forEach(s=>addSec(s));
+  (ex.steps||[]).forEach(s=>addStep(s.t,s.d));
+  (ex.tips||[]).forEach(t=>addTip(t));
+  document.getElementById('formOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function clearForm(){
+  ['f_name','f_muscle','f_icon','f_diff','f_equip','f_sets','f_reps','f_rest'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value='';
+  });
+  ['secList','stepList','tipList'].forEach(id=>document.getElementById(id).innerHTML='');
+}
+
+function closeForm(){
+  document.getElementById('formOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// ── Dynamic rows ──
+function addSec(val=''){
+  const div=document.createElement('div');
+  div.className='dynamic-item';
+  div.innerHTML=`<input type="text" placeholder="VD: Vai trước" value="${val}"><button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('secList').appendChild(div);
+}
+let stepCount=0;
+function addStep(t='',d=''){
+  stepCount++;
+  const n=document.getElementById('stepList').children.length+1;
+  const div=document.createElement('div');
+  div.className='dynamic-item';
+  div.style.cssText='display:grid;grid-template-columns:28px 1fr 1.5fr auto;gap:8px;align-items:start;';
+  div.innerHTML=`
+    <span style="font-family:'Bebas Neue';font-size:26px;color:var(--border2);line-height:1.4;">${String(n).padStart(2,'0')}</span>
+    <input type="text" placeholder="Tiêu đề bước…" value="${escHtml(t)}">
+    <textarea placeholder="Mô tả chi tiết bước…" rows="2">${escHtml(d)}</textarea>
+    <button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('stepList').appendChild(div);
+}
+function addTip(val=''){
+  const div=document.createElement('div');
+  div.className='dynamic-item';
+  div.innerHTML=`<input type="text" placeholder="VD: ⚡ Không nhấc mông khỏi bench" value="${escHtml(val)}"><button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById('tipList').appendChild(div);
+}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── SUBMIT ──
+async function submitForm(){
+  const name=document.getElementById('f_name').value.trim();
+  const muscle=document.getElementById('f_muscle').value;
+  const icon=document.getElementById('f_icon').value.trim();
+  const diff=document.getElementById('f_diff').value;
+  const equip=document.getElementById('f_equip').value;
+  if(!name||!muscle||!icon||!diff||!equip){
+    showToast('Vui lòng điền đầy đủ các trường bắt buộc (*)','error');return;
+  }
+  const sec=[...document.querySelectorAll('#secList .dynamic-item input')].map(i=>i.value.trim()).filter(Boolean);
+  const steps=[...document.querySelectorAll('#stepList .dynamic-item')].map(row=>{
+    const inputs=row.querySelectorAll('input,textarea');
+    return{t:(inputs[0]||{}).value||'',d:(inputs[1]||{}).value||''};
+  }).filter(s=>s.t||s.d);
+  const tips=[...document.querySelectorAll('#tipList .dynamic-item input')].map(i=>i.value.trim()).filter(Boolean);
+  const payload={name,muscle,icon,diff,equip,sets:document.getElementById('f_sets').value.trim(),reps:document.getElementById('f_reps').value.trim(),rest:document.getElementById('f_rest').value.trim(),sec,steps,tips};
+  if(editingId){
+    const updated=await apiPut(editingId,payload);
+    exercises=exercises.map(e=>e.id===editingId?{...e,...updated}:e);
+    showToast('✅ Đã cập nhật bài tập','success');
+  }else{
+    const created=await apiPost(payload);
+    exercises.push(created);
+    showToast('✅ Đã thêm bài tập mới','success');
+  }
+  closeForm();
+  renderStats();
+  renderTable();
+}
+
+// ═══════════════════════════════════════════════════════
+// ██  DELETE
+// ═══════════════════════════════════════════════════════
+
+function askDelete(id){
+  deleteId=id;
+  const ex=exercises.find(e=>e.id===id);
+  document.getElementById('confirmName').textContent=ex?`"${ex.name}"`:'bài tập này';
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeConfirm(){
+  document.getElementById('confirmOverlay').classList.remove('open');
+  document.body.style.overflow='';
+  deleteId=null;
+}
+async function confirmDelete(){
+  if(!deleteId) return;
+  await apiDelete(deleteId);
+  exercises=exercises.filter(e=>e.id!==deleteId);
+  showToast('🗑️ Đã xóa bài tập','info');
+  closeConfirm();
+  renderStats();
+  renderTable();
+}
+
+// ═══════════════════════════════════════════════════════
+// ██  API CONFIG
+// ═══════════════════════════════════════════════════════
+
+function saveApiConfig(){
+  API_URL=document.getElementById('apiUrl').value.trim().replace(/\/$/,'');
+  API_KEY=document.getElementById('apiKey').value.trim();
+  localStorage.setItem('pumpd_api_url',API_URL);
+  localStorage.setItem('pumpd_api_key',API_KEY);
+  updateStatus();
+  showToast('✅ Đã lưu cấu hình API','success');
+}
+
+async function testConnection(){
+  const url=document.getElementById('apiUrl').value.trim().replace(/\/$/,'');
+  if(!url){showToast('Nhập URL API trước','error');return;}
+  showToast('🔌 Đang kiểm tra kết nối…','info');
+  try{
+    const r=await fetch(`${url}/exercises`,{headers:getHeaders(),signal:AbortSignal.timeout(5000)});
+    if(r.ok){showToast(`✅ Kết nối thành công (${r.status})`, 'success');}
+    else{showToast(`❌ Server phản hồi ${r.status}`,'error');}
+  }catch(e){showToast(`❌ Không kết nối được: ${e.message}`,'error');}
+}
+
+// ═══════════════════════════════════════════════════════
+// ██  SECTION NAV
+// ═══════════════════════════════════════════════════════
+
+function showSection(id){
+  document.querySelectorAll('[id^=section-]').forEach(s=>s.style.display='none');
+  document.getElementById('section-'+id).style.display='block';
+  document.querySelectorAll('.s-item').forEach(i=>i.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════
+// ██  TOAST
+// ═══════════════════════════════════════════════════════
+
+function showToast(msg,type='info'){
+  const wrap=document.getElementById('toastWrap');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.textContent=msg;
+  wrap.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},3000);
+}
+
+// ── Overlay close ──
+document.getElementById('formOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeForm();});
+document.getElementById('confirmOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeConfirm();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeForm();closeConfirm();}});
+
+// ── INIT ──
+init();
+</script>
+</body>
+</html>
