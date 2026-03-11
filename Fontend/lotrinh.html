@@ -257,6 +257,7 @@ body {
                 </ul>
             </nav>
             <div class="auth-links"><a href="dangnhap.html" class="btn-signup">Đăng xuất</a></div>
+            <button id="themeToggle" class="theme-toggle">🌙</button>
         </div>
     </header>
 <!-- TICKER -->
@@ -326,6 +327,24 @@ body {
     </main>
 
     <script>
+    //#region nut dieu chinh toi sang 
+        const toggleBtn = document.getElementById("themeToggle");
+        toggleBtn.addEventListener("click", () => {
+            document.body.classList.toggle("light-mode");
+            if(document.body.classList.contains("light-mode")){
+                toggleBtn.textContent = "☀️";
+                localStorage.setItem("theme","light");
+            }else{
+                toggleBtn.textContent = "🌙";
+                localStorage.setItem("theme","dark");
+            }
+        });
+
+        if(localStorage.getItem("theme") === "light"){
+            document.body.classList.add("light-mode");
+            toggleBtn.textContent = "☀️";
+        }
+    //#endregion
         const btnGenerate = document.getElementById('btn-generate');
         const planContainer = document.getElementById('plan-container');
 

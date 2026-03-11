@@ -25,6 +25,7 @@
             </ul>
         </nav>
         <a href="dangnhap.html" class="btn-signup">Đăng nhập / Đăng ký</a>
+        <button id="themeToggle" class="theme-toggle">🌙</button>
     </div>
 </header>
 
@@ -377,6 +378,24 @@
 </footer>
 
 <script>
+    //#region nut dieu chinh toi sang 
+    const toggleBtn = document.getElementById("themeToggle");
+    toggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("light-mode");
+        if(document.body.classList.contains("light-mode")){
+            toggleBtn.textContent = "☀️";
+            localStorage.setItem("theme","light");
+        }else{
+            toggleBtn.textContent = "🌙";
+            localStorage.setItem("theme","dark");
+        }
+    });
+
+    if(localStorage.getItem("theme") === "light"){
+        document.body.classList.add("light-mode");
+        toggleBtn.textContent = "☀️";
+    }
+    //#endregion
     // Scroll reveal
     const reveals = document.querySelectorAll('.reveal');
     const observer = new IntersectionObserver((entries) => {

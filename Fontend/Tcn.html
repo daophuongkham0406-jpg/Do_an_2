@@ -26,6 +26,7 @@
       </ul>
     </nav>
     <a href="dangnhap.html" class="btn-nav">Đăng xuất</a>
+    <button id="themeToggle" class="theme-toggle">🌙</button>
   </div>
 </header>
 <!-- TICKER -->
@@ -296,6 +297,24 @@
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
+//#region nut dieu chinh toi sang 
+    const toggleBtn = document.getElementById("themeToggle");
+    toggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("light-mode");
+        if(document.body.classList.contains("light-mode")){
+            toggleBtn.textContent = "☀️";
+            localStorage.setItem("theme","light");
+        }else{
+            toggleBtn.textContent = "🌙";
+            localStorage.setItem("theme","dark");
+        }
+    });
+
+    if(localStorage.getItem("theme") === "light"){
+        document.body.classList.add("light-mode");
+        toggleBtn.textContent = "☀️";
+    }
+    //#endregion
 // ── DEFAULT DATA ──────────────────────────────────────────
 const DEF_PROFILE={name:'Nguyễn Văn A',age:24,gender:'male',weight:72,height:175,goalWeight:68,level:'I',goalType:'lose',joinDate:'1/2024',totalWorkouts:38,streak:14};
 const DEF_HISTORY=[

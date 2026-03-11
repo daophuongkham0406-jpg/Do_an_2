@@ -34,7 +34,7 @@
             top: 0;
             z-index: 1000;
         }
-
+        
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
         .header-flex { display: flex; justify-content: space-between; align-items: center; }
@@ -2777,4 +2777,43 @@ textarea { resize: vertical; min-height: 68px; line-height: 1.6; }
   .modal-ft        { padding: 16px 18px 20px; flex-direction: column; }
   .btn-ghost, .btn-primary { text-align: center; width: 100%; }
   .footer-grid     { grid-template-columns: 1fr 1fr; gap: 28px; }
+}
+/* ===== THEME TOGGLE BUTTON ===== */
+
+.theme-toggle{
+    background: none;
+    border: 1px solid #444;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+.theme-toggle:hover{
+    background: #222;
+}
+
+
+/*===== LIGHT MODE OVERRIDES ===== */
+body.light-mode {
+
+/* nền */
+--bg-primary: #829db8;
+--bg-card: #c57b7b;
+
+/* chữ */
+--text-primary: #b6bb9c;
+--text-secondary: #5a5f6b;
+--text-muted: #8b9099;
+
+/* border */
+--border: #e3e6eb;
+--border-hover: #d2d6dc;
+
+/* accent giảm chói */
+--accent: #b7e000;
+--accent-hover: #a5d000;
+
 }
