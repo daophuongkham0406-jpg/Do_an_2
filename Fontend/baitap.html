@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư viện bài tập - PUMPD</title>
+    <link rel="stylesheet" href="TrangChu.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        .app-layout { display: flex; gap: 30px; margin-top: 30px; margin-bottom: 50px; }
+        .app-sidebar { width: 300px; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); height: fit-content; }
+        .app-sidebar h2 { font-size: 1.25rem; margin-bottom: 24px; font-weight: 800; color: #111827; }
+        .filter-group { margin-bottom: 24px; }
+        .filter-group h3 { font-size: 0.85rem; color: #6b7280; text-transform: uppercase; margin-bottom: 12px; }
+        .filter-group label { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; font-weight: 500; color: #374151;}
+        .filter-group input { margin-right: 10px; width: 16px; height: 16px; accent-color: #0b132b; }
+        .app-main { flex: 1; }
+        .page-header { margin-bottom: 30px; }
+        .page-header h1 { font-size: 2rem; font-weight: 800; color: #111827; margin-bottom: 10px;}
+        .page-header p { color: #6b7280; font-size: 1.05rem; }
+        .exercise-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+        .exercise-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.2s ease; cursor: pointer; }
+        .exercise-card:hover { transform: translateY(-5px); }
+        .exercise-card img { width: 100%; height: 180px; object-fit: cover; }
+        .exercise-card .info { padding: 16px; }
+        .exercise-card h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; color: #111827;}
+        .card-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag { font-size: 0.75rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+        .tag-muscle { background: #eff6ff; color: #1d4ed8; }
+        .tag-equip { background: #f3f4f6; color: #4b5563; }
+        .empty-state { padding: 50px; text-align: center; color: #6b7280; background: #fff; border-radius: 12px; border: 2px dashed #e5e7eb; grid-column: 1/-1;}
+        @media (max-width: 900px) { .app-layout { flex-direction: column; } .app-sidebar { width: 100%; } }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container header-flex">
+            <div class="logo"><span class="logo-icon">P</span> PUMPD</div>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="baitap.html" style="font-weight: bold; color: white;">Bài tập</a></li>
+                    <li><a href="GioiThieuCauHoi.html">Giới thiệu & Câu hỏi</a></li>
+                    <li><a href="TrangCaNhan.html">Trang cá nhân</a></li>
+                    <li><a href="lotrinh.html">Lộ trình cá nhân</a></li>
+                </ul>
+            </nav>
+            <div class="auth-links"><a href="#" class="btn-signup">Đăng xuất</a></div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="app-layout">
+                <aside class="app-sidebar">
+                    <h2>Bộ lọc bài tập</h2>
+                    <div class="filter-group">
+                        <h3>Nhóm cơ</h3>
+                        <label><input type="checkbox" value="Ngực" class="filter-cb"> Ngực</label>
+                        <label><input type="checkbox" value="Lưng" class="filter-cb"> Lưng</label>
+                        <label><input type="checkbox" value="Chân" class="filter-cb"> Cơ Chân</label>
+                        <label><input type="checkbox" value="Tay" class="filter-cb"> Tay / Vai</label>
+                    </div>
+                    <div class="filter-group">
+                        <h3>Dụng cụ</h3>
+                        <label><input type="checkbox" value="Bodyweight" class="filter-cb"> Không dụng cụ</label>
+                        <label><input type="checkbox" value="Dumbbell" class="filter-cb"> Tạ đơn (Dumbbell)</label>
+                        <label><input type="checkbox" value="Barbell" class="filter-cb"> Tạ đòn (Barbell)</label>
+                    </div>
+                </aside>
+
+                <section class="app-main">
+                    <div class="page-header">
+                        <h1>Khám phá bài tập</h1>
+                        <p>Hàng trăm bài tập được phân loại chi tiết giúp bạn dễ dàng tập luyện.</p>
+                    </div>
+                    <div class="exercise-grid" id="exercise-grid"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const dbExercises = [
+            { name: "Barbell Squat", muscle: "Chân", equipment: "Barbell", img: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&q=80" },
+            { name: "Push Up", muscle: "Ngực", equipment: "Bodyweight", img: "https://images.unsplash.com/photo-1598971639058-fab3c3109a00?w=400&q=80" },
+            { name: "Pull Up", muscle: "Lưng", equipment: "Bodyweight", img: "https://images.unsplash.com/photo-1598971484999-6934b4553bce?w=400&q=80" },
+            { name: "Dumbbell Curl", muscle: "Tay", equipment: "Dumbbell", img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&q=80" }
+        ];
+
+        const exerciseGrid = document.getElementById('exercise-grid');
+
+        function renderExercises(data) {
+            if (!exerciseGrid) return;
+            exerciseGrid.innerHTML = data.length ? data.map(ex => `
+                <div class="exercise-card">
+                    <img src="${ex.img}" alt="${ex.name}">
+                    <div class="info">
+                        <h3>${ex.name}</h3>
+                        <div class="card-tags">
+                            <span class="tag tag-muscle">${ex.muscle}</span>
+                            <span class="tag tag-equip">${ex.equipment}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('') : '<div class="empty-state">Không tìm thấy bài tập phù hợp với bộ lọc.</div>';
+        }
+
+        document.querySelectorAll('.filter-cb').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const checked = Array.from(document.querySelectorAll('.filter-cb:checked')).map(el => el.value);
+                if (!checked.length) return renderExercises(dbExercises);
+                const filtered = dbExercises.filter(ex => checked.includes(ex.muscle) || checked.includes(ex.equipment));
+                renderExercises(filtered);
+            });
+        });
+
+        renderExercises(dbExercises);
+    </script>
+</body>
+</html>
