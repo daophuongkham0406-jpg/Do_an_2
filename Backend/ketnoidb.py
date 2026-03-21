@@ -1,29 +1,55 @@
 import os
+import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-# 1. Kích hoạt và lấy đường link bí mật từ file .env
 load_dotenv()
-MONGO_URI = os.getenv("MONGO_URI")
+client = MongoClient(os.getenv("MONGO_URI"))
+db = client["do_an_2"]
 
-try:
-    # 2. Tạo kết nối bằng biến MONGO_URI (không lộ link thật)
-    client = MongoClient(MONGO_URI)
-    
-    # 3. Thử ping xem có thông mạng không
-    client.admin.command('ping')
-    print("✅ KẾT NỐI THÀNH CÔNG! Trang Web đã nhìn thấy MongoDB trên mây.")
-    
-    # 4. Thử thêm dữ liệu
-    db = client["do_an_2"]
-    collection = db["taikhoan"]
-    # Tạo thử một tài khoản mẫu y như thật
-    collection.insert_one({
-            "tai_khoan": "admin_test", 
-            "mat_khau": "123456", 
-            "vai_tro": "quan_tri_vien"
-    })
-    print("✅ Đã thêm thành công một tài khoản mẫu vào database do_an_2!")
+# Lấy 3 bảng
+users_col = db["user"]
+plans_col = db["plan"]
+admins_col = db["admin"]
 
-except Exception as e:
-    print("❌ KẾT NỐI THẤT BẠI:", e)
+# 1. TẠO USER
+new_user = {
+    "fullName": "Nguyễn Minh Trí",
+    "email": "tri@gmail.com",
+    "passwordHash": "mat_khau_da_ma_hoa_123",
+    "isPremium": False,
+    "targetCalories": 2500,
+    "streakDays": 3,
+    "savedExercises": [],
+    "createdAt": datetime.datetime.now()
+}
+user_result = users_col.insert_one(new_user)
+user_id = user_result.inserted_id # LẤY ID CỦA USER VỪA TẠO
+print(f"✅ Đã tạo User thành công! ID: {user_id}")
+
+# 2. TẠO PLAN VÀ GẮN VÀO USER TRÊN
+new_plan = {
+    "userId": user_id, # DÙNG ID VỪA LẤY ĐƯỢC NHÉT VÀO ĐÂY
+    "goal": "Tăng cơ giảm mỡ",
+    "experienceLevel": "Beginner",
+    "equipmentAvailable": "Dumbbell, Mat",
+    "isActive": True,
+    "createdAt": datetime.datetime.now()
+}
+plans_col.insert_one(new_plan)
+print("✅ Đã tạo Plan và liên kết với User thành công!")
+
+# 3. TẠO ADMIN (Gộp chung thuộc tính User và Admin)
+new_admin = {
+    "fullName": "Quản trị viên 1",
+    "email": "admin1@gmail.com",
+    "passwordHash": "admin_hash_pass",
+    "isPremium": True,
+    "targetCalories": 2200,
+    "streakDays": 10,
+    "savedExercises": [],
+    "createdAt": datetime.datetime.now(),
+    "adminLevel": 1 # Cột riêng của Admin
+}
+admins_col.insert_one(new_admin)
+print("✅ Đã tạo Admin thành công!")
