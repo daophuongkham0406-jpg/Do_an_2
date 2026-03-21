@@ -1,22 +1,24 @@
-# File: test_db.py
+import os
+from dotenv import load_dotenv
 from pymongo import MongoClient
 
+# 1. Kích hoạt và lấy đường link bí mật từ file .env
+load_dotenv()
+MONGO_URI = os.getenv("MONGO_URI")
+
 try:
-    # 1. Tạo kết nối đến MongoDB (địa chỉ mặc định)
-    client = MongoClient("mongodb://localhost:27017/")
+    # 2. Tạo kết nối bằng biến MONGO_URI (không lộ link thật)
+    client = MongoClient(MONGO_URI)
     
-    # 2. Thử truy cập server để xem thông tin
+    # 3. Thử ping xem có thông mạng không
     client.admin.command('ping')
+    print("✅ KẾT NỐI THÀNH CÔNG! Trang Web đã nhìn thấy MongoDB trên mây.")
     
-    print("✅ KẾT NỐI THÀNH CÔNG! Python đã nhìn thấy MongoDB.")
-    
-    # 3. Tạo thử một database và thêm dữ liệu mẫu
-    db = client["test_database"]  # Tên database
-    collection = db["users"]      # Tên bảng (collection)
-    
-    # Thêm một dòng dữ liệu vào
-    collection.insert_one({"name": "Admin", "role": "Tester"})
-    print("✅ Đã thêm thử dữ liệu vào database 'test_database'.")
+    # 4. Thử thêm dữ liệu
+    db = client["test_database"]
+    collection = db["users"]
+    collection.insert_one({"name": "Admin Web", "role": "Tester"})
+    print("✅ Đã thêm dữ liệu từ Web vào database.")
 
 except Exception as e:
     print("❌ KẾT NỐI THẤT BẠI:", e)
