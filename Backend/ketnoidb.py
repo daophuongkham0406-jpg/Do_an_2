@@ -15,10 +15,15 @@ try:
     print("✅ KẾT NỐI THÀNH CÔNG! Trang Web đã nhìn thấy MongoDB trên mây.")
     
     # 4. Thử thêm dữ liệu
-    db = client["test_database"]
-    collection = db["users"]
-    collection.insert_one({"name": "Admin Web", "role": "Tester"})
-    print("✅ Đã thêm dữ liệu từ Web vào database.")
+    db = client["do_an_2"]
+    collection = db["taikhoan"]
+    # Tạo thử một tài khoản mẫu y như thật
+    collection.insert_one({
+            "tai_khoan": "admin_test", 
+            "mat_khau": "123456", 
+            "vai_tro": "quan_tri_vien"
+    })
+    print("✅ Đã thêm thành công một tài khoản mẫu vào database do_an_2!")
 
 except Exception as e:
     print("❌ KẾT NỐI THẤT BẠI:", e)
