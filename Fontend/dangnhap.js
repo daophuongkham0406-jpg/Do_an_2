@@ -102,3 +102,56 @@ if (error.message && error.message.includes('Failed to fetch')) {
         alert("⚠️ Đã xảy ra sự cố không xác định khi kết nối: " + error.message);
     }
 }
+
+/* ── Xử lý Đăng nhập ── */
+async function handleLogin(e) {
+    e.preventDefault();
+    
+    // 1. SỬA LẠI ID: Trỏ đúng vào id="login-email" của file HTML
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    
+    try {
+        const response = await fetch('http://127.0.0.1:5000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // 2. SỬA LẠI DỮ LIỆU GỬI ĐI: Gửi 'email' thay vì 'username'
+            body: JSON.stringify({ email: email, password: pass }) 
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            alert("🎉 Đăng nhập thành công!");
+            
+            // Lưu dữ liệu vào localStorage (Bạn có thể lưu token hoặc thông tin user)
+            // Lát nữa trang index.html sẽ đọc cái này để biết ai đang đăng nhập
+            if(result.token) localStorage.setItem('token', result.token);
+            if(result.user) localStorage.setItem('loggedInUser', JSON.stringify(result.user));
+            
+            // 3. LỆNH NHẢY TRANG CHỦ
+            window.location.href = 'index.html';
+            
+        } else {
+            alert("⚠️ Đăng nhập thất bại: " + (result.message || "Sai thông tin"));
+        }
+    } catch (error) {
+        console.error("Chi tiết lỗi Đăng nhập:", error);
+        alert("❌ Lỗi kết nối khi đăng nhập. Vui lòng thử lại sau!");
+    }
+}
+
+// Gắn sự kiện cho form Đăng ký và Đăng nhập
+document
+  .getElementById('register-form')
+  .addEventListener('submit', function(e) {
+    e.preventDefault();
+    handleRegister(e);
+  });
+
+document
+  .getElementById('login-form')
+  .addEventListener('submit', function(e) {
+    e.preventDefault();
+    handleLogin(e);
+  });
