@@ -15,7 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Lấy fullName từ dữ liệu Database hiện lên
         userMenu.innerHTML = `
-            <span style="color: #c6ff00; font-weight: 600; font-size: 15px;"> ${user.fullName}</span>
+            <a href="Tcn.html" id="profile-link" style="color: #c6ff00; font-weight: 600; font-size: 15px; text-decoration: none; cursor: pointer; transition: 0.3s;">
+                ${user.fullName}
+            </a>
             <button id="logout-btn" style="background: transparent; border: 1px solid #fff; color: #fff; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.3s;">
                 Đăng xuất
             </button>
