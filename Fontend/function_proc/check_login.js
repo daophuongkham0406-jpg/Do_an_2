@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <a href="Tcn.html" id="profile-link" style="color: #c6ff00; font-weight: 600; font-size: 15px; text-decoration: none; cursor: pointer; transition: 0.3s;">
                 ${user.fullName}
             </a>
-            <button id="logout-btn" style="background: transparent; border: 1px solid #fff; color: #fff; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.3s;">
+            <button id="logout-btn" style="background: transparent; border: 1px solid #a8af2c; color: #bee04d; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.3s;">
                 Đăng xuất
             </button>
         `;
