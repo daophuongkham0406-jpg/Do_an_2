@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime
 from dangnhap import auth_bp
+from canhan import profile_bp
 
 # 1. Tải cấu hình từ file .env
 load_dotenv()
@@ -20,6 +21,9 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Tất cả đường dẫn trong auth_bp sẽ bắt đầu bằng /api/auth
 app.register_blueprint(auth_bp, url_prefix='/api/auth') 
+
+# Tất cả đường dẫn trong profile_bp sẽ bắt đầu bằng /api/profile
+app.register_blueprint(profile_bp, url_prefix='/api/profile')
 
 # 3. Kết nối MongoDB
 try:
