@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 from dangnhap import auth_bp
 from canhan import profile_bp
+from baitap import baitap_bp
 
 # 1. Tải cấu hình từ file .env
 load_dotenv()
@@ -24,7 +25,8 @@ app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
 # Tất cả đường dẫn trong profile_bp sẽ bắt đầu bằng /api/profile
 app.register_blueprint(profile_bp, url_prefix='/api/profile')
-
+# Tất cả đường dẫn trong baitap_bp sẽ bắt đầu bằng /api/exercises
+app.register_blueprint(baitap_bp, url_prefix='/api/exercises')
 # 3. Kết nối MongoDB
 try:
     client = MongoClient(MONGO_URI)
