@@ -219,6 +219,50 @@
   </div>
 </div>
 
+<div class="overlay" id="userModalOverlay">
+  <div class="modal" style="max-width: 450px;">
+    <div class="modal-header">
+      <div class="modal-title">HỒ SƠ NGƯỜI DÙNG</div>
+      <button class="modal-close" onclick="closeUserModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <div style="width: 80px; height: 80px; background: var(--bg3); border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 12px; color: var(--accent);">👤</div>
+        <h2 id="u_fullName" style="margin-bottom: 8px; font-size: 22px;"></h2>
+        <span id="u_role" class="badge"></span>
+      </div>
+      
+      <div class="form-grid full">
+        <div class="form-row">
+          <label>Tài khoản</label>
+          <input type="text" id="u_username" readonly style="background: var(--bg3); color: var(--text2); border-color: transparent;">
+        </div>
+        <div class="form-row">
+          <label>Email</label>
+          <input type="text" id="u_email" readonly style="background: var(--bg3); color: var(--text2); border-color: transparent;">
+        </div>
+        <div class="form-grid">
+            <div class="form-row">
+              <label>Tuổi</label>
+              <input type="text" id="u_age" readonly style="background: var(--bg3); color: var(--text2); border-color: transparent;">
+            </div>
+            <div class="form-row">
+              <label>Giới tính</label>
+              <input type="text" id="u_gender" readonly style="background: var(--bg3); color: var(--text2); border-color: transparent;">
+            </div>
+        </div>
+        <div class="form-row">
+          <label>Ngày tham gia</label>
+          <input type="text" id="u_created" readonly style="background: var(--bg3); color: var(--text2); border-color: transparent;">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content: center;">
+      <button class="btn btn-ghost" onclick="closeUserModal()" style="width: 100%;">Đóng</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script src="function_proc/admin.js"></script>
