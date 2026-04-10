@@ -3,9 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Quản lý Bài Tập | PUMPD</title>
+<title>Admin Panel | PUMPD</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="admin.css">
+<style>
+  /* Căn chỉnh lại màu sắc Badge User cho đẹp */
+  .badge-admin { background: rgba(232, 255, 71, 0.12); border: 1px solid rgba(232, 255, 71, 0.3); color: var(--accent); }
+  .badge-user { background: rgba(77, 168, 255, 0.12); border: 1px solid rgba(77, 168, 255, 0.3); color: var(--blue); }
+  .table-head.user-grid, .tr.user-grid { grid-template-columns: 80px 1fr 150px 100px 100px 80px; }
+</style>
 </head>
 <body>
 
@@ -27,20 +33,22 @@
 <div class="layout">
 
   <aside class="sidebar">
-    <div class="s-title">Quản lý</div>
-    <div class="s-item active">
+    <div class="s-title">Nội dung</div>
+    <div class="s-item active" onclick="switchSection('exercises')" id="nav-exercises">
       <span class="s-icon">🏋️</span> Bài tập
       <span class="s-badge" id="exCountBadge">0</span>
     </div>
     <div class="s-divider"></div>
-    <div class="s-info" style="margin-top:16px;">
-      <strong>💡 Trạng thái hệ thống</strong>
-      <p>Trang quản trị đang được kết nối trực tiếp với <strong>MongoDB Database</strong>. Mọi thay đổi Thêm/Sửa/Xóa sẽ được lưu vĩnh viễn.</p>
+    <div class="s-title">Hệ thống</div>
+    <div class="s-item" onclick="switchSection('users')" id="nav-users">
+      <span class="s-icon">👥</span> Người dùng
+      <span class="s-badge" id="userCountBadge">0</span>
     </div>
   </aside>
 
   <main class="main">
-    <section id="section-exercises">
+    
+    <section id="section-exercises" style="display: block;">
       <div class="page-header">
         <div class="page-title-wrap">
           <div class="page-label">Quản lý nội dung</div>
@@ -107,6 +115,42 @@
         </div>
       </div>
     </section>
+
+    <section id="section-users" style="display: none;">
+        <div class="page-header">
+            <div class="page-title-wrap">
+              <div class="page-label">Quản trị hệ thống</div>
+              <h1>Danh sách Người Dùng</h1>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <div class="search-wrap">
+              <input type="text" id="userSearch" placeholder="Tìm theo tên, username hoặc email…" oninput="renderUserTable()">
+              <span class="search-icon">🔍</span>
+            </div>
+            <select class="sel" id="filterRole" onchange="renderUserTable()">
+              <option value="">Tất cả quyền</option>
+              <option value="admin">Admin</option>
+              <option value="user">User thường</option>
+            </select>
+        </div>
+
+        <div class="table-wrap">
+            <div class="table-head user-grid">
+              <div class="th">ID</div>
+              <div class="th">Họ Tên</div>
+              <div class="th">Email</div>
+              <div class="th">Tài khoản</div>
+              <div class="th">Quyền hạn</div>
+              <div class="th">Thao tác</div>
+            </div>
+            <div class="table-body" id="userTableBody">
+              <div class="empty-row">Đang tải…</div>
+            </div>
+        </div>
+    </section>
+
   </main>
 </div>
 
@@ -166,7 +210,7 @@
   <div class="modal confirm-modal">
     <div class="modal-body" style="padding:28px;text-align:center;">
       <div class="confirm-icon">🗑️</div>
-      <div class="confirm-msg">Bạn có chắc muốn xóa bài tập<br><strong id="confirmName"></strong>?<br>Hành động này không thể hoàn tác.</div>
+      <div class="confirm-msg">Bạn có chắc muốn xóa <br><strong id="confirmName"></strong>?<br>Hành động này không thể hoàn tác.</div>
       <div style="display:flex;gap:10px;justify-content:center;">
         <button class="btn btn-ghost" onclick="closeConfirm()">Hủy</button>
         <button class="btn btn-danger" onclick="confirmDelete()">Xóa</button>

@@ -3,6 +3,124 @@ const API_URL = 'http://127.0.0.1:5000/api/exercises/';
 function getHeaders(){
     return {'Content-Type': 'application/json'};
 }
+let userlist = []; 
+let deletetype = null;
+
+// ham lay du lieu user
+async function fetchUsers() {
+    try {
+        const r = await fetch(USER_API_URL, { headers: getHeaders() });
+        usersList = await checkResponse(r);
+        document.getElementById('userCountBadge').textContent = usersList.length;
+        renderUserTable();
+    } catch(e) {
+        showErrorToast(e, 'Tải danh sách Người dùng');
+    }
+}
+// Vẽ bảng User
+function renderUserTable() {
+    const q = document.getElementById('userSearch').value.toLowerCase();
+    const r = document.getElementById('filterRole').value;
+    
+    let data = [...usersList];
+    
+    // Tìm kiếm (Fullname, Email, Username)
+    if (q) {
+        data = data.filter(u => 
+            (u.fullName && u.fullName.toLowerCase().includes(q)) || 
+            (u.email && u.email.toLowerCase().includes(q)) ||
+            (u.username && u.username.toLowerCase().includes(q))
+        );
+    }
+    // Lọc quyền
+    if (r) data = data.filter(u => u.role === r);
+    
+    const tbody = document.getElementById('userTableBody');
+    if (!data.length) {
+        tbody.innerHTML = '<div class="empty-row">Không tìm thấy người dùng nào.</div>';
+        return;
+    }
+    
+    tbody.innerHTML = data.map(u => `
+        <div class="tr user-grid">
+            <div class="td id-cell" title="${u.id}">${String(u.id).slice(-6)}</div>
+            <div class="td name">${u.fullName || 'Chưa cập nhật'}</div>
+            <div class="td" style="color:var(--text2)">${u.email || ''}</div>
+            <div class="td" style="color:var(--text3)">@${u.username}</div>
+            <div class="td"><span class="badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}">${u.role.toUpperCase()}</span></div>
+            <div class="td actions" onclick="event.stopPropagation()">
+                ${u.role !== 'admin' ? `<button class="icon-btn del" onclick="askDeleteUser('${u.id}')" title="Xóa User">🗑️</button>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+// ============================================================================
+// ĐIỀU HƯỚNG VÀ XỬ LÝ CHUNG (CẬP NHẬT)
+// ============================================================================
+
+// Hàm chuyển đổi giữa các màn hình
+function switchSection(sectionId) {
+    // Đổi Active Menu
+    document.querySelectorAll('.sidebar .s-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('nav-' + sectionId).classList.add('active');
+
+    // Đổi Màn hình
+    document.getElementById('section-exercises').style.display = (sectionId === 'exercises') ? 'block' : 'none';
+    document.getElementById('section-users').style.display = (sectionId === 'users') ? 'block' : 'none';
+
+    // Tải dữ liệu tương ứng nếu chưa có
+    if (sectionId === 'users' && usersList.length === 0) {
+        fetchUsers();
+    }
+}
+
+// --- SỬA LẠI CHỨC NĂNG XÓA CHUNG ---
+// Thay thế hàm askDelete cũ của bạn
+function askDelete(id) {
+    deleteType = 'exercise';
+    deleteId = id;
+    const ex = exercises.find(e => e.id === id);
+    document.getElementById('confirmName').textContent = ex ? `Bài tập: "${ex.name}"` : 'bài tập này';
+    document.getElementById('confirmOverlay').classList.add('open');
+}
+
+// Hàm xóa User riêng
+function askDeleteUser(id) {
+    deleteType = 'user';
+    deleteId = id;
+    const u = usersList.find(e => e.id === id);
+    document.getElementById('confirmName').textContent = u ? `User: "${u.fullName}"` : 'người dùng này';
+    document.getElementById('confirmOverlay').classList.add('open');
+}
+
+// Thay thế hàm confirmDelete cũ của bạn
+async function confirmDelete() {
+    if (!deleteId) return;
+    
+    if (deleteType === 'exercise') {
+        await apiDelete(deleteId);
+        exercises = exercises.filter(e => e.id !== deleteId);
+        showToast('🗑️ Đã xóa bài tập', 'info');
+        renderStats();
+        renderTable();
+    } 
+    else if (deleteType === 'user') {
+        try {
+            const r = await fetch(`${USER_API_URL}${deleteId}`, { method: 'DELETE', headers: getHeaders() });
+            await checkResponse(r);
+            usersList = usersList.filter(u => u.id !== deleteId);
+            showToast('🗑️ Đã xóa người dùng', 'info');
+            document.getElementById('userCountBadge').textContent = usersList.length;
+            renderUserTable();
+        } catch (e) {
+            showErrorToast(e, 'Xóa người dùng');
+        }
+    }
+    
+    closeConfirm();
+}
+
+
 
 async function checkResponse(response) {
     if (!response.ok) {
