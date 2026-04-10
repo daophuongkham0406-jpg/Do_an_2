@@ -1,61 +1,116 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP
-    const userStr = localStorage.getItem('loggedInUser'); // Dữ liệu ta đã lưu lúc đăng nhập thành công
-    const loginBtn = document.querySelector('.btn-signup'); // Tìm nút Đăng nhập/Đăng ký
+    
+    // ========================================================================
+    // 0. TỰ ĐỘNG BƠM GIAO DIỆN THÔNG BÁO (TOAST) VÀO MỌI TRANG
+    // ========================================================================
+    if (!document.getElementById('global-toast-style')) {
+        const style = document.createElement('style');
+        style.id = 'global-toast-style';
+        style.innerHTML = `
+            .toast-wrap { position: fixed; bottom: 30px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 12px; }
+            .toast { background-color: #1d1e25; color: #ffffff; border-left: 4px solid #7241ff; padding: 16px 24px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 12px; transform: translateX(120%); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+            .toast.show { transform: translateX(0); opacity: 1; }
+            .toast.success { border-left-color: #e6ff00; }
+            .toast.error { border-left-color: #ff4d4d; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    if (!document.getElementById('toastWrap')) {
+        const tw = document.createElement('div');
+        tw.id = 'toastWrap';
+        tw.className = 'toast-wrap';
+        document.body.appendChild(tw);
+    }
+
+    function showToast(msg, type = 'info') {
+        const wrap = document.getElementById('toastWrap');
+        const t = document.createElement('div');
+        t.className = `toast ${type}`;
+        let icon = 'ℹ️';
+        if(type === 'error') icon = '❌';
+        if(type === 'success') icon = '✅';
+        
+        t.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
+        wrap.appendChild(t);
+        requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+        setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 2000);
+    }
+
+    // ========================================================================
+    // 1. KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP VÀ ĐỔI MENU
+    // ========================================================================
+    const userStr = localStorage.getItem('loggedInUser'); 
+    const loginBtn = document.querySelector('.btn-signup'); 
 
     if (userStr && loginBtn) {
-        // NẾU ĐÃ ĐĂNG NHẬP: Biến đổi chuỗi JSON thành Object
         const user = JSON.parse(userStr);
 
-        // Tạo một vùng chứa mới gồm Tên và Nút Đăng xuất
         const userMenu = document.createElement('div');
         userMenu.style.display = 'flex';
         userMenu.style.alignItems = 'center';
         userMenu.style.gap = '15px';
 
-        // Lấy fullName từ dữ liệu Database hiện lên
+        // Lấy fullName, thiết kế nút đăng xuất màu Vàng Neon
         userMenu.innerHTML = `
-            <a href="Tcn.html" id="profile-link" style="color: #c6ff00; font-weight: 600; font-size: 15px; text-decoration: none; cursor: pointer; transition: 0.3s;">
-                ${user.fullName}
+            <a href="Tcn.html" id="profile-link" style="color: #ffffff; font-weight: 600; font-size: 14px; text-decoration: none; cursor: pointer; transition: 0.3s;">
+                <span style="color:#e6ff00">${user.fullName}</span>
             </a>
-            <button id="logout-btn" style="background: transparent; border: 1px solid #a8af2c; color: #bee04d; padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.3s;">
+            <button id="logout-btn" style="background: transparent; border: 1px solid #e6ff00; color: #e6ff00; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
                 Đăng xuất
             </button>
         `;
 
-        // Đổi chỗ: Xóa nút Đăng nhập cũ, nhét vùng userMenu mới vào
+        // Thay nút Đăng nhập bằng Menu User
         loginBtn.parentNode.replaceChild(userMenu, loginBtn);
 
-        // Hiệu ứng hover cho nút đăng xuất (cho đẹp)
+        // Hiệu ứng hover cho nút Đăng xuất
         const logoutBtn = document.getElementById('logout-btn');
-        logoutBtn.addEventListener('mouseover', () => logoutBtn.style.background = 'rgba(255,255,255,0.1)');
-        logoutBtn.addEventListener('mouseout', () => logoutBtn.style.background = 'transparent');
+        logoutBtn.addEventListener('mouseover', () => {
+            logoutBtn.style.background = '#e6ff00';
+            logoutBtn.style.color = '#000';
+        });
+        logoutBtn.addEventListener('mouseout', () => {
+            logoutBtn.style.background = 'transparent';
+            logoutBtn.style.color = '#e6ff00';
+        });
 
-        // BẮT SỰ KIỆN ĐĂNG XUẤT
+        // BẮT SỰ KIỆN ĐĂNG XUẤT (Thay confirm bằng thông báo mượt mà)
         logoutBtn.addEventListener('click', () => {
-            if(confirm("Bạn có chắc chắn muốn đăng xuất?")) {
-                localStorage.removeItem('loggedInUser'); // Xóa trí nhớ trình duyệt
-                localStorage.removeItem('token');
-                window.location.href = 'index.html'; // Tải lại trang chủ (sẽ quay về dạng Khách)
-            }
+            localStorage.removeItem('loggedInUser'); 
+            localStorage.removeItem('token');
+            
+            showToast("👋 Đã đăng xuất thành công!", "success");
+            
+            // Đợi 1 giây để người dùng thấy thông báo rồi mới f5
+            setTimeout(() => {
+                window.location.href = 'index.html'; 
+            }, 1000);
         });
     }
 
-    // 2. CHẶN TÀI KHOẢN KHÁCH NHẤN VÀO CÁC TRANG KHÁC
-    // Tìm tất cả các link trong menu điều hướng
+    // ========================================================================
+    // 2. CHẶN TÀI KHOẢN KHÁCH NHẤN VÀO TRANG CẤM
+    // ========================================================================
     const navLinks = document.querySelectorAll('.nav-menu a');
     
+    // Khai báo các trang mà Khách được phép vào (Trang chủ, Giới thiệu)
+    const publicPages = ['index.html', 'GioiThieuCauHoi.html'];
+
     navLinks.forEach(link => {
-        // Bỏ qua trang chủ, chỉ bắt lỗi các trang khác (Bài tập, Lộ trình...)
-        if (!link.href.includes('index.html')) {
+        // Kiểm tra xem link này có nằm trong danh sách publicPages không
+        const isPublic = publicPages.some(page => link.href.includes(page));
+
+        if (!isPublic && link.href !== '' && link.href !== '#') {
             link.addEventListener('click', (e) => {
-                // Nếu chưa đăng nhập (không có dữ liệu trong localStorage)
                 if (!localStorage.getItem('loggedInUser')) {
-                    e.preventDefault(); // Chặn không cho nhảy trang
+                    e.preventDefault(); 
                     
-                    alert('🔒 Vui lòng đăng nhập để sử dụng tính năng này!');
-                    // Tự động đẩy khách sang trang đăng nhập
-                    window.location.href = 'dangnhap.html'; 
+                    showToast('🔒 Vui lòng đăng nhập để sử dụng tính năng này!', 'error');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dangnhap.html'; 
+                    }, 1500); 
                 }
             });
         }

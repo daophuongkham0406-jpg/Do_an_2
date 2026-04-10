@@ -193,3 +193,38 @@ button.hidden:hover {
     font-size: 13px; font-weight: 600; transition: 0.2s; z-index: 10;
 }
 .back-btn-inner:hover { transform: translateX(-3px); color: var(--accent-yellow); }
+/* --- HIỆU ỨNG THÔNG BÁO (TOAST) --- */
+.toast-wrap {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast {
+    background-color: var(--bg-card, #1d1e25);
+    color: var(--text-main, #ffffff);
+    border-left: 4px solid var(--accent-purple, #7241ff);
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateX(120%);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Hiệu ứng nảy nhẹ */
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.success { border-left-color: var(--accent-yellow, #e6ff00); }
+.toast.error { border-left-color: #ff4d4d; }

@@ -5,10 +5,10 @@ const API_URL = 'http://127.0.0.1:5000/api/exercises/';
 const USER_API_URL = 'http://127.0.0.1:5000/api/users/';
 
 let exercises = [];
-let usersList = []; // Chữ L viết hoa nhé!
+let usersList = []; 
 let editingId = null;
 let deleteId = null;
-let deleteType = null; // Chữ T viết hoa nhé!
+let deleteType = null; 
 
 function getHeaders() {
     return { 'Content-Type': 'application/json' };
@@ -30,7 +30,7 @@ async function checkResponse(response) {
 function showErrorToast(error, actionName) {
     console.error(`[Loi ${actionName}]:`, error);
     if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-        showToast("May chu dang tat! Hay chay 'python app.py'", 'error');
+        showToast("Máy chủ đang tắt! Hãy chạy 'python app.py'", 'error');
     } else {
         showToast(error.message, 'error');
     }
@@ -105,9 +105,13 @@ async function init() {
         return;
     }
     const user = JSON.parse(userStr);
+    
+    // Đã sửa thành showToast thay vì alert
     if (user.role !== 'admin') {
-        alert('Ban khong co quyen truy cap trang Quan tri!');
-        window.location.href = 'index.html';
+        showToast('⛔ Bạn không có quyền truy cập trang Quản trị!', 'error');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1500);
         return;
     }
 
@@ -124,16 +128,13 @@ async function init() {
 }
 
 function switchSection(sectionId) {
-    // Đổi Active Menu
     document.querySelectorAll('.sidebar .s-item').forEach(el => el.classList.remove('active'));
     const navItem = document.getElementById('nav-' + sectionId);
     if(navItem) navItem.classList.add('active');
 
-    // Đổi Màn hình
     document.getElementById('section-exercises').style.display = (sectionId === 'exercises') ? 'block' : 'none';
     document.getElementById('section-users').style.display = (sectionId === 'users') ? 'block' : 'none';
 
-    // Tải dữ liệu tương ứng nếu chưa có
     if (sectionId === 'users' && usersList.length === 0) {
         fetchUsers();
     }
@@ -181,8 +182,6 @@ function renderTable() {
         </div>
     `).join('');
 }
-
-
 
 function renderUserTable() {
     const q = document.getElementById('userSearch').value.toLowerCase();
@@ -306,8 +305,8 @@ async function submitForm() {
         const equip = document.getElementById('f_equip').value;
 
         if (!name || !muscle || !icon || !diff || !equip) {
-            if (typeof showToast === 'function') showToast('Vui long dien day du cac truong (*)', 'error');
-            else alert('Vui long dien day du cac truong (*)');
+            // Đã đổi sang showToast
+            showToast('Vui lòng điền đầy đủ các trường bắt buộc (*)', 'error');
             return;
         }
 
@@ -329,11 +328,11 @@ async function submitForm() {
         if (editingId) {
             const updated = await apiPut(editingId, payload);
             exercises = exercises.map(e => e.id === editingId ? { ...e, ...updated } : e);
-            showToast('Cap nhat thanh cong', 'success');
+            showToast('Cập nhật bài tập thành công', 'success');
         } else {
             const created = await apiPost(payload);
             exercises.push(created);
-            showToast('Them moi thanh cong', 'success');
+            showToast('Thêm bài tập mới thành công', 'success');
         }
 
         closeForm();
@@ -342,7 +341,7 @@ async function submitForm() {
 
     } catch (error) {
         console.error("Loi:", error);
-        alert("Da xay ra loi khi luu! Vui long xem Console (F12).");
+        showToast("Đã xảy ra lỗi khi lưu! Vui lòng xem Console (F12).", "error");
     }
 }
 
@@ -378,7 +377,7 @@ async function confirmDelete() {
     if (deleteType === 'exercise') {
         await apiDelete(deleteId);
         exercises = exercises.filter(e => e.id !== deleteId);
-        showToast('Da xoa bai tap', 'info');
+        showToast('Đã xóa bài tập', 'info');
         renderStats();
         renderTable();
     } 
@@ -387,33 +386,39 @@ async function confirmDelete() {
             const r = await fetch(`${USER_API_URL}${deleteId}`, { method: 'DELETE', headers: getHeaders() });
             await checkResponse(r);
             usersList = usersList.filter(u => u.id !== deleteId);
-            showToast('Da xoa nguoi dung', 'info');
+            showToast('Đã xóa người dùng', 'info');
             document.getElementById('userCountBadge').textContent = usersList.length;
             renderUserTable();
         } catch (e) {
-            showErrorToast(e, 'Xoa nguoi dung');
+            showErrorToast(e, 'Xóa người dùng');
         }
     }
     closeConfirm();
 }
 
 // ════════════════════════════════════════════════════════════════
-// 9. TIỆN ÍCH & SỰ KIỆN CHUNG
+// 9. TIỆN ÍCH THÔNG BÁO (TOAST ĐƯỢC NÂNG CẤP)
 // ════════════════════════════════════════════════════════════════
 function showToast(msg, type = 'info') {
     const wrap = document.getElementById('toastWrap');
     if (!wrap) return;
     const t = document.createElement('div');
     t.className = `toast ${type}`;
-    t.textContent = msg;
+    
+    // Gắn thêm icon cho xịn xò
+    let icon = 'ℹ️';
+    if(type === 'success') icon = '✅';
+    if(type === 'error') icon = '❌';
+
+    t.innerHTML = `<span>${icon}</span> <span>${msg}</span>`;
     wrap.appendChild(t);
+    
     requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3000);
 }
 
 document.getElementById('formOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeForm(); });
 document.getElementById('confirmOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeConfirm(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeForm(); closeConfirm(); } });
 
 // ════════════════════════════════════════════════════════════════
 // 10. XỬ LÝ MODAL THÔNG TIN USER
