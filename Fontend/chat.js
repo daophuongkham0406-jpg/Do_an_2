@@ -16,7 +16,7 @@ const chatbotHTML = `
         
         <ul class="chatbox">
             <li class="chat incoming">
-                <p>Chào bạn! Mình là AI HLV cá nhân. Hãy cho mình biết chiều cao, cân nặng, độ tuổi hoặc mục tiêu thể hình của bạn để mình hỗ trợ nhé!</p>
+                <p>Chào bạn! Mình là AI HLV cá nhân của PUMPD. Bạn muốn tìm bài tập nào, hay cần tư vấn lộ trình tập luyện hôm nay?</p>
             </li>
         </ul>
 
@@ -28,7 +28,7 @@ const chatbotHTML = `
 
         <div class="chat-input">
             <input type="text" placeholder="Nhập chỉ số hoặc câu hỏi..." required>
-            <span id="send-btn">
+            <span id="send-btn" style="cursor: pointer;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="#512da8"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path></svg>
             </span>
         </div>
@@ -54,11 +54,46 @@ closeBtn.addEventListener("click", () => document.body.classList.remove("show-ch
 const createChatLi = (message, className) => {
     const chatLi = document.createElement("li");
     chatLi.classList.add("chat", className);
-    chatLi.innerHTML = `<p>${message}</p>`;
+    // Bắt lỗi an toàn nếu message có chứa HTML độc hại
+    const safeText = document.createTextNode(message);
+    const pTag = document.createElement("p");
+    pTag.appendChild(safeText);
+    chatLi.appendChild(pTag);
     return chatLi;
 }
 
-// Hàm xử lý khi gửi tin nhắn hoặc bấm vào nút gợi ý
+// Hàm kết nối với Server Python và trả lời
+const generateResponse = async (incomingChatLi, userMessage) => {
+    const messageElement = incomingChatLi.querySelector("p");
+    
+    try {
+        // Gửi câu hỏi của người dùng tới Server Python đang chạy ở cổng 5000
+        const response = await fetch("http://127.0.0.1:5000/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: userMessage })
+        });
+
+        const data = await response.json();
+
+        // Kiểm tra xem Server có trả về lỗi không
+        if (response.ok) {
+            // Thay thế chữ "Đang suy nghĩ..." bằng câu trả lời của AI
+            messageElement.textContent = data.reply;
+        } else {
+            messageElement.textContent = `Lỗi: ${data.error || "Không thể lấy câu trả lời từ AI."}`;
+        }
+    } catch (error) {
+        messageElement.textContent = "Oops! Lỗi kết nối đến máy chủ AI. Hãy chắc chắn rằng bạn đang chạy file app.py!";
+    } finally {
+        // Đảm bảo khung chat luôn cuộn xuống dòng mới nhất
+        chatbox.scrollTo(0, chatbox.scrollHeight);
+    }
+}
+
+// Hàm xử lý chính khi người dùng gửi tin nhắn
 const handleChat = (message) => {
     if(!message) return;
     
@@ -66,29 +101,21 @@ const handleChat = (message) => {
     
     // 3.1 Hiển thị tin nhắn của người dùng lên màn hình
     chatbox.appendChild(createChatLi(message, "outgoing"));
-    chatbox.scrollTo(0, chatbox.scrollHeight); // Cuộn xuống cuối
+    chatbox.scrollTo(0, chatbox.scrollHeight); 
 
     // 3.2 Ẩn danh sách câu hỏi gợi ý khi đã bắt đầu chat
     const suggestionsContainer = document.querySelector('.chat-suggestions');
     if(suggestionsContainer) suggestionsContainer.style.display = 'none';
 
-    // 3.3 Giả lập AI suy nghĩ và trả lời (sau này sẽ thay bằng gọi API Node.js)
+    // 3.3 Hiển thị chữ "Đang suy nghĩ..." trước khi AI trả lời
     setTimeout(() => {
-        let aiResponse = "";
-        let lowerMsg = message.toLowerCase();
-        
-        if(lowerMsg.includes("clean bulk") || lowerMsg.includes("tăng") || lowerMsg.includes("cơ")) {
-            aiResponse = "Tuyệt vời! Để xây dựng lộ trình tăng cơ nạc (Clean Bulk), hệ thống đang phân tích các bài tập Compound phù hợp với bạn. Vui lòng đợi trong giây lát...";
-        } else if (lowerMsg.includes("ngực") || lowerMsg.includes("bài tập")) {
-            aiResponse = "Với bài tập ngực, bạn nên ưu tiên Bench Press, Incline Dumbbell Press và Cable Crossover. Bạn muốn tập trung vào phần ngực trên hay ngực dưới?";
-        } else {
-            aiResponse = "Hệ thống đang tiếp nhận chỉ số của bạn. Danh sách các bài tập sẽ được khởi tạo dựa trên dữ liệu Class Diagram trong hệ thống.";
-        }
-
-        // Hiển thị phản hồi của AI
-        chatbox.appendChild(createChatLi(aiResponse, "incoming"));
+        const incomingChatLi = createChatLi("HLV đang phân tích dữ liệu...", "incoming");
+        chatbox.appendChild(incomingChatLi);
         chatbox.scrollTo(0, chatbox.scrollHeight);
-    }, 800);
+        
+        // Gọi hàm kết nối với Python
+        generateResponse(incomingChatLi, message);
+    }, 400); // Đợi 0.4s để tạo hiệu ứng giống người thật
 }
 
 // Lắng nghe sự kiện click vào các nút gợi ý
