@@ -116,7 +116,7 @@ async function init() {
     }
 
     const adminNameEl = document.getElementById('adminName');
-    if (adminNameEl) adminNameEl.textContent = `Xin chao, ${user.fullName}`;
+    if (adminNameEl) adminNameEl.textContent = `${user.fullName}`;
 
     exercises = await apiGet();
 
