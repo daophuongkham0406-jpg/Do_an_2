@@ -1,19 +1,38 @@
-// ═══════════════════════════════════════════════════════
-// ██  API LAYER — KẾT NỐI TRỰC TIẾP MONGODB
-// ═══════════════════════════════════════════════════════
-const API_URL = 'http://127.0.0.1:5000/api/exercises'; 
+const API_URL = 'http://127.0.0.1:5000/api/exercises/'; 
 
 function getHeaders(){
     return {'Content-Type': 'application/json'};
 }
 
+async function checkResponse(response) {
+    if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        if (response.status === 404) {
+            throw new Error("404: Sai duong dan API. Kiem tra lai app.py!");
+        } else if (response.status === 500) {
+            throw new Error("500: Server Python bi loi code (Crash)!");
+        } else {
+            throw new Error(errData.message || `Loi khong xac dinh: ${response.status}`);
+        }
+    }
+    return response.json();
+}
+
+function showErrorToast(error, actionName) {
+    console.error(`[Loi ${actionName}]:`, error);
+    if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+        showToast("May chu dang tat! Hay chay 'python app.py'", 'error');
+    } else {
+        showToast(error.message, 'error');
+    }
+}
+
 async function apiGet() {
     try {
         const r = await fetch(API_URL, { headers: getHeaders() });
-        if (!r.ok) throw new Error(r.status);
-        return await r.json();
+        return await checkResponse(r);
     } catch(e) { 
-        showToast('Lỗi kết nối Backend. Hãy kiểm tra python app.py!', 'error'); 
+        showErrorToast(e, 'Tai danh sach'); 
         return []; 
     }
 }
@@ -21,57 +40,58 @@ async function apiGet() {
 async function apiPost(data) {
     try {
         const r = await fetch(API_URL, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) });
-        if (!r.ok) throw new Error(r.status);
-        return await r.json();
-    } catch(e) { showToast('Lỗi khi Thêm bài tập', 'error'); throw e; }
+        return await checkResponse(r);
+    } catch(e) { 
+        showErrorToast(e, 'Them bai tap'); 
+        throw e; 
+    }
 }
 
 async function apiPut(id, data) {
     try {
-        const r = await fetch(`${API_URL}/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify(data) });
-        if (!r.ok) throw new Error(r.status);
-        return await r.json();
-    } catch(e) { showToast('Lỗi khi Sửa bài tập', 'error'); throw e; }
+        const r = await fetch(`${API_URL}${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify(data) });
+        return await checkResponse(r);
+    } catch(e) { 
+        showErrorToast(e, 'Sua bai tap'); 
+        throw e;
+    }
 }
 
 async function apiDelete(id) {
     try {
-        const r = await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: getHeaders() });
-        if (!r.ok) throw new Error(r.status);
+        const r = await fetch(`${API_URL}${id}`, { method: 'DELETE', headers: getHeaders() });
+        if (!r.ok) await checkResponse(r);
         return true;
-    } catch(e) { showToast('Lỗi khi Xóa bài tập', 'error'); throw e; }
+    } catch(e) { 
+        showErrorToast(e, 'Xoa bai tap'); 
+        throw e;
+    }
 }
 
-// ═══════════════════════════════════════════════════════
-// ██  STATE & INIT (CÓ BẢO MẬT)
-// ═══════════════════════════════════════════════════════
 let exercises = [];
 let editingId = null;
 let deleteId = null;
 
 async function init() {
-    // 1. BẢO MẬT: KIỂM TRA QUYỀN ADMIN
     const userStr = localStorage.getItem('loggedInUser');
     if (!userStr) {
-        window.location.href = 'dangnhap.html'; // Chưa đăng nhập -> Đuổi
+        window.location.href = 'dangnhap.html';
         return;
     }
     const user = JSON.parse(userStr);
     if (user.role !== 'admin') {
-        alert('⛔ Bạn không có quyền truy cập trang Quản trị!');
-        window.location.href = 'index.html'; // User thường -> Đuổi
+        alert('Ban khong co quyen truy cap trang Quan tri!');
+        window.location.href = 'index.html';
         return;
     }
 
-    // Hiển thị tên Admin trên Topbar
     const adminNameEl = document.getElementById('adminName');
-    if(adminNameEl) adminNameEl.textContent = `Xin chào, ${user.fullName}`;
+    if(adminNameEl) adminNameEl.textContent = `Xin chao, ${user.fullName}`;
 
-    // 2. TẢI DỮ LIỆU
     exercises = await apiGet();
     
     document.getElementById('statusDot').className = 'status-dot connected';
-    document.getElementById('statusText').textContent = 'Đã kết nối MongoDB';
+    document.getElementById('statusText').textContent = 'Da ket noi MongoDB';
     
     renderStats();
     renderTable();
@@ -86,10 +106,7 @@ function renderStats(){
     document.getElementById('exCountBadge').textContent = t;
 }
 
-// ═══════════════════════════════════════════════════════
-// ██  TABLE RENDER
-// ═══════════════════════════════════════════════════════
-const diffLabel={B:'Người mới',I:'Trung bình',A:'Nâng cao'};
+const diffLabel={B:'Nguoi moi',I:'Trung binh',A:'Nang cao'};
 
 function renderTable(){
     const q=document.getElementById('adminSearch').value.toLowerCase();
@@ -102,7 +119,7 @@ function renderTable(){
     if(d) data=data.filter(e=>e.diff===d);
     
     const tbody=document.getElementById('tableBody');
-    if(!data.length){tbody.innerHTML='<div class="empty-row">Không tìm thấy bài tập nào.</div>';return;}
+    if(!data.length){tbody.innerHTML='<div class="empty-row">Khong tim thay bai tap nao.</div>';return;}
     
     tbody.innerHTML=data.map(e=>`
         <div class="tr" onclick="openEdit('${e.id}')">
@@ -113,19 +130,16 @@ function renderTable(){
             <div class="td equip">${e.equip}</div>
             <div class="td"><span class="badge badge-${e.diff}">${diffLabel[e.diff]||e.diff}</span></div>
             <div class="td actions" onclick="event.stopPropagation()">
-                <button class="icon-btn edit" onclick="openEdit('${e.id}')" title="Sửa">✏️</button>
-                <button class="icon-btn del" onclick="askDelete('${e.id}')" title="Xóa">🗑️</button>
+                <button class="icon-btn edit" onclick="openEdit('${e.id}')" title="Sua">✏️</button>
+                <button class="icon-btn del" onclick="askDelete('${e.id}')" title="Xoa">🗑️</button>
             </div>
         </div>
     `).join('');
 }
 
-// ═══════════════════════════════════════════════════════
-// ██  FORM — ADD / EDIT
-// ═══════════════════════════════════════════════════════
 function openAdd(){
     editingId=null;
-    document.getElementById('formTitle').textContent='THÊM BÀI TẬP MỚI';
+    document.getElementById('formTitle').textContent='THEM BAI TAP MOI';
     clearForm();
     addStep(); addStep(); 
     addTip(); 
@@ -137,7 +151,7 @@ function openEdit(id){
     const ex=exercises.find(e=>e.id===id);
     if(!ex) return;
     editingId=id;
-    document.getElementById('formTitle').textContent='SỬA BÀI TẬP';
+    document.getElementById('formTitle').textContent='SUA BAI TAP';
     clearForm();
     document.getElementById('f_name').value=ex.name||'';
     document.getElementById('f_muscle').value=ex.muscle||'';
@@ -167,13 +181,13 @@ function closeForm(){
     document.body.style.overflow='';
 }
 
-// ── Dynamic rows ──
 function addSec(val=''){
     const div=document.createElement('div');
     div.className='dynamic-item';
-    div.innerHTML=`<input type="text" placeholder="VD: Vai trước" value="${val}"><button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
+    div.innerHTML=`<input type="text" placeholder="VD: Vai truoc" value="${val}"><button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
     document.getElementById('secList').appendChild(div);
 }
+
 let stepCount=0;
 function addStep(t='',d=''){
     stepCount++;
@@ -183,81 +197,97 @@ function addStep(t='',d=''){
     div.style.cssText='display:grid;grid-template-columns:28px 1fr 1.5fr auto;gap:8px;align-items:start;';
     div.innerHTML=`
         <span style="font-family:'Bebas Neue';font-size:26px;color:var(--border2);line-height:1.4;">${String(n).padStart(2,'0')}</span>
-        <input type="text" placeholder="Tiêu đề bước…" value="${escHtml(t)}">
-        <textarea placeholder="Mô tả chi tiết bước…" rows="2">${escHtml(d)}</textarea>
+        <input type="text" placeholder="Tieu de buoc…" value="${escHtml(t)}">
+        <textarea placeholder="Mo ta chi tiet buoc…" rows="2">${escHtml(d)}</textarea>
         <button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
     document.getElementById('stepList').appendChild(div);
 }
+
 function addTip(val=''){
     const div=document.createElement('div');
     div.className='dynamic-item';
-    div.innerHTML=`<input type="text" placeholder="VD: ⚡ Không nhấc mông khỏi bench" value="${escHtml(val)}"><button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
+    div.innerHTML=`<input type="text" placeholder="Lu y..." value="${escHtml(val)}"><button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
     document.getElementById('tipList').appendChild(div);
 }
 
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-// ── SUBMIT ──
-async function submitForm(){
-    const name=document.getElementById('f_name').value.trim();
-    const muscle=document.getElementById('f_muscle').value;
-    const icon=document.getElementById('f_icon').value.trim();
-    const diff=document.getElementById('f_diff').value;
-    const equip=document.getElementById('f_equip').value;
-    if(!name||!muscle||!icon||!diff||!equip){
-        showToast('Vui lòng điền đầy đủ các trường bắt buộc (*)','error');return;
+async function submitForm() {
+    try {
+        const name = document.getElementById('f_name').value.trim();
+        const muscle = document.getElementById('f_muscle').value;
+        const icon = document.getElementById('f_icon').value.trim();
+        const diff = document.getElementById('f_diff').value;
+        const equip = document.getElementById('f_equip').value;
+
+        if (!name || !muscle || !icon || !diff || !equip) {
+            if (typeof showToast === 'function') {
+                showToast('Vui long dien day du cac truong bat buoc (*)', 'error');
+            } else {
+                alert('Vui long dien day du cac truong bat buoc (*)');
+            }
+            return; 
+        }
+
+        const sec = [...document.querySelectorAll('#secList .dynamic-item input')].map(i => i.value.trim()).filter(Boolean);
+        const steps = [...document.querySelectorAll('#stepList .dynamic-item')].map(row => {
+            const inputs = row.querySelectorAll('input,textarea');
+            return { t: (inputs[0] || {}).value || '', d: (inputs[1] || {}).value || '' };
+        }).filter(s => s.t || s.d);
+        const tips = [...document.querySelectorAll('#tipList .dynamic-item input')].map(i => i.value.trim()).filter(Boolean);
+        
+        const payload = {
+            name, muscle, icon, diff, equip,
+            sets: document.getElementById('f_sets') ? document.getElementById('f_sets').value.trim() : '',
+            reps: document.getElementById('f_reps') ? document.getElementById('f_reps').value.trim() : '',
+            rest: document.getElementById('f_rest') ? document.getElementById('f_rest').value.trim() : '',
+            sec, steps, tips
+        };
+        
+        if (editingId) {
+            const updated = await apiPut(editingId, payload);
+            exercises = exercises.map(e => e.id === editingId ? { ...e, ...updated } : e);
+            showToast('Cap nhat thanh cong', 'success');
+        } else {
+            const created = await apiPost(payload);
+            exercises.push(created);
+            showToast('Them moi thanh cong', 'success');
+        }
+
+        closeForm();
+        renderStats();
+        renderTable();
+
+    } catch (error) {
+        console.error("Loi:", error);
+        alert("Da xay ra loi khi luu! Vui long xem Console (F12).");
     }
-    const sec=[...document.querySelectorAll('#secList .dynamic-item input')].map(i=>i.value.trim()).filter(Boolean);
-    const steps=[...document.querySelectorAll('#stepList .dynamic-item')].map(row=>{
-        const inputs=row.querySelectorAll('input,textarea');
-        return{t:(inputs[0]||{}).value||'',d:(inputs[1]||{}).value||''};
-    }).filter(s=>s.t||s.d);
-    const tips=[...document.querySelectorAll('#tipList .dynamic-item input')].map(i=>i.value.trim()).filter(Boolean);
-    
-    const payload={name,muscle,icon,diff,equip,sets:document.getElementById('f_sets').value.trim(),reps:document.getElementById('f_reps').value.trim(),rest:document.getElementById('f_rest').value.trim(),sec,steps,tips};
-    
-    if(editingId){
-        const updated=await apiPut(editingId,payload);
-        exercises=exercises.map(e=>e.id===editingId?{...e,...updated}:e);
-        showToast('✅ Đã cập nhật bài tập','success');
-    }else{
-        const created=await apiPost(payload);
-        exercises.push(created);
-        showToast('✅ Đã thêm bài tập mới','success');
-    }
-    closeForm();
-    renderStats();
-    renderTable();
 }
 
-// ═══════════════════════════════════════════════════════
-// ██  DELETE
-// ═══════════════════════════════════════════════════════
 function askDelete(id){
     deleteId=id;
     const ex=exercises.find(e=>e.id===id);
-    document.getElementById('confirmName').textContent=ex?`"${ex.name}"`:'bài tập này';
+    document.getElementById('confirmName').textContent=ex?`"${ex.name}"`:'bai tap nay';
     document.getElementById('confirmOverlay').classList.add('open');
     document.body.style.overflow='hidden';
 }
+
 function closeConfirm(){
     document.getElementById('confirmOverlay').classList.remove('open');
     document.body.style.overflow='';
     deleteId=null;
 }
+
 async function confirmDelete(){
     if(!deleteId) return;
     await apiDelete(deleteId);
     exercises=exercises.filter(e=>e.id!==deleteId);
-    showToast('🗑️ Đã xóa bài tập','info');
+    showToast('Da xoa bai tap', 'info');
     closeConfirm();
     renderStats();
     renderTable();
 }
 
-// ═══════════════════════════════════════════════════════
-// ██  TOAST & EVENTS
-// ═══════════════════════════════════════════════════════
 function showToast(msg,type='info'){
     const wrap=document.getElementById('toastWrap');
     const t=document.createElement('div');
@@ -272,5 +302,4 @@ document.getElementById('formOverlay').addEventListener('click',e=>{if(e.target=
 document.getElementById('confirmOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeConfirm();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeForm();closeConfirm();}});
 
-// Khởi chạy khi load trang
 init();
