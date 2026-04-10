@@ -543,23 +543,92 @@ textarea{resize:vertical;min-height:80px;line-height:1.6;}
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
+// ═══════════════════════════════════════════════════════
+// ██  API LAYER — KẾT NỐI TRỰC TIẾP MONGODB
+// ═══════════════════════════════════════════════════════
 
+// Gắn cứng đường dẫn tới Backend Python của bạn
+const API_URL = 'http://127.0.0.1:5000/api/exercises'; 
+
+function getHeaders(){
+    return {'Content-Type': 'application/json'};
+}
+
+async function apiGet() {
+    try {
+        const r = await fetch(API_URL, { headers: getHeaders() });
+        if (!r.ok) throw new Error(r.status);
+        return await r.json();
+    } catch(e) { 
+        showToast('Lỗi kết nối Backend. Hãy kiểm tra python app.py!', 'error'); 
+        return []; 
+    }
+}
+
+async function apiPost(data) {
+    try {
+        const r = await fetch(API_URL, { 
+            method: 'POST', 
+            headers: getHeaders(), 
+            body: JSON.stringify(data) 
+        });
+        if (!r.ok) throw new Error(r.status);
+        return await r.json();
+    } catch(e) { 
+        showToast('Lỗi khi Thêm bài tập', 'error'); 
+        throw e;
+    }
+}
+
+async function apiPut(id, data) {
+    try {
+        const r = await fetch(`${API_URL}/${id}`, { 
+            method: 'PUT', 
+            headers: getHeaders(), 
+            body: JSON.stringify(data) 
+        });
+        if (!r.ok) throw new Error(r.status);
+        return await r.json();
+    } catch(e) { 
+        showToast('Lỗi khi Sửa bài tập', 'error'); 
+        throw e;
+    }
+}
+
+async function apiDelete(id) {
+    try {
+        const r = await fetch(`${API_URL}/${id}`, { 
+            method: 'DELETE', 
+            headers: getHeaders() 
+        });
+        if (!r.ok) throw new Error(r.status);
+        return true;
+    } catch(e) { 
+        showToast('Lỗi khi Xóa bài tập', 'error'); 
+        throw e;
+    }
+}
+// XÓA HÀM init() CŨ VÀ THAY BẰNG HÀM init() NÀY
+let exercises = [];
+let editingId = null;
+let deleteId = null;
+
+async function init() {
+    // Gọi API lấy dữ liệu từ MongoDB ngay khi tải trang
+    exercises = await apiGet();
+    
+    // Cập nhật giao diện
+    const dot = document.getElementById('statusDot');
+    const txt = document.getElementById('statusText');
+    dot.className = 'status-dot connected';
+    txt.textContent = 'Đã kết nối MongoDB';
+    
+    renderStats();
+    renderTable();
+}
 // ═══════════════════════════════════════════════════════
 // ██  STATE & INIT
 // ═══════════════════════════════════════════════════════
-
-let exercises=[];
-let editingId=null;
-let deleteId=null;
-
-async function init(){
-  exercises = await apiGet();
-  updateStatus();
-  renderStats();
-  renderTable();
-  document.getElementById('apiUrl').value=API_URL;
-  document.getElementById('apiKey').value=API_KEY;
-}
 
 function updateStatus(){
   const dot=document.getElementById('statusDot');
