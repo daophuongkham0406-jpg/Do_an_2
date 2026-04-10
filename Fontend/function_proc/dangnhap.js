@@ -40,10 +40,20 @@ async function handleRegister(e) {
         // Xử lý dữ liệu trả về từ backend
         const result = await response.json();
 
-        if (response.ok) { // Status 200 -> 299
-            alert("🎉 Đăng ký thành công và đã lưu vào Database!");
-            e.target.reset(); 
-            container.classList.remove('active'); 
+        if (response.ok) { 
+            alert("🎉 Đăng nhập thành công! Đang chuyển hướng...");
+            
+            // Lưu thông tin user vào bộ nhớ
+            localStorage.setItem("loggedInUser", JSON.stringify(result.user));
+            if(result.token) localStorage.setItem('token', result.token);
+            
+            // LẼ TẺ: KIỂM TRA ROLE ĐỂ CHUYỂN TRANG
+            if (result.user.role === 'admin') {
+                window.location.href = "admin.html"; // Sếp về trang quản lý
+            } else {
+                window.location.href = "index.html"; // Khách về trang chủ
+            }
+            
         } else {
             // TÁCH RIÊNG CÁC LỖI TỪ DATABASE / BACKEND
             if (response.status === 400 || response.status === 409) {

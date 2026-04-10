@@ -28,6 +28,7 @@ def register():
         "email": data['email'],
         "passwordHash": hashed_password.decode('utf-8'),
         "isPremium": False,
+        "role": "user",
         "createdAt": datetime.now()
     }
 
@@ -73,7 +74,8 @@ def login():
             "id": str(user['_id']),
             "fullName": user['fullName'],
             "username": user['username'],
-            "isPremium": user['isPremium']
+            "isPremium": user['isPremium'],
+            "role": user.get('role', 'user')
         }
 
         return jsonify({
