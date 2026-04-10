@@ -28,7 +28,7 @@ def register():
         "email": data['email'],
         "passwordHash": hashed_password.decode('utf-8'),
         "isPremium": False,
-        "role": "user",
+        "role": 'user',
         "createdAt": datetime.now()
     }
 
