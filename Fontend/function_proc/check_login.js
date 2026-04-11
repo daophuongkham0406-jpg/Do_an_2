@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .toast-wrap { position: fixed; bottom: 30px; right: 30px; z-index: 99999; display: flex; flex-direction: column; gap: 12px; }
             .toast { background-color: #1d1e25; color: #ffffff; border-left: 4px solid #7241ff; padding: 16px 24px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 12px; transform: translateX(120%); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
             .toast.show { transform: translateX(0); opacity: 1; }
-            .toast.success { border-left-color: #e6ff00; }
+            .toast.success { border-left-color: var(--accent); }
             .toast.error { border-left-color: #ff4d4d; }
         `;
         document.head.appendChild(style);
@@ -51,12 +51,11 @@ document.addEventListener("DOMContentLoaded", () => {
         userMenu.style.alignItems = 'center';
         userMenu.style.gap = '15px';
 
-        // Lấy fullName, thiết kế nút đăng xuất màu Vàng Neon
         userMenu.innerHTML = `
             <a href="Tcn.html" id="profile-link" style="color: #ffffff; font-weight: 600; font-size: 14px; text-decoration: none; cursor: pointer; transition: 0.3s;">
-                <span style="color:#e6ff00">${user.fullName}</span>
+                <span style="color:var(--accent)">${user.fullName}</span>
             </a>
-            <button id="logout-btn" style="background: transparent; border: 1px solid #e6ff00; color: #e6ff00; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+            <button id="logout-btn" style="background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
                 Đăng xuất
             </button>
         `;
@@ -67,12 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
         // Hiệu ứng hover cho nút Đăng xuất
         const logoutBtn = document.getElementById('logout-btn');
         logoutBtn.addEventListener('mouseover', () => {
-            logoutBtn.style.background = '#e6ff00';
+            logoutBtn.style.background = 'var(--accent)';
             logoutBtn.style.color = '#000';
         });
         logoutBtn.addEventListener('mouseout', () => {
             logoutBtn.style.background = 'transparent';
-            logoutBtn.style.color = '#e6ff00';
+            logoutBtn.style.color = 'var(--accent)';
         });
 
         // BẮT SỰ KIỆN ĐĂNG XUẤT (Thay confirm bằng thông báo mượt mà)

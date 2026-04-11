@@ -9,20 +9,7 @@
     <link rel="stylesheet" href="chat.css">
 
     <style>
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #111111;
-            --bg-card: #161616;
-            --bg-card-hover: #1e1e1e;
-            --accent: #e8ff47;
-            --accent-dim: #b8cc35;
-            --text-primary: #f0f0f0;
-            --text-secondary: #888;
-            --text-muted: #555;
-            --border: #2a2a2a;
-            --border-hover: #444;
-        }
-
+        
         body { background-color: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', sans-serif; margin: 0; }
 
         /* ── LAYOUT ── */
@@ -864,5 +851,24 @@
 
 <script src="function_proc/check_login.js"></script>
 <script src="chat.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    let path = window.location.pathname;
+    let page = path.split("/").pop();
+
+    if (page === "" || page === "TrangChu.html") {
+        page = "index.html";
+    }
+
+    const menuLinks = document.querySelectorAll(".nav-menu ul li a");
+
+    menuLinks.forEach(link => {
+        const linkHref = link.getAttribute("href");
+        if (linkHref === page) {
+            link.classList.add("active-menu");
+        }
+    });
+});
+</script>
 </body>
 </html>

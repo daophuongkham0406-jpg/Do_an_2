@@ -577,7 +577,26 @@
     padding: 4px 10px;
     border-radius: 4px;
   }
+  
 </style>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    let path = window.location.pathname;
+    let page = path.split("/").pop();
 
+    if (page === "" || page === "TrangChu.html") {
+        page = "index.html";
+    }
+
+    const menuLinks = document.querySelectorAll(".nav-menu ul li a");
+
+    menuLinks.forEach(link => {
+        const linkHref = link.getAttribute("href");
+        if (linkHref === page) {
+            link.classList.add("active-menu");
+        }
+    });
+});
+</script>
 </body>
 </html>
