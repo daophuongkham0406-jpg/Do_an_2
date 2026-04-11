@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
+    // GỌI API LẤY LỘ TRÌNH ĐANG THỰC HIỆN CỦA USER
+    fetchActivePlan(userId);
+
+    // GỌI API LẤY THÔNG TIN CÁ NHÂN VÀ LỊCH SỬ
     try {
         const response = await fetch(`http://127.0.0.1:5000/api/profile/get/${userId}`);
         const data = await response.json();
@@ -50,6 +54,94 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById('profileName').textContent = "LỖI KẾT NỐI SERVER";
     }
 });
+
+// ============================================================================
+// 1. QUẢN LÝ LỘ TRÌNH LUYỆN TẬP (AI PLAN) - MỚI THÊM
+// ============================================================================
+
+// Hàm gọi API lấy Plan đang active
+async function fetchActivePlan(userId) {
+    const wrap = document.getElementById('activePlanWrap');
+    
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/plans/active/${userId}`);
+        
+        if (!response.ok) {
+            wrap.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;background:var(--bg3);border-radius:12px;">Bạn chưa có lộ trình nào.<br>Hãy sang trang Lộ Trình để tạo ngay!</div>`;
+            return;
+        }
+
+        const plan = await response.json();
+        renderPlanUI(plan);
+
+    } catch (error) {
+        console.error("Lỗi tải lộ trình:", error);
+        wrap.innerHTML = `<div style="padding:20px;text-align:center;color:#ff4d4d;font-size:13px;">Lỗi kết nối máy chủ khi tải lộ trình.</div>`;
+    }
+}
+
+// Vẽ giao diện Check-list ngày tập
+function renderPlanUI(plan) {
+    const wrap = document.getElementById('activePlanWrap');
+    
+    // Đổi tên lộ trình trên tiêu đề Card HTML (Tìm ngược lên thẻ cha)
+    const cardTitle = wrap.parentElement.querySelector('.card-title');
+    if(cardTitle) cardTitle.textContent = plan.plan_name || "Lộ trình AI";
+
+    // Tạo danh sách các ngày tập
+    let daysHtml = '';
+    const progress = plan.daily_progress || [];
+
+    progress.forEach((dayData, index) => {
+        const isDone = dayData.completed ? 'checked' : '';
+        const textStyle = dayData.completed ? 'text-decoration: line-through; opacity: 0.5;' : '';
+        const dayLabel = dayData.day_name || `Ngày ${index + 1}`;
+
+        daysHtml += `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding: 12px 15px; border-bottom: 1px solid var(--border); background: var(--bg-input); border-radius: 8px; margin-bottom: 8px; transition: 0.3s;">
+                <div style="display:flex; align-items:center; gap: 12px;">
+                    <input type="checkbox" style="width: 18px; height: 18px; accent-color: #e8ff47; cursor:pointer;" 
+                           ${isDone} 
+                           onchange="updatePlanDay('${plan.id}', ${index}, this.checked)">
+                    <div style="font-size: 14px; font-weight: 600; color: var(--text-main); ${textStyle}">${dayLabel}</div>
+                </div>
+                <button style="background:transparent; border:1px solid var(--border); color:var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor:pointer; transition: 0.2s;" onmouseover="this.style.color='#e8ff47'; this.style.borderColor='#e8ff47'" onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border)'">Xem bài</button>
+            </div>
+        `;
+    });
+
+    wrap.innerHTML = daysHtml;
+}
+
+// Cập nhật lên CSDL khi người dùng Tick/Bỏ Tick
+async function updatePlanDay(planId, dayIndex, isCompleted) {
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/api/plans/update_progress/${planId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ day_index: dayIndex, is_completed: isCompleted })
+        });
+
+        if (response.ok) {
+            toast(isCompleted ? "✅ Đã hoàn thành ngày tập!" : "⏳ Đã hủy hoàn thành", "ok");
+            // Render lại để giao diện áp dụng dòng kẻ ngang (line-through)
+            const userStr = localStorage.getItem('loggedInUser');
+            if (userStr) {
+                const localUser = JSON.parse(userStr);
+                fetchActivePlan(localUser.id || localUser._id);
+            }
+        } else {
+            toast("❌ Lỗi khi lưu tiến độ!", "err");
+        }
+    } catch (error) {
+        console.error("Lỗi cập nhật tiến độ:", error);
+        toast("🔌 Lỗi mạng khi cập nhật tiến độ!", "err");
+    }
+}
+
+// ============================================================================
+// 2. CÁC HÀM XỬ LÝ HỒ SƠ & BIỂU ĐỒ (CŨ GIỮ NGUYÊN)
+// ============================================================================
 
 function calcBMI(w, h) {
     if (!w || !h) return 0;
@@ -126,7 +218,7 @@ async function saveProfile() {
             localUser.fullName = name;
             localStorage.setItem('loggedInUser', JSON.stringify(localUser));
             const profileLink = document.getElementById('profile-link');
-            if(profileLink) profileLink.innerHTML = `👋 Xin chào, ${name}`;
+            if(profileLink) profileLink.innerHTML = `<span style="color:#e6ff00">${name}</span>`;
 
             renderProfile();
             closeEdit();

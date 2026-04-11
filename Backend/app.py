@@ -9,6 +9,7 @@ from dangnhap import auth_bp
 from canhan import profile_bp
 from baitap import baitap_bp
 from qluser import user_bp
+from quanly_plan import plan_bp
 
 # 1. Tải cấu hình từ file .env
 load_dotenv()
@@ -30,7 +31,8 @@ app.register_blueprint(profile_bp, url_prefix='/api/profile')
 app.register_blueprint(baitap_bp, url_prefix='/api/exercises')
 # Tất cả đường dẫn trong user_bp sẽ bắt đầu bằng /api/users
 app.register_blueprint(user_bp, url_prefix='/api/users')
-
+# Thêm dòng này ở chỗ đăng ký Blueprint:
+app.register_blueprint(plan_bp, url_prefix='/api/plans')
 
 # 3. Kết nối MongoDB
 try:
