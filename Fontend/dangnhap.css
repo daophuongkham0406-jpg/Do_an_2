@@ -1,230 +1,416 @@
 /* --- BIẾN MÀU SẮC THEO PHONG CÁCH PUMPD DARK MODE --- */
 :root {
-    --bg-main: #13141a;       /* Nền trang (Đen sâu) */
-    --bg-card: #1d1e25;       /* Nền Form (Xám đen) */
-    --bg-input: #262831;      /* Nền Input (Xám sáng hơn) */
-    --text-main: #ffffff;     /* Chữ chính (Trắng) */
-    --text-muted: #8e919f;    /* Chữ phụ (Xám) */
-    --accent-yellow: #e6ff00; /* Vàng Neon (Nhấn mạnh) */
-    --accent-yellow-glow: rgba(230, 255, 0, 0.15);
-    --accent-purple: #7241ff; /* Tím PUMPD */
-    --border: #2c2f3a;        /* Viền */
+  --bg-main: #13141a; /* Nền trang (Đen sâu) */
+  --bg-card: #1d1e25; /* Nền Form (Xám đen) */
+  --bg-input: #262831; /* Nền Input (Xám sáng hơn) */
+  --text-main: #ffffff; /* Chữ chính (Trắng) */
+  --text-muted: #8e919f; /* Chữ phụ (Xám) */
+  --accent-yellow: #e6ff00; /* Vàng Neon (Nhấn mạnh) */
+  --accent-yellow-glow: rgba(230, 255, 0, 0.15);
+  --accent-purple: #7241ff; /* Tím PUMPD */
+  --border: #2c2f3a; /* Viền */
 }
 
-* { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+* {
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
 
 body {
-    /* Nền trang giống hệt trang bài tập */
-    background-color: var(--bg-main);
-    background-image: 
-        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 50px 50px;
-    color: var(--text-main);
-    display: flex; align-items: center; justify-content: center;
-    height: 100vh; margin: 0;
+  /* Nền trang giống hệt trang bài tập */
+  background-color: var(--bg-main);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
 }
 
 /* Khung bọc chính */
 .container {
-    background-color: var(--bg-card);
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    position: relative;
-    overflow: hidden;
-    width: 800px; max-width: 95%; min-height: 550px;
+  background-color: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+  width: 800px;
+  max-width: 95%;
+  min-height: 550px;
 }
 
 .form-container {
-    position: absolute; top: 0; height: 100%;
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Form mặc định */
-.sign-in { left: 0; width: 50%; z-index: 2; }
-.sign-up { left: 0; width: 50%; opacity: 0; z-index: 1; }
+.sign-in {
+  left: 0;
+  width: 50%;
+  z-index: 2;
+}
+.sign-up {
+  left: 0;
+  width: 50%;
+  opacity: 0;
+  z-index: 1;
+}
 
 /* Khi nhấn nút chuyển form */
-.container.active .sign-in { transform: translateX(100%); opacity: 0; }
-.container.active .sign-up { transform: translateX(100%); opacity: 1; z-index: 5; }
+.container.active .sign-in {
+  transform: translateX(100%);
+  opacity: 0;
+}
+.container.active .sign-up {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+}
 
 /* --- PHẦN OVERLAY (CHUYỂN FORM) --- */
 .toggle-container {
-    position: absolute; top: 0; left: 50%; width: 50%; height: 100%;
-    overflow: hidden; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
 }
 
 .container.active .toggle-container {
-    transform: translateX(-100%);
+  transform: translateX(-100%);
 }
 
 .toggle {
-    /* Nền Panel chứa nút Đăng nhập/Đăng ký */
-    background: radial-gradient(circle at center, #232530 0%, var(--bg-main) 100%);
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    color: var(--text-main); position: relative; left: -100%;
-    height: 100%; width: 200%;
-    transform: translateX(0); transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Nền Panel chứa nút Đăng nhập/Đăng ký */
+  background: radial-gradient(
+    circle at center,
+    #232530 0%,
+    var(--bg-main) 100%
+  );
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  color: var(--text-main);
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.container.active .toggle { transform: translateX(50%); }
+.container.active .toggle {
+  transform: translateX(50%);
+}
 
 .toggle-panel {
-    position: absolute; width: 50%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column; padding: 0 40px; text-align: center;
-    top: 0; transition: all 0.6s ease-in-out;
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  text-align: center;
+  top: 0;
+  transition: all 0.6s ease-in-out;
 }
 
-.toggle-panel h1 { font-size: 28px; font-weight: 800; color: var(--accent-yellow); margin-bottom: 10px;}
-.toggle-panel p { color: var(--text-muted); font-size: 14px; line-height: 1.5;}
+.toggle-panel h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent-yellow);
+  margin-bottom: 10px;
+}
+.toggle-panel p {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
 
-.toggle-left { transform: translateX(-200%); }
-.container.active .toggle-left { transform: translateX(0); }
+.toggle-left {
+  transform: translateX(-200%);
+}
+.container.active .toggle-left {
+  transform: translateX(0);
+}
 
-.toggle-right { right: 0; transform: translateX(0); }
-.container.active .toggle-right { transform: translateX(200%); }
+.toggle-right {
+  right: 0;
+  transform: translateX(0);
+}
+.container.active .toggle-right {
+  transform: translateX(200%);
+}
 
 /* --- FORM ELEMENTS --- */
 form {
-    background-color: var(--bg-card);
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column; padding: 0 40px; height: 100%;
-    position: relative;
+  background-color: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 40px;
+  height: 100%;
+  position: relative;
 }
 
-form h1 { font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-main); }
-form p.subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+form h1 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 5px;
+  color: var(--text-main);
+}
+form p.subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
 
 input {
-    background-color: var(--bg-input); 
-    color: var(--text-main);
-    border: 1px solid var(--border); 
-    margin: 6px 0;
-    padding: 12px 15px; font-size: 14px; border-radius: 8px;
-    width: 100%; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: var(--bg-input);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+  margin: 6px 0;
+  padding: 12px 15px;
+  font-size: 14px;
+  border-radius: 8px;
+  width: 100%;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
-input::placeholder { color: #66697a; }
-input:focus { 
-    border-color: var(--accent-purple); 
-    box-shadow: 0 0 0 2px rgba(114, 65, 255, 0.2); 
-    background-color: #2a2c36;
+input::placeholder {
+  color: #66697a;
+}
+input:focus {
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 0 2px rgba(114, 65, 255, 0.2);
+  background-color: #2a2c36;
 }
 
 /* --- PASSWORD TOGGLE --- */
-.password-wrap { position: relative; width: 100%; margin: 6px 0; }
-.password-wrap input { margin: 0; padding-right: 40px; }
-.eye-btn {
-    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-    background: none; border: none; cursor: pointer; color: var(--text-muted); 
-    padding: 0; display: flex; align-items: center;
+.password-wrap {
+  position: relative;
+  width: 100%;
+  margin: 6px 0;
 }
-.eye-btn:hover { color: var(--accent-yellow); }
+.password-wrap input {
+  margin: 0;
+  padding-right: 40px;
+}
+.eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.eye-btn:hover {
+  color: var(--accent-yellow);
+}
 
 /* --- FORM ROW (2 cột) --- */
-.form-row { display: flex; gap: 10px; width: 100%; }
-.form-row input { margin: 6px 0; }
+.form-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+.form-row input {
+  margin: 6px 0;
+}
 
 /* --- GENDER RADIO --- */
-.gender-group { display: flex; gap: 8px; width: 100%; margin: 6px 0; }
-.gender-option { flex: 1; position: relative; }
-.gender-option input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+.gender-group {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin: 6px 0;
+}
+.gender-option {
+  flex: 1;
+  position: relative;
+}
+.gender-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 .gender-option label {
-    display: flex; align-items: center; justify-content: center;
-    padding: 10px 4px;
-    background-color: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 13px; font-weight: 600;
-    color: var(--text-muted); cursor: pointer;
-    transition: all 0.2s; white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 .gender-option input[type="radio"]:checked + label {
-    background-color: var(--accent-yellow-glow);
-    border-color: var(--accent-yellow);
-    color: var(--accent-yellow);
+  background-color: var(--accent-yellow-glow);
+  border-color: var(--accent-yellow);
+  color: var(--accent-yellow);
 }
-.gender-option label:hover { border-color: #555866; color: var(--text-main); }
+.gender-option label:hover {
+  border-color: #555866;
+  color: var(--text-main);
+}
 
 /* --- BUTTONS --- */
 button {
-    background-color: var(--accent-purple); color: #fff; font-size: 14px;
-    padding: 12px 45px; border: none;
-    border-radius: 8px; font-weight: 700;
-    margin-top: 15px; cursor: pointer; width: 100%;
-    transition: all 0.2s;
+  background-color: var(--accent-purple);
+  color: #fff;
+  font-size: 14px;
+  padding: 12px 45px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  margin-top: 15px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
 }
-button:hover { background-color: #8c62ff; transform: translateY(-1px); box-shadow: 0 4px 15px rgba(114, 65, 255, 0.4); }
+button:hover {
+  background-color: #8c62ff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(114, 65, 255, 0.4);
+}
 
 button.hidden {
-    background-color: transparent;
-    border: 1px solid var(--accent-yellow);
-    color: var(--accent-yellow);
-    width: auto; margin-top: 20px;
+  background-color: transparent;
+  border: 1px solid var(--accent-yellow);
+  color: var(--accent-yellow);
+  width: auto;
+  margin-top: 20px;
 }
-button.hidden:hover { 
-    background-color: var(--accent-yellow); 
-    color: #000; 
-    box-shadow: 0 4px 15px var(--accent-yellow-glow); 
+button.hidden:hover {
+  background-color: var(--accent-yellow);
+  color: #000;
+  box-shadow: 0 4px 15px var(--accent-yellow-glow);
 }
 
 /* --- QUÊN MẬT KHẨU & MAGIC LINK --- */
-.forgot { width: 100%; text-align: right; margin-top: 5px; }
-.forgot a { font-size: 12px; color: var(--accent-yellow); text-decoration: none; font-weight: 500;}
-.forgot a:hover { text-decoration: underline; }
+.forgot {
+  width: 100%;
+  text-align: right;
+  margin-top: 5px;
+}
+.forgot a {
+  font-size: 12px;
+  color: var(--accent-yellow);
+  text-decoration: none;
+  font-weight: 500;
+}
+.forgot a:hover {
+  text-decoration: underline;
+}
 
 .magic-link {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; color: var(--text-muted); margin-top: 15px;
-    background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
-    width: 100%; text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 15px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  width: 100%;
+  text-align: left;
 }
-.magic-link svg { stroke: var(--accent-purple); }
-.magic-link a { color: var(--accent-purple); font-weight: 700; text-decoration: none; }
-.magic-link a:hover { text-decoration: underline; color: #8c62ff;}
+.magic-link svg {
+  stroke: var(--accent-purple);
+}
+.magic-link a {
+  color: var(--accent-purple);
+  font-weight: 700;
+  text-decoration: none;
+}
+.magic-link a:hover {
+  text-decoration: underline;
+  color: #8c62ff;
+}
 
 /* --- NÚT QUAY LẠI --- */
 .back-btn-inner {
-    position: absolute; top: 25px; left: 30px;
-    display: flex; align-items: center; gap: 5px;
-    text-decoration: none; color: var(--text-muted);
-    font-size: 13px; font-weight: 600; transition: 0.2s; z-index: 10;
+  position: absolute;
+  top: 25px;
+  left: 30px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  transition: 0.2s;
+  z-index: 10;
 }
-.back-btn-inner:hover { transform: translateX(-3px); color: var(--accent-yellow); }
+.back-btn-inner:hover {
+  transform: translateX(-3px);
+  color: var(--accent-yellow);
+}
 /* --- HIỆU ỨNG THÔNG BÁO (TOAST) --- */
 .toast-wrap {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .toast {
-    background-color: var(--bg-card, #1d1e25);
-    color: var(--text-main, #ffffff);
-    border-left: 4px solid var(--accent-purple, #7241ff);
-    padding: 16px 24px;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transform: translateX(120%);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Hiệu ứng nảy nhẹ */
+  background-color: var(--bg-card, #1d1e25);
+  color: var(--text-main, #ffffff);
+  border-left: 4px solid var(--accent-purple, #7241ff);
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Hiệu ứng nảy nhẹ */
 }
 
 .toast.show {
-    transform: translateX(0);
-    opacity: 1;
+  transform: translateX(0);
+  opacity: 1;
 }
 
-.toast.success { border-left-color: var(--accent-yellow, #e6ff00); }
-.toast.error { border-left-color: #ff4d4d; }
+.toast.success {
+  border-left-color: var(--accent-yellow, #e6ff00);
+}
+.toast.error {
+  border-left-color: #ff4d4d;
+}

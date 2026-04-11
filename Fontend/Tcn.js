@@ -3,46 +3,48 @@
 // Hiển thị lộ trình đang active lên trang hồ sơ cá nhân
 // ═══════════════════════════════════════════════════════
 
-const AI_SERVER   = 'http://localhost:5001';
-const CURRENT_UID = localStorage.getItem('userId') || 'guest';
+const AI_SERVER = "http://localhost:5001";
+const CURRENT_UID = localStorage.getItem("userId") || "guest";
 
 // ── Gọi khi trang load xong ──
-document.addEventListener('DOMContentLoaded', () => {
-    loadActivePlan();
-    loadAllPlansHistory();
+document.addEventListener("DOMContentLoaded", () => {
+  loadActivePlan();
+  loadAllPlansHistory();
 });
 
 // ════════════════════════════════════════
 // 1. LỘ TRÌNH ĐANG ACTIVE (hiển thị tiến độ)
 // ════════════════════════════════════════
 async function loadActivePlan() {
-    try {
-        const res  = await fetch(`${AI_SERVER}/api/get-active-plan?userId=${CURRENT_UID}`);
-        const data = await res.json();
+  try {
+    const res = await fetch(
+      `${AI_SERVER}/api/get-active-plan?userId=${CURRENT_UID}`,
+    );
+    const data = await res.json();
 
-        const wrap = document.getElementById('activePlanWrap');
-        if (!wrap) return;
+    const wrap = document.getElementById("activePlanWrap");
+    if (!wrap) return;
 
-        if (!data.plan) {
-            wrap.innerHTML = `
+    if (!data.plan) {
+      wrap.innerHTML = `
                 <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">
                     Chưa có lộ trình nào đang hoạt động.
                     <br><a href="lotrinh.html" style="color:var(--accent);font-weight:700;margin-top:8px;display:inline-block;">→ Tạo lộ trình ngay</a>
                 </div>`;
-            return;
-        }
+      return;
+    }
 
-        const plan      = data.plan;
-        const done      = plan.days_done || 0;
-        const total     = plan.duration_days || 7;
-        const pct       = Math.round(done / total * 100);
-        const dailyProg = plan.daily_progress || [];
+    const plan = data.plan;
+    const done = plan.days_done || 0;
+    const total = plan.duration_days || 7;
+    const pct = Math.round((done / total) * 100);
+    const dailyProg = plan.daily_progress || [];
 
-        // Header + progress bar
-        wrap.innerHTML = `
+    // Header + progress bar
+    wrap.innerHTML = `
             <div class="active-plan-header">
                 <div>
-                    <div class="active-plan-name">${plan.plan_name || 'Lộ trình'}</div>
+                    <div class="active-plan-name">${plan.plan_name || "Lộ trình"}</div>
                     <div class="active-plan-meta">${plan.goal} · ${plan.level} · Tạo ngày ${plan.created_at}</div>
                 </div>
                 <a href="lotrinh.html" class="btn-view-plan">Xem chi tiết →</a>
@@ -60,70 +62,72 @@ async function loadActivePlan() {
 
             <div class="active-days-grid" id="activeDaysGrid"></div>`;
 
-        // Render mini day-dots
-        const grid = document.getElementById('activeDaysGrid');
-        dailyProg.forEach(day => {
-            const dot = document.createElement('div');
-            dot.className = `day-dot ${day.day_done ? 'done' : (day.is_rest ? 'rest' : 'pending')}`;
-            dot.title     = `${day.day_name} — ${day.focus || 'Nghỉ'}`;
-            dot.innerHTML = day.day_done ? '✓' : (day.is_rest ? '💤' : day.day_number);
-            grid.appendChild(dot);
-        });
-
-    } catch(e) {
-        console.warn('Không tải được lộ trình active:', e);
-    }
+    // Render mini day-dots
+    const grid = document.getElementById("activeDaysGrid");
+    dailyProg.forEach((day) => {
+      const dot = document.createElement("div");
+      dot.className = `day-dot ${day.day_done ? "done" : day.is_rest ? "rest" : "pending"}`;
+      dot.title = `${day.day_name} — ${day.focus || "Nghỉ"}`;
+      dot.innerHTML = day.day_done ? "✓" : day.is_rest ? "💤" : day.day_number;
+      grid.appendChild(dot);
+    });
+  } catch (e) {
+    console.warn("Không tải được lộ trình active:", e);
+  }
 }
 
 // ════════════════════════════════════════
 // 2. LỊCH SỬ TẤT CẢ LỘ TRÌNH (thành tích)
 // ════════════════════════════════════════
 async function loadAllPlansHistory() {
-    try {
-        const res  = await fetch(`${AI_SERVER}/api/get-all-plans?userId=${CURRENT_UID}`);
-        const data = await res.json();
+  try {
+    const res = await fetch(
+      `${AI_SERVER}/api/get-all-plans?userId=${CURRENT_UID}`,
+    );
+    const data = await res.json();
 
-        // Cập nhật số lộ trình hoàn thành lên hero pills
-        const completed = (data.plans || []).filter(p => p.status === 'completed');
-        const pRoutines = document.getElementById('pRoutines');
-        if (pRoutines) pRoutines.textContent = completed.length;
+    // Cập nhật số lộ trình hoàn thành lên hero pills
+    const completed = (data.plans || []).filter(
+      (p) => p.status === "completed",
+    );
+    const pRoutines = document.getElementById("pRoutines");
+    if (pRoutines) pRoutines.textContent = completed.length;
 
-        const countEl = document.getElementById('routineCount');
-        if (countEl) countEl.textContent = completed.length;
+    const countEl = document.getElementById("routineCount");
+    if (countEl) countEl.textContent = completed.length;
 
-        // Render danh sách lộ trình đã xong
-        const list = document.getElementById('routineList');
-        if (!list) return;
+    // Render danh sách lộ trình đã xong
+    const list = document.getElementById("routineList");
+    if (!list) return;
 
-        if (completed.length === 0) {
-            list.innerHTML = `<div style="padding:16px;color:var(--text-muted);font-size:13px;">Chưa hoàn thành lộ trình nào.</div>`;
-            return;
-        }
+    if (completed.length === 0) {
+      list.innerHTML = `<div style="padding:16px;color:var(--text-muted);font-size:13px;">Chưa hoàn thành lộ trình nào.</div>`;
+      return;
+    }
 
-        list.innerHTML = '';
-        completed.forEach(plan => {
-            const item = document.createElement('div');
-            item.className = 'routine-item-tcn';
-            item.innerHTML = `
+    list.innerHTML = "";
+    completed.forEach((plan) => {
+      const item = document.createElement("div");
+      item.className = "routine-item-tcn";
+      item.innerHTML = `
                 <div class="ri-icon">🏆</div>
                 <div class="ri-info">
-                    <div class="ri-name">${plan.plan_name || 'Lộ trình'}</div>
+                    <div class="ri-name">${plan.plan_name || "Lộ trình"}</div>
                     <div class="ri-meta">${plan.goal} · ${plan.duration_days} ngày · Hoàn thành ${plan.created_at}</div>
                 </div>
                 <div class="ri-badge">Xong</div>`;
-            list.appendChild(item);
-        });
-
-    } catch(e) {
-        console.warn('Không tải được lịch sử lộ trình:', e);
-    }
+      list.appendChild(item);
+    });
+  } catch (e) {
+    console.warn("Không tải được lịch sử lộ trình:", e);
+  }
 }
 
 // ════════════════════════════════════════
 // CSS NỘI TUYẾN cho các element mới
 // (Thêm vào TrangCaNhan.css hoặc để ở đây)
 // ════════════════════════════════════════
-const _style = document.createElement('style');
+const _style = document.createElement("style");
 _style.textContent = `
 /* ── Card lộ trình active ── */
 #activePlanWrap {
