@@ -67,8 +67,8 @@ const generateResponse = async (incomingChatLi, userMessage) => {
     const messageElement = incomingChatLi.querySelector("p");
     
     try {
-        // Gửi câu hỏi của người dùng tới Server Python đang chạy ở cổng 5000
-        const response = await fetch("http://127.0.0.1:5000/api/chat", {
+        // ĐÃ CHỈNH SỬA: Gửi câu hỏi tới Server Python đang chạy ở cổng 5002
+        const response = await fetch("http://127.0.0.1:5002/api/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -86,7 +86,7 @@ const generateResponse = async (incomingChatLi, userMessage) => {
             messageElement.textContent = `Lỗi: ${data.error || "Không thể lấy câu trả lời từ AI."}`;
         }
     } catch (error) {
-        messageElement.textContent = "Oops! Lỗi kết nối đến máy chủ AI. Hãy chắc chắn rằng bạn đang chạy file app.py!";
+        messageElement.textContent = "Oops! Lỗi kết nối đến máy chủ AI. Hãy chắc chắn rằng bạn đang chạy file app.py ở cổng 5002!";
     } finally {
         // Đảm bảo khung chat luôn cuộn xuống dòng mới nhất
         chatbox.scrollTo(0, chatbox.scrollHeight);
