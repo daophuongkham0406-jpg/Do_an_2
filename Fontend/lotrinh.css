@@ -588,3 +588,37 @@
   opacity: 0.2;
   cursor: not-allowed;
 }
+/* ── CSS CHUẨN CHO NÚT NGÀY NGHỈ ── */
+        .rest-check-box {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px; border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border);
+            cursor: pointer; transition: all 0.2s;
+        }
+        .rest-check-box:hover {
+            border-color: var(--border-hover); background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Trạng thái đã hoàn thành của khung chữ */
+        .rest-check-box.completed {
+            border-color: #4ecdc4; 
+            background: rgba(78, 205, 196, 0.05); 
+            color: #4ecdc4;
+        }
+
+        /* Định dạng ô tròn mặc định (Chưa tick) */
+        .rest-check-box .ex-checkbox {
+            width: 22px; height: 22px; border-radius: 50%;
+            border: 2px solid var(--border-hover);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; font-size: 12px;
+            background: transparent; color: transparent;
+        }
+
+        /* Định dạng ô tròn khi ĐÃ TICK (Hình tròn xanh ngọc, dấu tick đen) */
+        .rest-check-box.completed .ex-checkbox {
+            background: #4ecdc4; 
+            border-color: #4ecdc4; 
+            color: #0a0a0a; 
+        }
