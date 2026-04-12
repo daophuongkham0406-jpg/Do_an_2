@@ -23,7 +23,7 @@ const chatbotHTML = `
         
         <ul class="chatbox">
             <li class="chat incoming">
-                <p>Chào bạn! Mình là AI HLV cá nhân của PUMPD. Bạn muốn tìm bài tập nào, hay cần tư vấn lộ trình tập luyện hôm nay?</p>
+                <p>Chào bạn! Mình là AI HLV cá nhân của FIT ME. Bạn muốn tìm bài tập nào, hay cần tư vấn lộ trình tập luyện hôm nay?</p>
             </li>
         </ul>
 
@@ -55,84 +55,92 @@ const suggestionBtns = document.querySelectorAll(".suggestion-btn");
 
 // 4. CÁC HÀM XỬ LÝ
 // Mở & Đóng khung chat
-chatbotToggler.addEventListener("click", () => document.body.classList.toggle("show-chatbot"));
-closeBtn.addEventListener("click", () => document.body.classList.remove("show-chatbot"));
+chatbotToggler.addEventListener("click", () =>
+  document.body.classList.toggle("show-chatbot"),
+);
+closeBtn.addEventListener("click", () =>
+  document.body.classList.remove("show-chatbot"),
+);
 
 // Hàm tạo thẻ chứa tin nhắn
 const createChatLi = (message, className) => {
-    const chatLi = document.createElement("li");
-    chatLi.classList.add("chat", className);
-    // Dùng textContent để an toàn, chống lỗi (XSS)
-    const pTag = document.createElement("p");
-    pTag.textContent = message; 
-    chatLi.appendChild(pTag);
-    return chatLi;
+  const chatLi = document.createElement("li");
+  chatLi.classList.add("chat", className);
+  // Dùng textContent để an toàn, chống lỗi (XSS)
+  const pTag = document.createElement("p");
+  pTag.textContent = message;
+  chatLi.appendChild(pTag);
+  return chatLi;
 };
 
 // Hàm kết nối với Server Python và trả lời
 const generateResponse = async (incomingChatLi, userMessage) => {
-    const messageElement = incomingChatLi.querySelector("p");
-    
-    try {
-        const response = await fetch(CHAT_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ message: userMessage })
-        });
+  const messageElement = incomingChatLi.querySelector("p");
 
-        const data = await response.json();
-        
-        if (response.ok) {
-            // Thay thế chữ "Đang suy nghĩ..." bằng câu trả lời của AI
-            messageElement.textContent = data.reply;
-        } else {
-            messageElement.textContent = `Lỗi: ${data.error || "Không thể lấy câu trả lời từ AI."}`;
-        }
-    } catch (error) {
-        messageElement.textContent = "Oops! Lỗi kết nối đến máy chủ AI. Hãy chắc chắn rằng bạn đang chạy file chat_ai.py ở cổng 5002!";
-    } finally {
-        // Đảm bảo khung chat luôn cuộn xuống dòng mới nhất
-        chatbox.scrollTo(0, chatbox.scrollHeight);
+  try {
+    const response = await fetch(CHAT_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: userMessage }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Thay thế chữ "Đang suy nghĩ..." bằng câu trả lời của AI
+      messageElement.textContent = data.reply;
+    } else {
+      messageElement.textContent = `Lỗi: ${data.error || "Không thể lấy câu trả lời từ AI."}`;
     }
+  } catch (error) {
+    messageElement.textContent =
+      "Oops! Lỗi kết nối đến máy chủ AI. Hãy chắc chắn rằng bạn đang chạy file chat_ai.py ở cổng 5002!";
+  } finally {
+    // Đảm bảo khung chat luôn cuộn xuống dòng mới nhất
+    chatbox.scrollTo(0, chatbox.scrollHeight);
+  }
 };
 
 // Hàm xử lý chính khi người dùng gửi tin nhắn
 const handleChat = (message) => {
-    if(!message) return;
-    
-    chatInput.value = ""; // Xóa trắng ô nhập liệu
-    
-    // Hiển thị tin nhắn người dùng
-    chatbox.appendChild(createChatLi(message, "outgoing"));
-    chatbox.scrollTo(0, chatbox.scrollHeight); 
+  if (!message) return;
 
-    // Ẩn danh sách gợi ý khi đã bắt đầu chat
-    const suggestionsContainer = document.querySelector('.chat-suggestions');
-    if(suggestionsContainer) suggestionsContainer.style.display = 'none';
+  chatInput.value = ""; // Xóa trắng ô nhập liệu
 
-    // Hiển thị trạng thái chờ
-    setTimeout(() => {
-        const incomingChatLi = createChatLi("HLV đang phân tích dữ liệu...", "incoming");
-        chatbox.appendChild(incomingChatLi);
-        chatbox.scrollTo(0, chatbox.scrollHeight);
-        
-        // Gọi API sang server AI
-        generateResponse(incomingChatLi, message);
-    }, 400); // Đợi 0.4s để tạo hiệu ứng giống người thật
+  // Hiển thị tin nhắn người dùng
+  chatbox.appendChild(createChatLi(message, "outgoing"));
+  chatbox.scrollTo(0, chatbox.scrollHeight);
+
+  // Ẩn danh sách gợi ý khi đã bắt đầu chat
+  const suggestionsContainer = document.querySelector(".chat-suggestions");
+  if (suggestionsContainer) suggestionsContainer.style.display = "none";
+
+  // Hiển thị trạng thái chờ
+  setTimeout(() => {
+    const incomingChatLi = createChatLi(
+      "HLV đang phân tích dữ liệu...",
+      "incoming",
+    );
+    chatbox.appendChild(incomingChatLi);
+    chatbox.scrollTo(0, chatbox.scrollHeight);
+
+    // Gọi API sang server AI
+    generateResponse(incomingChatLi, message);
+  }, 400); // Đợi 0.4s để tạo hiệu ứng giống người thật
 };
 
 // 5. GẮN SỰ KIỆN LẮNG NGHE CHO CÁC NÚT BẤM
-suggestionBtns.forEach(btn => {
-    btn.addEventListener("click", (e) => handleChat(e.target.textContent));
+suggestionBtns.forEach((btn) => {
+  btn.addEventListener("click", (e) => handleChat(e.target.textContent));
 });
 
 sendChatBtn.addEventListener("click", () => handleChat(chatInput.value.trim()));
 
 chatInput.addEventListener("keydown", (e) => {
-    if(e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        handleChat(chatInput.value.trim());
-    }
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    handleChat(chatInput.value.trim());
+  }
 });

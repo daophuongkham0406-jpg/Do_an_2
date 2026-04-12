@@ -1,133 +1,176 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel | PUMPD</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="admin.css">
-<link rel="stylesheet" href="chat.css">
-<style>
-  /* Căn chỉnh lại màu sắc Badge User cho đẹp */
-  .badge-admin { background: rgba(232, 255, 71, 0.12); border: 1px solid rgba(232, 255, 71, 0.3); color: var(--accent); }
-  .badge-user { background: rgba(77, 168, 255, 0.12); border: 1px solid rgba(77, 168, 255, 0.3); color: var(--blue); }
-  .table-head.user-grid, .tr.user-grid { grid-template-columns: 80px 1fr 150px 100px 100px 80px; }
-</style>
-</head>
-<body>
-
-<header class="topbar">
-  <div class="tb-left">
-    <a href="index.html" class="logo"><span class="logo-icon">P</span>PUMPD</a>
-    <span class="admin-badge">Admin Panel</span>
-  </div>
-  <div class="tb-right">
-    <span id="adminName" style="font-size: 13px; color: var(--accent); font-weight: 600; margin-right: 15px;"></span>
-    <div class="api-status">
-      <span class="status-dot" id="statusDot"></span>
-      <span id="statusText">Đang tải...</span>
-    </div>
-    <a href="bt.html" class="btn-back">← Xem thư viện</a>
-  </div>
-</header>
-
-<div class="layout">
-
-  <aside class="sidebar">
-    <div class="s-title">Nội dung</div>
-    <div class="s-item active" onclick="switchSection('exercises')" id="nav-exercises">
-      <span class="s-icon">🏋️</span> Bài tập
-      <span class="s-badge" id="exCountBadge">0</span>
-    </div>
-    <div class="s-divider"></div>
-    <div class="s-title">Hệ thống</div>
-    <div class="s-item" onclick="switchSection('users')" id="nav-users">
-      <span class="s-icon">👥</span> Người dùng
-      <span class="s-badge" id="userCountBadge">0</span>
-    </div>
-  </aside>
-
-  <main class="main">
-    
-    <section id="section-exercises" style="display: block;">
-      <div class="page-header">
-        <div class="page-title-wrap">
-          <div class="page-label">Quản lý nội dung</div>
-          <h1>Danh sách Bài Tập</h1>
-        </div>
-        <div class="header-actions">
-          <button class="btn btn-primary" onclick="openAdd()">＋ Thêm bài tập</button>
-        </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel | FIT ME</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="admin.css" />
+    <link rel="stylesheet" href="chat.css" />
+    <style>
+      /* Căn chỉnh lại màu sắc Badge User cho đẹp */
+      .badge-admin {
+        background: rgba(232, 255, 71, 0.12);
+        border: 1px solid rgba(232, 255, 71, 0.3);
+        color: var(--accent);
+      }
+      .badge-user {
+        background: rgba(77, 168, 255, 0.12);
+        border: 1px solid rgba(77, 168, 255, 0.3);
+        color: var(--blue);
+      }
+      .table-head.user-grid,
+      .tr.user-grid {
+        grid-template-columns: 80px 1fr 150px 100px 100px 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="tb-left">
+        <a href="index.html" class="logo"
+          ><span class="logo-icon">F</span> FIT ME</a
+        >
+        <span class="admin-badge">Admin Panel</span>
       </div>
-
-      <div class="stats-row">
-        <div class="stat">
-          <div class="stat-num" id="statTotal">0</div>
-          <div class="stat-lbl">Tổng bài tập</div>
+      <div class="tb-right">
+        <span
+          id="adminName"
+          style="
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-right: 15px;
+          "
+        ></span>
+        <div class="api-status">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Đang tải...</span>
         </div>
-        <div class="stat">
-          <div class="stat-num" id="statBeginner">0</div>
-          <div class="stat-lbl">Người mới</div>
-          <div class="stat-sub">Beginner</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num" id="statInter">0</div>
-          <div class="stat-lbl">Trung bình</div>
-          <div class="stat-sub">Intermediate</div>
-        </div>
-        <div class="stat">
-          <div class="stat-num" id="statAdv">0</div>
-          <div class="stat-lbl">Nâng cao</div>
-          <div class="stat-sub">Advanced</div>
-        </div>
+        <a href="bt.html" class="btn-back">← Xem thư viện</a>
       </div>
+    </header>
 
-      <div class="toolbar">
-        <div class="search-wrap">
-          <input type="text" id="adminSearch" placeholder="Tìm bài tập theo tên…" oninput="renderTable()">
-          <span class="search-icon">🔍</span>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="s-title">Nội dung</div>
+        <div
+          class="s-item active"
+          onclick="switchSection('exercises')"
+          id="nav-exercises"
+        >
+          <span class="s-icon">🏋️</span> Bài tập
+          <span class="s-badge" id="exCountBadge">0</span>
         </div>
-        <select class="sel" id="filterMuscle" onchange="renderTable()">
-          <option value="">Tất cả nhóm cơ</option>
-          <option>Ngực</option><option>Lưng</option><option>Vai</option>
-          <option>Tay trước</option><option>Tay sau</option><option>Chân</option>
-          <option>Mông</option><option>Bụng</option><option>Toàn thân</option>
-        </select>
-        <select class="sel" id="filterDiff" onchange="renderTable()">
-          <option value="">Tất cả độ khó</option>
-          <option value="B">Người mới</option>
-          <option value="I">Trung bình</option>
-          <option value="A">Nâng cao</option>
-        </select>
-      </div>
+        <div class="s-divider"></div>
+        <div class="s-title">Hệ thống</div>
+        <div class="s-item" onclick="switchSection('users')" id="nav-users">
+          <span class="s-icon">👥</span> Người dùng
+          <span class="s-badge" id="userCountBadge">0</span>
+        </div>
+      </aside>
 
-      <div class="table-wrap">
-        <div class="table-head">
-          <div class="th">Icon</div>
-          <div class="th">ID</div>
-          <div class="th">Tên bài tập</div>
-          <div class="th">Nhóm cơ</div>
-          <div class="th">Thiết bị</div>
-          <div class="th">Độ khó</div>
-          <div class="th">Thao tác</div>
-        </div>
-        <div class="table-body" id="tableBody">
-          <div class="empty-row">Đang tải…</div>
-        </div>
-      </div>
-    </section>
+      <main class="main">
+        <section id="section-exercises" style="display: block">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div class="page-label">Quản lý nội dung</div>
+              <h1>Danh sách Bài Tập</h1>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="openAdd()">
+                ＋ Thêm bài tập
+              </button>
+            </div>
+          </div>
 
-    <section id="section-users" style="display: none;">
-        <div class="page-header">
+          <div class="stats-row">
+            <div class="stat">
+              <div class="stat-num" id="statTotal">0</div>
+              <div class="stat-lbl">Tổng bài tập</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num" id="statBeginner">0</div>
+              <div class="stat-lbl">Người mới</div>
+              <div class="stat-sub">Beginner</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num" id="statInter">0</div>
+              <div class="stat-lbl">Trung bình</div>
+              <div class="stat-sub">Intermediate</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num" id="statAdv">0</div>
+              <div class="stat-lbl">Nâng cao</div>
+              <div class="stat-sub">Advanced</div>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <div class="search-wrap">
+              <input
+                type="text"
+                id="adminSearch"
+                placeholder="Tìm bài tập theo tên…"
+                oninput="renderTable()"
+              />
+              <span class="search-icon">🔍</span>
+            </div>
+            <select class="sel" id="filterMuscle" onchange="renderTable()">
+              <option value="">Tất cả nhóm cơ</option>
+              <option>Ngực</option>
+              <option>Lưng</option>
+              <option>Vai</option>
+              <option>Tay trước</option>
+              <option>Tay sau</option>
+              <option>Chân</option>
+              <option>Mông</option>
+              <option>Bụng</option>
+              <option>Toàn thân</option>
+            </select>
+            <select class="sel" id="filterDiff" onchange="renderTable()">
+              <option value="">Tất cả độ khó</option>
+              <option value="B">Người mới</option>
+              <option value="I">Trung bình</option>
+              <option value="A">Nâng cao</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <div class="table-head">
+              <div class="th">Icon</div>
+              <div class="th">ID</div>
+              <div class="th">Tên bài tập</div>
+              <div class="th">Nhóm cơ</div>
+              <div class="th">Thiết bị</div>
+              <div class="th">Độ khó</div>
+              <div class="th">Thao tác</div>
+            </div>
+            <div class="table-body" id="tableBody">
+              <div class="empty-row">Đang tải…</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="section-users" style="display: none">
+          <div class="page-header">
             <div class="page-title-wrap">
               <div class="page-label">Quản trị hệ thống</div>
               <h1>Danh sách Người Dùng</h1>
             </div>
-        </div>
+          </div>
 
-        <div class="toolbar">
+          <div class="toolbar">
             <div class="search-wrap">
-              <input type="text" id="userSearch" placeholder="Tìm theo tên, username hoặc email…" oninput="renderUserTable()">
+              <input
+                type="text"
+                id="userSearch"
+                placeholder="Tìm theo tên, username hoặc email…"
+                oninput="renderUserTable()"
+              />
               <span class="search-icon">🔍</span>
             </div>
             <select class="sel" id="filterRole" onchange="renderUserTable()">
@@ -135,9 +178,9 @@
               <option value="admin">Admin</option>
               <option value="user">User thường</option>
             </select>
-        </div>
+          </div>
 
-        <div class="table-wrap">
+          <div class="table-wrap">
             <div class="table-head user-grid">
               <div class="th">ID</div>
               <div class="th">Họ Tên</div>
@@ -149,123 +192,253 @@
             <div class="table-body" id="userTableBody">
               <div class="empty-row">Đang tải…</div>
             </div>
-        </div>
-    </section>
-
-  </main>
-</div>
-
-<div class="overlay" id="formOverlay">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="formTitle">THÊM BÀI TẬP</div>
-      <button class="modal-close" onclick="closeForm()">✕</button>
+          </div>
+        </section>
+      </main>
     </div>
-    <div class="modal-body">
-      <div class="form-grid">
-        <div class="form-row span2"><label>Tên bài tập <span class="req">*</span></label><input type="text" id="f_name" placeholder="VD: Barbell Bench Press"></div>
-        <div class="form-row">
-          <label>Nhóm cơ chính <span class="req">*</span></label>
-          <select id="f_muscle"><option value="">Chọn nhóm cơ…</option><option>Ngực</option><option>Lưng</option><option>Vai</option><option>Tay trước</option><option>Tay sau</option><option>Chân</option><option>Mông</option><option>Bụng</option><option>Toàn thân</option></select>
-        </div>
-        <div class="form-row"><label>Icon (Emoji) <span class="req">*</span></label><input type="text" id="f_icon" placeholder="VD: 🏋️" maxlength="4"></div>
-        <div class="form-row">
-          <label>Độ khó <span class="req">*</span></label>
-          <select id="f_diff"><option value="">Chọn độ khó…</option><option value="B">Người mới</option><option value="I">Trung bình</option><option value="A">Nâng cao</option></select>
-        </div>
-        <div class="form-row">
-          <label>Thiết bị <span class="req">*</span></label>
-          <select id="f_equip"><option value="">Chọn thiết bị…</option><option>Barbell</option><option>Dumbbell</option><option>Cable</option><option>Machine</option><option>Bodyweight</option><option>Kettlebell</option></select>
-        </div>
-        <div class="form-row"><label>Sets <span class="req">*</span></label><input type="text" id="f_sets" placeholder="VD: 4"></div>
-        <div class="form-row"><label>Reps <span class="req">*</span></label><input type="text" id="f_reps" placeholder="VD: 8-12"></div>
-        <div class="form-row span2"><label>Thời gian nghỉ <span class="req">*</span></label><input type="text" id="f_rest" placeholder="VD: 90 giây"></div>
-      </div>
 
-      <div class="form-section">
-        <div class="form-section-title">Cơ phụ (Secondary muscles)</div>
-        <div class="dynamic-list" id="secList"></div>
-        <button class="add-row-btn" onclick="addSec()">＋ Thêm nhóm cơ phụ</button>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-title">Hướng dẫn thực hiện (Steps)</div>
-        <div class="dynamic-list" id="stepList"></div>
-        <button class="add-row-btn" onclick="addStep()">＋ Thêm bước</button>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-title">Lưu ý / Tips</div>
-        <div class="dynamic-list" id="tipList"></div>
-        <button class="add-row-btn" onclick="addTip()">＋ Thêm lưu ý</button>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeForm()">Hủy</button>
-      <button class="btn btn-primary" onclick="submitForm()">💾 Lưu bài tập</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="confirmOverlay">
-  <div class="modal confirm-modal">
-    <div class="modal-body" style="padding:28px;text-align:center;">
-      <div class="confirm-icon">🗑️</div>
-      <div class="confirm-msg">Bạn có chắc muốn xóa <br><strong id="confirmName"></strong>?<br>Hành động này không thể hoàn tác.</div>
-      <div style="display:flex;gap:10px;justify-content:center;">
-        <button class="btn btn-ghost" onclick="closeConfirm()">Hủy</button>
-        <button class="btn btn-danger" onclick="confirmDelete()">Xóa</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="userModalOverlay">
-  <div class="modal" style="max-width: 450px;">
-    <div class="modal-header">
-      <div class="modal-title">HỒ SƠ NGƯỜI DÙNG</div>
-      <button class="modal-close" onclick="closeUserModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div style="text-align: center; margin-bottom: 24px;">
-        <div style="width: 80px; height: 80px; background: var(--bg3); border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; margin: 0 auto 12px; color: var(--accent);">👤</div>
-        <h2 id="u_fullName" style="margin-bottom: 8px; font-size: 22px;"></h2>
-        <span id="u_role" class="badge"></span>
-      </div>
-      
-      <div class="form-grid full">
-        <div class="form-row">
-          <label>Tài khoản</label>
-          <input type="text" id="u_username" readonly style="background: var(--bg3); color: var(--text2); border-color: transparent;">
+    <div class="overlay" id="formOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title" id="formTitle">THÊM BÀI TẬP</div>
+          <button class="modal-close" onclick="closeForm()">✕</button>
         </div>
-        <div class="form-row">
-          <label>Email</label>
-          <input type="text" id="u_email" readonly style="background: var(--bg3); color: var(--text2); border-color: transparent;">
-        </div>
-        <div class="form-grid">
-            <div class="form-row">
-              <label>Tuổi</label>
-              <input type="text" id="u_age" readonly style="background: var(--bg3); color: var(--text2); border-color: transparent;">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-row span2">
+              <label>Tên bài tập <span class="req">*</span></label
+              ><input
+                type="text"
+                id="f_name"
+                placeholder="VD: Barbell Bench Press"
+              />
             </div>
             <div class="form-row">
-              <label>Giới tính</label>
-              <input type="text" id="u_gender" readonly style="background: var(--bg3); color: var(--text2); border-color: transparent;">
+              <label>Nhóm cơ chính <span class="req">*</span></label>
+              <select id="f_muscle">
+                <option value="">Chọn nhóm cơ…</option>
+                <option>Ngực</option>
+                <option>Lưng</option>
+                <option>Vai</option>
+                <option>Tay trước</option>
+                <option>Tay sau</option>
+                <option>Chân</option>
+                <option>Mông</option>
+                <option>Bụng</option>
+                <option>Toàn thân</option>
+              </select>
             </div>
+            <div class="form-row">
+              <label>Icon (Emoji) <span class="req">*</span></label
+              ><input
+                type="text"
+                id="f_icon"
+                placeholder="VD: 🏋️"
+                maxlength="4"
+              />
+            </div>
+            <div class="form-row">
+              <label>Độ khó <span class="req">*</span></label>
+              <select id="f_diff">
+                <option value="">Chọn độ khó…</option>
+                <option value="B">Người mới</option>
+                <option value="I">Trung bình</option>
+                <option value="A">Nâng cao</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Thiết bị <span class="req">*</span></label>
+              <select id="f_equip">
+                <option value="">Chọn thiết bị…</option>
+                <option>Barbell</option>
+                <option>Dumbbell</option>
+                <option>Cable</option>
+                <option>Machine</option>
+                <option>Bodyweight</option>
+                <option>Kettlebell</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>Sets <span class="req">*</span></label
+              ><input type="text" id="f_sets" placeholder="VD: 4" />
+            </div>
+            <div class="form-row">
+              <label>Reps <span class="req">*</span></label
+              ><input type="text" id="f_reps" placeholder="VD: 8-12" />
+            </div>
+            <div class="form-row span2">
+              <label>Thời gian nghỉ <span class="req">*</span></label
+              ><input type="text" id="f_rest" placeholder="VD: 90 giây" />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Cơ phụ (Secondary muscles)</div>
+            <div class="dynamic-list" id="secList"></div>
+            <button class="add-row-btn" onclick="addSec()">
+              ＋ Thêm nhóm cơ phụ
+            </button>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Hướng dẫn thực hiện (Steps)</div>
+            <div class="dynamic-list" id="stepList"></div>
+            <button class="add-row-btn" onclick="addStep()">
+              ＋ Thêm bước
+            </button>
+          </div>
+
+          <div class="form-section">
+            <div class="form-section-title">Lưu ý / Tips</div>
+            <div class="dynamic-list" id="tipList"></div>
+            <button class="add-row-btn" onclick="addTip()">
+              ＋ Thêm lưu ý
+            </button>
+          </div>
         </div>
-        <div class="form-row">
-          <label>Ngày tham gia</label>
-          <input type="text" id="u_created" readonly style="background: var(--bg3); color: var(--text2); border-color: transparent;">
+        <div class="modal-footer">
+          <button class="btn btn-ghost" onclick="closeForm()">Hủy</button>
+          <button class="btn btn-primary" onclick="submitForm()">
+            💾 Lưu bài tập
+          </button>
         </div>
       </div>
     </div>
-    <div class="modal-footer" style="justify-content: center;">
-      <button class="btn btn-ghost" onclick="closeUserModal()" style="width: 100%;">Đóng</button>
-    </div>
-  </div>
-</div>
 
-<div class="toast-wrap" id="toastWrap"></div>
-<script src="function_proc/admin.js"></script>
-<script src="main.js?v=1"></script>
-</body>
+    <div class="overlay" id="confirmOverlay">
+      <div class="modal confirm-modal">
+        <div class="modal-body" style="padding: 28px; text-align: center">
+          <div class="confirm-icon">🗑️</div>
+          <div class="confirm-msg">
+            Bạn có chắc muốn xóa <br /><strong id="confirmName"></strong
+            >?<br />Hành động này không thể hoàn tác.
+          </div>
+          <div style="display: flex; gap: 10px; justify-content: center">
+            <button class="btn btn-ghost" onclick="closeConfirm()">Hủy</button>
+            <button class="btn btn-danger" onclick="confirmDelete()">
+              Xóa
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="userModalOverlay">
+      <div class="modal" style="max-width: 450px">
+        <div class="modal-header">
+          <div class="modal-title">HỒ SƠ NGƯỜI DÙNG</div>
+          <button class="modal-close" onclick="closeUserModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div style="text-align: center; margin-bottom: 24px">
+            <div
+              style="
+                width: 80px;
+                height: 80px;
+                background: var(--bg3);
+                border: 2px solid var(--border);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 36px;
+                margin: 0 auto 12px;
+                color: var(--accent);
+              "
+            >
+              👤
+            </div>
+            <h2
+              id="u_fullName"
+              style="margin-bottom: 8px; font-size: 22px"
+            ></h2>
+            <span id="u_role" class="badge"></span>
+          </div>
+
+          <div class="form-grid full">
+            <div class="form-row">
+              <label>Tài khoản</label>
+              <input
+                type="text"
+                id="u_username"
+                readonly
+                style="
+                  background: var(--bg3);
+                  color: var(--text2);
+                  border-color: transparent;
+                "
+              />
+            </div>
+            <div class="form-row">
+              <label>Email</label>
+              <input
+                type="text"
+                id="u_email"
+                readonly
+                style="
+                  background: var(--bg3);
+                  color: var(--text2);
+                  border-color: transparent;
+                "
+              />
+            </div>
+            <div class="form-grid">
+              <div class="form-row">
+                <label>Tuổi</label>
+                <input
+                  type="text"
+                  id="u_age"
+                  readonly
+                  style="
+                    background: var(--bg3);
+                    color: var(--text2);
+                    border-color: transparent;
+                  "
+                />
+              </div>
+              <div class="form-row">
+                <label>Giới tính</label>
+                <input
+                  type="text"
+                  id="u_gender"
+                  readonly
+                  style="
+                    background: var(--bg3);
+                    color: var(--text2);
+                    border-color: transparent;
+                  "
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Ngày tham gia</label>
+              <input
+                type="text"
+                id="u_created"
+                readonly
+                style="
+                  background: var(--bg3);
+                  color: var(--text2);
+                  border-color: transparent;
+                "
+              />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="justify-content: center">
+          <button
+            class="btn btn-ghost"
+            onclick="closeUserModal()"
+            style="width: 100%"
+          >
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast-wrap" id="toastWrap"></div>
+    <script src="function_proc/admin.js"></script>
+    <script src="main.js?v=1"></script>
+  </body>
 </html>

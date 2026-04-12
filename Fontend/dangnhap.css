@@ -1,4 +1,4 @@
-/* --- BIẾN MÀU SẮC THEO PHONG CÁCH PUMPD DARK MODE --- */
+/* --- BIẾN MÀU SẮC THEO PHONG CÁCH FIT ME DARK MODE --- */
 :root {
     --bg-main: #13141a;       /* Nền trang (Đen sâu) */
     --bg-card: #1d1e25;       /* Nền Form (Xám đen) */
@@ -7,7 +7,7 @@
     --text-muted: #8e919f;    /* Chữ phụ (Xám) */
     --accent-yellow: #e6ff00; /* Vàng Neon (Nhấn mạnh) */
     --accent-yellow-glow: rgba(230, 255, 0, 0.15);
-    --accent-purple: #7241ff; /* Tím PUMPD */
+    --accent-purple: #7241ff; /* Tím FITME */
     --border: #2c2f3a;        /* Viền */
 }
 
