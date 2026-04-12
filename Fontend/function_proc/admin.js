@@ -3,6 +3,10 @@
 // ════════════════════════════════════════════════════════════════
 const API_URL = 'http://127.0.0.1:5000/api/exercises/';
 const USER_API_URL = 'http://127.0.0.1:5000/api/users/';
+const API_TIPS = 'http://127.0.0.1:5000/api/tips';
+const API_WORKOUTS = 'http://127.0.0.1:5000/api/sample-workouts';
+const API_FEATURED = 'http://127.0.0.1:5000/api/featured';
+const API_MUSCLES = 'http://127.0.0.1:5000/api/muscles-info';
 
 let exercises = [];
 let usersList = []; 
@@ -127,16 +131,48 @@ async function init() {
     renderTable();
 }
 
+// ════════════════════════════════════════════════════════════════
+// ĐÃ SỬA: HÀM ĐIỀU HƯỚNG MÀN HÌNH (HỖ TRỢ THÊM TAB TIPS)
+// ════════════════════════════════════════════════════════════════
 function switchSection(sectionId) {
+    // 1. Gỡ bỏ trạng thái sáng (active) của tất cả các menu bên trái
     document.querySelectorAll('.sidebar .s-item').forEach(el => el.classList.remove('active'));
+    
+    // 2. Làm sáng cái menu vừa được click
     const navItem = document.getElementById('nav-' + sectionId);
     if(navItem) navItem.classList.add('active');
 
-    document.getElementById('section-exercises').style.display = (sectionId === 'exercises') ? 'block' : 'none';
-    document.getElementById('section-users').style.display = (sectionId === 'users') ? 'block' : 'none';
+    // 3. Ẩn TẤT CẢ các vùng nội dung bên phải
+    document.getElementById('section-exercises').style.display = 'none';
+    document.getElementById('section-users').style.display = 'none';
+    
+    const sectionTips = document.getElementById('section-tips');
+    if (sectionTips) sectionTips.style.display = 'none'; // Ẩn tab tips
 
+    const sectionWorkouts = document.getElementById('section-workouts');
+    if (sectionWorkouts) sectionWorkouts.style.display = 'none';
+
+    const sectionFeatured = document.getElementById('section-featured');
+    if (sectionFeatured) sectionFeatured.style.display = 'none';
+
+    const sectionMuscles = document.getElementById('section-muscles');
+    if (sectionMuscles) sectionMuscles.style.display = 'none';
+
+    // 4. Kích hoạt (Hiện) vùng nội dung tương ứng với menu vừa bấm
+    const activeSection = document.getElementById('section-' + sectionId);
+    if (activeSection) activeSection.style.display = 'block';
+
+    // 5. Tự động tải dữ liệu nếu cần thiết
     if (sectionId === 'users' && usersList.length === 0) {
         fetchUsers();
+    } else if (sectionId === 'tips') {
+        loadAdminTips(); // Tự động gọi API lấy danh sách mẹo khi chuyển sang tab này
+    } else if (sectionId === 'workouts') {
+        loadAdminWorkouts(); // Tự động gọi API lấy danh sách bài tập mẫu khi chuyển sang tab này
+    } else if (sectionId === 'featured') {
+        loadAdminFeatured();
+    } else if (sectionId === 'muscles') {
+        loadAdminMuscles();
     }
 }
 
@@ -473,3 +509,386 @@ document.getElementById('userModalOverlay').addEventListener('click', e => {
 // Khởi chạy khi load trang
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeForm(); closeConfirm(); closeUserModal(); } });
 init();
+// --------------------------------------------------------------
+// 1. TẢI DỮ LIỆU ĐỔ VÀO BẢNG
+function loadAdminTips() {
+    const tbody = document.getElementById('tipsTableBody');
+    tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
+
+    fetch(API_TIPS)
+        .then(res => res.json())
+        .then(res => {
+            if (res.success && res.data.length > 0) {
+                tbody.innerHTML = res.data.map(tip => `
+                    <div class="tr tips-grid">
+                        <div class="td">${tip.order}</div>
+                        <div class="td" style="font-weight: 600;">${tip.title}</div>
+                        <div class="td" style="color: var(--text-muted); font-size: 13px;">${tip.content.substring(0, 60)}...</div>
+                        <div class="td" style="display:flex; gap:10px;">
+                            <span style="cursor:pointer; color:var(--accent);" onclick='editTip(${JSON.stringify(tip)})'>✏️</span>
+                            <span style="cursor:pointer; color:#ff6060;" onclick="deleteTip('${tip._id}', '${tip.title}')">🗑️</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                tbody.innerHTML = '<div class="empty-row">Chưa có mẹo nào.</div>';
+            }
+        });
+}
+
+// 2. MỞ VÀ ĐÓNG MODAL
+function openTipModal() {
+    document.getElementById('tipModalOverlay').classList.add('open');
+}
+
+function closeTipModal() {
+    document.getElementById('tipModalOverlay').classList.remove('open');
+    // Reset Form
+    document.getElementById('tip_id').value = '';
+    document.getElementById('tip_order').value = '1';
+    document.getElementById('tip_title').value = '';
+    document.getElementById('tip_content').value = '';
+    document.getElementById('tipModalTitle').innerText = 'THÊM MẸO MỚI';
+}
+
+// 3. BẤM NÚT SỬA (Điền dữ liệu lên Form)
+function editTip(tip) {
+    document.getElementById('tip_id').value = tip._id;
+    document.getElementById('tip_order').value = tip.order;
+    document.getElementById('tip_title').value = tip.title;
+    document.getElementById('tip_content').value = tip.content;
+    document.getElementById('tipModalTitle').innerText = 'SỬA MẸO TẬP LUYỆN';
+    openTipModal();
+}
+
+// 4. LƯU DỮ LIỆU (POST hoặc PUT)
+function saveTip() {
+    const id = document.getElementById('tip_id').value;
+    const data = {
+        order: parseInt(document.getElementById('tip_order').value),
+        title: document.getElementById('tip_title').value,
+        content: document.getElementById('tip_content').value
+    };
+
+    if(!data.title || !data.content) return alert("Vui lòng nhập đủ Tiêu đề và Nội dung!");
+
+    const method = id ? 'PUT' : 'POST';
+    const url = id ? `${API_TIPS}/${id}` : API_TIPS;
+
+    fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+        if(res.success) {
+            closeTipModal();
+            loadAdminTips(); // Load lại bảng
+        } else {
+            alert("Lỗi: " + res.error);
+        }
+    });
+}
+
+// 5. XÓA DỮ LIỆU (DELETE)
+function deleteTip(id, title) {
+    if (confirm(`Bạn có chắc muốn xóa mẹo "${title}" không?`)) {
+        fetch(`${API_TIPS}/${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success) loadAdminTips();
+        });
+    }
+}
+// ==========================================
+// QUẢN LÝ LỊCH TẬP MẪU
+// ==========================================
+const catNames = { split: "Push/Pull/Legs", fullbody: "Full Body", upperlower: "Upper/Lower" };
+
+function loadAdminWorkouts() {
+    const tbody = document.getElementById('workoutsTableBody');
+    tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
+
+    fetch(API_WORKOUTS).then(res => res.json()).then(res => {
+        if (res.success && res.data.length > 0) {
+            tbody.innerHTML = res.data.map(wo => `
+                <div class="tr workouts-grid">
+                    <div class="td"><span class="tab-badge">${catNames[wo.category] || wo.category}</span></div>
+                    <div class="td">${wo.order}</div>
+                    <div class="td" style="font-weight: 600;">${wo.title}</div>
+                    <div class="td">${wo.is_rest_day ? '<span style="color:#4ecdc4;">Có</span>' : '<span style="color:var(--text-muted);">Không</span>'}</div>
+                    <div class="td" style="display:flex; gap:10px;">
+                        <span style="cursor:pointer; color:var(--accent);" onclick='editWorkout(${JSON.stringify(wo).replace(/'/g, "\\'")})'>✏️</span>
+                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteWorkout('${wo._id}', '${wo.title}')">🗑️</span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<div class="empty-row">Chưa có lịch tập mẫu nào.</div>';
+        }
+    });
+}
+
+function toggleWorkoutExercises() {
+    const isRest = document.getElementById('wo_is_rest').checked;
+    document.getElementById('wo_exercises_section').style.display = isRest ? 'none' : 'block';
+}
+
+function addWorkoutExercise(name = '', sets_reps = '') {
+    const div = document.createElement('div');
+    div.className = 'dynamic-item';
+    div.style.cssText = 'display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;';
+    div.innerHTML = `
+        <input type="text" placeholder="Tên bài (VD: Bench Press)" value="${name}">
+        <input type="text" placeholder="Sets x Reps (VD: 4x8)" value="${sets_reps}">
+        <button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
+    document.getElementById('wo_exerciseList').appendChild(div);
+}
+
+function openWorkoutModal() {
+    document.getElementById('workoutModalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeWorkoutModal() {
+    document.getElementById('workoutModalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    // Reset form
+    document.getElementById('wo_id').value = '';
+    document.getElementById('wo_title').value = '';
+    document.getElementById('wo_order').value = '1';
+    document.getElementById('wo_is_rest').checked = false;
+    document.getElementById('wo_exerciseList').innerHTML = '';
+    toggleWorkoutExercises();
+    document.getElementById('workoutModalTitle').innerText = 'THÊM NGÀY TẬP MỚI';
+}
+
+function editWorkout(wo) {
+    document.getElementById('wo_id').value = wo._id;
+    document.getElementById('wo_category').value = wo.category;
+    document.getElementById('wo_order').value = wo.order || 1;
+    document.getElementById('wo_title').value = wo.title;
+    document.getElementById('wo_is_rest').checked = wo.is_rest_day || false;
+    
+    document.getElementById('wo_exerciseList').innerHTML = '';
+    if(wo.exercises && wo.exercises.length > 0) {
+        wo.exercises.forEach(ex => addWorkoutExercise(ex.name, ex.sets_reps));
+    }
+    
+    toggleWorkoutExercises();
+    document.getElementById('workoutModalTitle').innerText = 'SỬA NGÀY TẬP';
+    openWorkoutModal();
+}
+
+function saveWorkout() {
+    const id = document.getElementById('wo_id').value;
+    const is_rest = document.getElementById('wo_is_rest').checked;
+    
+    // Thu thập danh sách bài tập từ các thẻ input
+    const exercises = [];
+    if(!is_rest) {
+        document.querySelectorAll('#wo_exerciseList .dynamic-item').forEach(row => {
+            const inputs = row.querySelectorAll('input');
+            const name = inputs[0].value.trim();
+            const sets_reps = inputs[1].value.trim();
+            if(name) exercises.push({ name: name, sets_reps: sets_reps });
+        });
+    }
+
+    const data = {
+        category: document.getElementById('wo_category').value,
+        order: parseInt(document.getElementById('wo_order').value),
+        title: document.getElementById('wo_title').value,
+        is_rest_day: is_rest,
+        exercises: exercises
+    };
+
+    if(!data.title) return alert("Vui lòng nhập Tiêu đề Ngày!");
+
+    fetch(id ? `${API_WORKOUTS}/${id}` : API_WORKOUTS, {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(res => {
+        if(res.success) {
+            closeWorkoutModal();
+            loadAdminWorkouts();
+        } else alert("Lỗi: " + res.error);
+    });
+}
+
+function deleteWorkout(id, title) {
+    if (confirm(`Bạn có chắc muốn xóa "${title}" không?`)) {
+        fetch(`${API_WORKOUTS}/${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(res => { if(res.success) loadAdminWorkouts(); });
+    }
+}
+// ==========================================
+// QUẢN LÝ NỘI DUNG NỔI BẬT
+// ==========================================
+function loadAdminFeatured() {
+    const tbody = document.getElementById('featuredTableBody');
+    tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
+
+    fetch(API_FEATURED).then(res => res.json()).then(res => {
+        if (res.success && res.data.length > 0) {
+            tbody.innerHTML = res.data.map(feat => `
+                <div class="tr featured-grid">
+                    <div class="td">${feat.order || 1}</div>
+                    <div class="td" style="font-size: 24px;">${feat.icon || '📌'}</div>
+                    <div class="td" style="font-weight: 600;">${feat.title}</div>
+                    <div class="td" style="color: var(--text-muted); font-size: 13px;">${(feat.description || '').substring(0, 60)}...</div>
+                    <div class="td" style="display:flex; gap:10px;">
+                        <span style="cursor:pointer; color:var(--accent);" onclick='editFeatured(${JSON.stringify(feat).replace(/'/g, "\\'")})'>✏️</span>
+                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteFeatured('${feat._id}', '${feat.title}')">🗑️</span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<div class="empty-row">Chưa có nội dung nổi bật nào.</div>';
+        }
+    });
+}
+
+function openFeaturedModal() {
+    document.getElementById('featuredModalOverlay').classList.add('open');
+}
+
+function closeFeaturedModal() {
+    document.getElementById('featuredModalOverlay').classList.remove('open');
+    document.getElementById('feat_id').value = '';
+    document.getElementById('feat_order').value = '1';
+    document.getElementById('feat_icon').value = '';
+    document.getElementById('feat_tag').value = '';
+    document.getElementById('feat_title').value = '';
+    document.getElementById('feat_desc').value = '';
+    document.getElementById('featuredModalTitle').innerText = 'THÊM NỘI DUNG NỔI BẬT';
+}
+
+function editFeatured(feat) {
+    document.getElementById('feat_id').value = feat._id;
+    document.getElementById('feat_order').value = feat.order || 1;
+    document.getElementById('feat_icon').value = feat.icon || '';
+    document.getElementById('feat_tag').value = feat.tag || '';
+    document.getElementById('feat_title').value = feat.title || '';
+    document.getElementById('feat_desc').value = feat.description || '';
+    document.getElementById('featuredModalTitle').innerText = 'SỬA NỘI DUNG';
+    openFeaturedModal();
+}
+
+function saveFeatured() {
+    const id = document.getElementById('feat_id').value;
+    const data = {
+        order: parseInt(document.getElementById('feat_order').value) || 1,
+        icon: document.getElementById('feat_icon').value,
+        tag: document.getElementById('feat_tag').value,
+        title: document.getElementById('feat_title').value,
+        description: document.getElementById('feat_desc').value
+    };
+
+    if(!data.title) return alert("Vui lòng nhập Tiêu đề!");
+
+    fetch(id ? `${API_FEATURED}/${id}` : API_FEATURED, {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => {
+        if(res.success) {
+            closeFeaturedModal();
+            loadAdminFeatured();
+        } else alert("Lỗi: " + res.error);
+    });
+}
+
+function deleteFeatured(id, title) {
+    if (confirm(`Bạn có chắc muốn xóa "${title}" không?`)) {
+        fetch(`${API_FEATURED}/${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(res => { if(res.success) loadAdminFeatured(); });
+    }
+}
+// ==========================================
+// QUẢN LÝ NHÓM CƠ & BÀI TẬP
+// ==========================================
+function loadAdminMuscles() {
+    const tbody = document.getElementById('musclesTableBody');
+    tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
+
+    fetch(API_MUSCLES).then(res => res.json()).then(res => {
+        if (res.success && res.data.length > 0) {
+            tbody.innerHTML = res.data.map(mus => `
+                <div class="tr muscles-grid">
+                    <div class="td">${mus.order || 1}</div>
+                    <div class="td" style="font-size: 24px;">${mus.icon || '💪'}</div>
+                    <div class="td" style="font-weight: 600;">${mus.name}</div>
+                    <div class="td" style="color: var(--text-muted);">${mus.exercise_count || ''}</div>
+                    <div class="td" style="display:flex; gap:10px;">
+                        <span style="cursor:pointer; color:var(--accent);" onclick='editMuscle(${JSON.stringify(mus).replace(/'/g, "\\'")})'>✏️</span>
+                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteMuscle('${mus._id}', '${mus.name}')">🗑️</span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<div class="empty-row">Chưa có nhóm cơ nào.</div>';
+        }
+    });
+}
+
+function openMuscleModal() {
+    document.getElementById('muscleModalOverlay').classList.add('open');
+}
+
+function closeMuscleModal() {
+    document.getElementById('muscleModalOverlay').classList.remove('open');
+    document.getElementById('mus_id').value = '';
+    document.getElementById('mus_order').value = '1';
+    document.getElementById('mus_icon').value = '';
+    document.getElementById('mus_name').value = '';
+    document.getElementById('mus_count').value = '';
+    document.getElementById('muscleModalTitle').innerText = 'THÊM NHÓM CƠ';
+}
+
+function editMuscle(mus) {
+    document.getElementById('mus_id').value = mus._id;
+    document.getElementById('mus_order').value = mus.order || 1;
+    document.getElementById('mus_icon').value = mus.icon || '';
+    document.getElementById('mus_name').value = mus.name || '';
+    document.getElementById('mus_count').value = mus.exercise_count || '';
+    document.getElementById('muscleModalTitle').innerText = 'SỬA NHÓM CƠ';
+    openMuscleModal();
+}
+
+function saveMuscle() {
+    const id = document.getElementById('mus_id').value;
+    const data = {
+        order: parseInt(document.getElementById('mus_order').value) || 1,
+        icon: document.getElementById('mus_icon').value,
+        name: document.getElementById('mus_name').value,
+        exercise_count: document.getElementById('mus_count').value
+    };
+
+    if(!data.name || !data.icon) return alert("Vui lòng nhập Tên và Icon!");
+
+    fetch(id ? `${API_MUSCLES}/${id}` : API_MUSCLES, {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => {
+        if(res.success) {
+            closeMuscleModal();
+            loadAdminMuscles();
+        } else alert("Lỗi: " + res.error);
+    });
+}
+
+function deleteMuscle(id, name) {
+    if (confirm(`Bạn có chắc muốn xóa "${name}" không?`)) {
+        fetch(`${API_MUSCLES}/${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(res => { if(res.success) loadAdminMuscles(); });
+    }
+}

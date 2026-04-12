@@ -71,6 +71,20 @@
           <span class="s-icon">👥</span> Người dùng
           <span class="s-badge" id="userCountBadge">0</span>
         </div>
+        <div class="s-divider"></div>
+        <div class="s-title">Trang chủ</div>
+        <div class="s-item" onclick="switchSection('tips')" id="nav-tips">
+          <span class="s-icon">💡</span> Mẹo tập luyện
+        </div> 
+        <div class="s-item" onclick="switchSection('workouts')" id="nav-workouts">
+          <span class="s-icon">📅</span> Lịch tập mẫu
+        </div>
+        <div class="s-item" onclick="switchSection('featured')" id="nav-featured">
+          <span class="s-icon">🔥</span> Nội dung nổi bật
+        </div>
+        <div class="s-item" onclick="switchSection('muscles')" id="nav-muscles">
+          <span class="s-icon">💪</span> Nhóm cơ & Bài tập
+        </div>
       </aside>
 
       <main class="main">
@@ -194,7 +208,158 @@
             </div>
           </div>
         </section>
+
+
+        <section id="section-tips" style="display: none">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div class="page-label">Quản trị trang chủ</div>
+              <h1>Danh sách Mẹo Tập Luyện</h1>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="openTipModal()">
+                ＋ Thêm mẹo mới
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <style>
+              .tips-grid { grid-template-columns: 80px 250px 1fr 100px; }
+            </style>
+            <div class="table-head tips-grid">
+              <div class="th">Thứ tự</div>
+              <div class="th">Tiêu đề</div>
+              <div class="th">Nội dung</div>
+              <div class="th">Thao tác</div>
+            </div>
+            <div class="table-body" id="tipsTableBody">
+              <div class="empty-row">Đang tải…</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="section-workouts" style="display: none">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div class="page-label">Quản trị trang chủ</div>
+              <h1>Danh sách Lịch Tập Mẫu</h1>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="openWorkoutModal()">
+                ＋ Thêm ngày tập
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <style>
+              .workouts-grid { grid-template-columns: 150px 80px 1fr 100px 100px; }
+              .tab-badge { background: var(--bg3); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: var(--text2); }
+            </style>
+            <div class="table-head workouts-grid">
+              <div class="th">Thuộc Tab</div>
+              <div class="th">Thứ tự</div>
+              <div class="th">Tiêu đề Ngày</div>
+              <div class="th">Nghỉ ngơi?</div>
+              <div class="th">Thao tác</div>
+            </div>
+            <div class="table-body" id="workoutsTableBody">
+              <div class="empty-row">Đang tải…</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="section-featured" style="display: none">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div class="page-label">Quản trị trang chủ</div>
+              <h1>Danh sách Nội Dung Nổi Bật</h1>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="openFeaturedModal()">
+                ＋ Thêm nội dung
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <style>
+              .featured-grid { grid-template-columns: 80px 80px 250px 1fr 100px; }
+            </style>
+            <div class="table-head featured-grid">
+              <div class="th">Thứ tự</div>
+              <div class="th">Icon</div>
+              <div class="th">Tiêu đề</div>
+              <div class="th">Mô tả</div>
+              <div class="th">Thao tác</div>
+            </div>
+            <div class="table-body" id="featuredTableBody">
+              <div class="empty-row">Đang tải…</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="section-muscles" style="display: none">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div class="page-label">Quản trị trang chủ</div>
+              <h1>Danh sách Nhóm cơ</h1>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="openMuscleModal()">
+                ＋ Thêm nhóm cơ
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <style>
+              .muscles-grid { grid-template-columns: 80px 80px 1fr 1fr 100px; }
+            </style>
+            <div class="table-head muscles-grid">
+              <div class="th">Thứ tự</div>
+              <div class="th">Icon</div>
+              <div class="th">Tên nhóm cơ</div>
+              <div class="th">Số lượng bài</div>
+              <div class="th">Thao tác</div>
+            </div>
+            <div class="table-body" id="musclesTableBody">
+              <div class="empty-row">Đang tải…</div>
+            </div>
+          </div>
+        </section>
       </main>
+    
+    <div class="overlay" id="tipModalOverlay">
+      <div class="modal" style="max-width: 500px">
+        <div class="modal-header">
+          <div class="modal-title" id="tipModalTitle">THÊM MẸO MỚI</div>
+          <button class="modal-close" onclick="closeTipModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="tip_id"> 
+          
+          <div class="form-grid full">
+            <div class="form-row">
+              <label>Thứ tự hiển thị <span class="req">*</span></label>
+              <input type="number" id="tip_order" value="1" />
+            </div>
+            <div class="form-row">
+              <label>Tiêu đề <span class="req">*</span></label>
+              <input type="text" id="tip_title" placeholder="VD: Progressive Overload" />
+            </div>
+            <div class="form-row">
+              <label>Nội dung chi tiết <span class="req">*</span></label>
+              <textarea id="tip_content" rows="5" placeholder="Nhập nội dung mẹo..." style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg3); color:var(--text);"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn btn-ghost" onclick="closeTipModal()">Hủy</button>
+          <button class="btn btn-primary" onclick="saveTip()">💾 Lưu dữ liệu</button>
+        </div>
+      </div>
     </div>
 
     <div class="overlay" id="formOverlay">
@@ -437,6 +602,134 @@
       </div>
     </div>
 
+    <div class="overlay" id="workoutModalOverlay">
+      <div class="modal" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header">
+          <div class="modal-title" id="workoutModalTitle">THÊM NGÀY TẬP MỚI</div>
+          <button class="modal-close" onclick="closeWorkoutModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="wo_id"> 
+          
+          <div class="form-grid full">
+            <div class="form-row">
+              <label>Thuộc Tab phân loại <span class="req">*</span></label>
+              <select id="wo_category">
+                <option value="split">Push / Pull / Legs</option>
+                <option value="fullbody">Full Body</option>
+                <option value="upperlower">Upper / Lower</option>
+              </select>
+            </div>
+            <div class="form-grid">
+              <div class="form-row">
+                <label>Thứ tự hiển thị <span class="req">*</span></label>
+                <input type="number" id="wo_order" value="1" />
+              </div>
+              <div class="form-row" style="display:flex; align-items:center; gap: 10px; padding-top: 25px;">
+                <input type="checkbox" id="wo_is_rest" style="width:18px; height:18px;" onchange="toggleWorkoutExercises()">
+                <label for="wo_is_rest" style="margin:0; cursor:pointer;">Đánh dấu là Ngày nghỉ</label>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Tiêu đề Ngày (VD: Thứ Hai - UPPER Sức mạnh) <span class="req">*</span></label>
+              <input type="text" id="wo_title" placeholder="Nhập tiêu đề..." />
+            </div>
+          </div>
+
+          <div class="form-section" id="wo_exercises_section">
+            <div class="form-section-title">Danh sách Bài Tập trong ngày</div>
+            <div class="dynamic-list" id="wo_exerciseList"></div>
+            <button class="add-row-btn" onclick="addWorkoutExercise()">
+              ＋ Thêm bài tập
+            </button>
+          </div>
+
+        </div>
+        <div class="modal-footer" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn btn-ghost" onclick="closeWorkoutModal()">Hủy</button>
+          <button class="btn btn-primary" onclick="saveWorkout()">💾 Lưu dữ liệu</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="featuredModalOverlay">
+      <div class="modal" style="max-width: 500px">
+        <div class="modal-header">
+          <div class="modal-title" id="featuredModalTitle">THÊM NỘI DUNG NỔI BẬT</div>
+          <button class="modal-close" onclick="closeFeaturedModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="feat_id"> 
+          
+          <div class="form-grid full">
+            <div class="form-row">
+              <label>Thứ tự hiển thị <span class="req">*</span></label>
+              <input type="number" id="feat_order" value="1" />
+            </div>
+            <div class="form-row" style="display: grid; grid-template-columns: 100px 1fr; gap: 15px;">
+              <div>
+                <label>Icon <span class="req">*</span></label>
+                <input type="text" id="feat_icon" placeholder="VD: 💪" />
+              </div>
+              <div>
+                <label>Thẻ Tag (Tùy chọn)</label>
+                <input type="text" id="feat_tag" placeholder="VD: Sức mạnh" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Tiêu đề <span class="req">*</span></label>
+              <input type="text" id="feat_title" placeholder="VD: Tăng cơ bắp hiệu quả" />
+            </div>
+            <div class="form-row">
+              <label>Mô tả chi tiết <span class="req">*</span></label>
+              <textarea id="feat_desc" rows="4" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg3); color:var(--text);"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn btn-ghost" onclick="closeFeaturedModal()">Hủy</button>
+          <button class="btn btn-primary" onclick="saveFeatured()">💾 Lưu dữ liệu</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="muscleModalOverlay">
+      <div class="modal" style="max-width: 400px">
+        <div class="modal-header">
+          <div class="modal-title" id="muscleModalTitle">THÊM NHÓM CƠ</div>
+          <button class="modal-close" onclick="closeMuscleModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="mus_id"> 
+          
+          <div class="form-grid full">
+            <div class="form-row">
+              <label>Thứ tự hiển thị <span class="req">*</span></label>
+              <input type="number" id="mus_order" value="1" />
+            </div>
+            <div class="form-row" style="display: grid; grid-template-columns: 100px 1fr; gap: 15px;">
+              <div>
+                <label>Icon <span class="req">*</span></label>
+                <input type="text" id="mus_icon" placeholder="VD: 🏋️" />
+              </div>
+              <div>
+                <label>Tên nhóm cơ <span class="req">*</span></label>
+                <input type="text" id="mus_name" placeholder="VD: Ngực" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Text phụ (Số bài tập) <span class="req">*</span></label>
+              <input type="text" id="mus_count" placeholder="VD: 42 bài tập" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn btn-ghost" onclick="closeMuscleModal()">Hủy</button>
+          <button class="btn btn-primary" onclick="saveMuscle()">💾 Lưu dữ liệu</button>
+        </div>
+      </div>
+    </div>
+    
     <div class="toast-wrap" id="toastWrap"></div>
     <script src="function_proc/admin.js"></script>
     <script src="main.js?v=1"></script>
