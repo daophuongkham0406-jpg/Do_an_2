@@ -358,6 +358,11 @@
             .app-layout { grid-template-columns: 1fr; }
             .app-sidebar { position: static; }
         }
+        /* --------------------------------------------------------------------- */
+        /* --------------------------------------------------------------------- */
+
+        /* --------------------------------------------------------------------- */
+
         /* ── NÚT HỦY LỘ TRÌNH ── */
         .btn-danger {
             width: 100%; padding: 14px; margin-top: 15px;
@@ -389,5 +394,39 @@
             background: #4ecdc4 !important; 
             border-color: #4ecdc4 !important; 
             color: #0a0a0a !important;
+        }
+        /* ── CHẾ ĐỘ HIỂN THỊ 1 NGÀY ── */
+        .day-card.hidden-day { 
+            display: none !important; 
+        }
+        
+        .day-nav-controls {
+            display: flex; 
+            justify-content: space-between; 
+            gap: 12px; 
+            margin-top: 10px; 
+            margin-bottom: 20px;
+        }
+        .btn-nav-day {
+            flex: 1; 
+            padding: 14px; 
+            background: var(--bg-secondary); 
+            border: 1px solid var(--border);
+            color: var(--text-primary); 
+            border-radius: 8px; 
+            font-weight: 700; 
+            font-size: 13px;
+            cursor: pointer; 
+            transition: all 0.2s; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+        .btn-nav-day:hover:not(:disabled) { 
+            border-color: var(--accent); 
+            color: var(--accent); 
+        }
+        .btn-nav-day:disabled { 
+            opacity: 0.2; 
+            cursor: not-allowed; 
         }
     

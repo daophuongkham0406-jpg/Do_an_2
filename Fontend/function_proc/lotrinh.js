@@ -2,7 +2,7 @@
     const AI_SERVER_URL = 'http://localhost:5001';
     // ── Lấy userId từ localStorage (do check_login.js lưu) ──
     const USER_ID = localStorage.getItem('userId') || 'guest';
-
+    let currentDisplayDayIndex = 0; // Biến để nhớ xem đang hiển thị ngày thứ mấy
     let selectedDays  = 7;
     let currentPlanData = null;  // JSON plan hiện tại
     let currentPlanId   = null;  // _id sau khi lưu
@@ -126,24 +126,27 @@
    // ═══════════════════════════════════════
     // RENDER KẾ HOẠCH TỪ JSON (ĐÃ SỬA LỖI MẤT NGÀY 4)
     // ═══════════════════════════════════════
+    // ═══════════════════════════════════════
+    // RENDER KẾ HOẠCH (CHẾ ĐỘ HIỂN THỊ TỪNG NGÀY)
+    // ═══════════════════════════════════════
     function renderPlan(planData, container, progress = null) {
         container.innerHTML = '';
-        let totalDays = planData.duration_days || planData.days.length;
+        let totalDays = planData.days.length;
         let completedDaysCount = 0; 
+        currentDisplayDayIndex = 0; // Reset về ngày đầu tiên khi render lại
 
         planData.days.forEach((day, index) => {
             const dayCard = document.createElement('div');
-            dayCard.className = `day-card ${index === 0 ? 'open' : ''}`;
+            
+            // 🌟 Mặc định ép thẻ LUÔN MỞ (open). 
+            // 🌟 Nếu không phải là Ngày 1 (index 0), thì gắn thêm class 'hidden-day' để giấu nó đi
+            dayCard.className = `day-card open ${index === 0 ? '' : 'hidden-day'}`;
             dayCard.dataset.dayNumber = day.day_number;
 
-            // Ép Ngày 4 và 7 là ngày nghỉ
-            if (day.day_number === 4 || day.day_number === 7) {
-                day.is_rest = true; 
-            }
+            if (day.day_number === 4 || day.day_number === 7) { day.is_rest = true; }
 
-            // 1. FIX LỖI SCOPE: Khai báo pd ở ngoài để tất cả đều nhìn thấy!
             let exProgress = {};
-            let pd = null; // Đưa ra ngoài
+            let pd = null; 
             if (progress) {
                 pd = progress.find(p => p.day_number === day.day_number);
                 if (pd && pd.exercises) {
@@ -151,7 +154,6 @@
                 }
             }
 
-            // 🌟 2. LOGIC TỰ KIỂM TRA TRẠNG THÁI HOÀN THÀNH
             let dayDone = false;
             if (day.is_rest) {
                 const localRestState = localStorage.getItem(`rest_${currentPlanId}_day_${day.day_number}`);
@@ -171,8 +173,9 @@
                 completedDaysCount++;
             }
 
+            // Đã bỏ sự kiện onClick toggle và icon ▼ vì giờ không cần thu gọn nữa
             dayCard.innerHTML = `
-                <div class="day-header" onclick="this.parentElement.classList.toggle('open')">
+                <div class="day-header">
                     <div class="day-header-left">
                         <span class="day-num-badge">Ngày ${day.day_number}</span>
                         <span class="day-name">${day.day_name || ''}</span>
@@ -180,7 +183,6 @@
                     <div style="display:flex;align-items:center;gap:10px;">
                         <span class="day-focus">${day.is_rest ? 'NGHỈ NGƠI' : (day.focus || '')}</span>
                         <span class="day-check-badge ${dayDone ? 'show' : ''}">✓ Hoàn thành</span>
-                        <span class="day-toggle-icon">▼</span>
                     </div>
                 </div>
                 <div class="day-body" id="day-body-${day.day_number}"></div>`;
@@ -188,7 +190,7 @@
             container.appendChild(dayCard);
             const body = document.getElementById(`day-body-${day.day_number}`);
 
-            // 3. RENDER NỘI DUNG CHI TIẾT
+            // RENDER CHI TIẾT
             if (day.is_rest) {
                 body.innerHTML = `
                     <div class="rest-check-box ${dayDone ? 'completed' : ''}" id="rest-btn-${day.day_number}">
@@ -228,9 +230,46 @@
             }
         });
 
-        // 🌟 4. CẬP NHẬT THANH TIẾN ĐỘ
+        // 🌟 TẠO THANH ĐIỀU HƯỚNG TỚI/LUI
+        const navWrap = document.createElement('div');
+        navWrap.className = 'day-nav-controls';
+        navWrap.innerHTML = `
+            <button class="btn-nav-day" id="btn-prev-day" onclick="navigateDay(-1)" disabled>← Ngày trước</button>
+            <button class="btn-nav-day" id="btn-next-day" onclick="navigateDay(1)" ${totalDays <= 1 ? 'disabled' : ''}>Ngày tiếp theo →</button>
+        `;
+        container.appendChild(navWrap);
+
         updateProgressBar(completedDaysCount, totalDays);
     }
+
+    // ═══════════════════════════════════════
+    // HÀM XỬ LÝ CHUYỂN NGÀY (TRƯỢT QUA LẠI)
+    // ═══════════════════════════════════════
+    window.navigateDay = function(direction) {
+        const cards = document.querySelectorAll('.day-card');
+        const totalDays = cards.length;
+        
+        // 1. Ẩn ngày đang hiển thị
+        if (cards[currentDisplayDayIndex]) {
+            cards[currentDisplayDayIndex].classList.add('hidden-day');
+        }
+        
+        // 2. Tính toán ngày tiếp theo
+        currentDisplayDayIndex += direction;
+        
+        // Chặn không cho vượt qua Ngày 1 hoặc Ngày 7
+        if (currentDisplayDayIndex < 0) currentDisplayDayIndex = 0;
+        if (currentDisplayDayIndex >= totalDays) currentDisplayDayIndex = totalDays - 1;
+        
+        // 3. Hiển thị ngày mới lên
+        if (cards[currentDisplayDayIndex]) {
+            cards[currentDisplayDayIndex].classList.remove('hidden-day');
+        }
+        
+        // 4. Khóa/Mở khóa các nút nếu đang ở trang đầu hoặc trang cuối
+        document.getElementById('btn-prev-day').disabled = (currentDisplayDayIndex === 0);
+        document.getElementById('btn-next-day').disabled = (currentDisplayDayIndex === totalDays - 1);
+    };
     // ═══════════════════════════════════════
     // NÚT ÁP DỤNG / TẠO LẠI
     // ═══════════════════════════════════════
