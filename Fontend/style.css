@@ -2399,3 +2399,33 @@ body {
     padding: 36px 24px;
   }
 }
+.page-title,
+.page-header h1,
+.hero-inner h1 {
+  font-size: clamp(36px, 5vw, 64px) !important;
+  line-height: 1.25 !important; 
+  font-weight: 700 !important; 
+  letter-spacing: -1px !important; 
+  margin-bottom: 20px !important;
+}
+
+.page-title em, 
+.page-header h1 em {
+  font-style: normal;
+  color: var(--accent);
+}
+.hero-title,
+.hero h1,
+.home-hero h1,
+.main-title,
+h1.hero-heading {
+  line-height: 1.35 !important; 
+  font-size: clamp(40px, 6vw, 72px) !important; 
+  padding-bottom: 15px !important;
+}
+
+.hero-title span, 
+.hero h1 span {
+  line-height: 1.35 !important;
+  display: inline-block;
+}
