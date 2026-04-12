@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="vi">
   <head>
@@ -151,7 +152,42 @@
                 </div>
               </div>
             </div>
-
+<!-- Thêm ngay vào đây: -->
+ 
+<div id="bmiPreview"></div>
+ 
+<!-- Ví dụ đoạn HTML hoàn chỉnh sau khi thêm: -->
+ 
+            <div class="form-group">
+              <label>Thông số cơ thể</label>
+              <div class="body-stats-row">
+                <div class="stat-input-wrap">
+                  <div class="stat-field">
+                    <input type="number" id="height" placeholder="170" min="100" max="250" value="" />
+                    <span class="stat-unit">cm</span>
+                  </div>
+                  <span class="stat-label">Chiều cao</span>
+                </div>
+                <div class="stat-input-wrap">
+                  <div class="stat-field">
+                    <input type="number" id="weight" placeholder="65" min="30" max="200" value="" />
+                    <span class="stat-unit">kg</span>
+                  </div>
+                  <span class="stat-label">Cân nặng</span>
+                </div>
+                <div class="stat-input-wrap">
+                  <div class="stat-field">
+                    <input type="number" id="age" placeholder="24" min="10" max="80" value="" />
+                    <span class="stat-unit">tuổi</span>
+                  </div>
+                  <span class="stat-label">Độ tuổi</span>
+                </div>
+              </div>
+ 
+              <!-- ← THÊM DÒNG NÀY -->
+              <div id="bmiPreview"></div>
+ 
+            </div>
             <div class="form-group">
               <label>Thiết bị sẵn có</label>
               <select id="equipment">
@@ -242,6 +278,7 @@
           </section>
         </div>
       </div>
+      
     </main>
     <script src="function_proc/lotrinh.js"></script>
     <script src="function_proc/check_login.js"></script>

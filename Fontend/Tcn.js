@@ -1,4 +1,5 @@
 // ═══════════════════════════════════════════════════════
+//ĐÂY LÀ FILE Tcn.js
 // THÊM ĐOẠN NÀY VÀO CUỐI FILE Tcn.js (function_proc/Tcn.js)
 // Hiển thị lộ trình đang active lên trang hồ sơ cá nhân
 // ═══════════════════════════════════════════════════════

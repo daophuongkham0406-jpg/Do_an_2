@@ -1,14 +1,26 @@
+// ════════════════════════════════════════════════════════════════
+// lotrinh.js — Đầy đủ: BMI Advice + Nutrition Sidebar + Food AI
+// ════════════════════════════════════════════════════════════════
+const AI_SERVER_URL = 'http://localhost:5001';
+const USER_ID = localStorage.getItem('userId') || 'guest';
+const TODAY = new Date().toISOString().split('T')[0];
 
-    const AI_SERVER_URL = 'http://localhost:5001';
-    // ── Lấy userId từ localStorage (do check_login.js lưu) ──
-    const USER_ID = localStorage.getItem('userId') || 'guest';
-    let currentDisplayDayIndex = 0; // Biến để nhớ xem đang hiển thị ngày thứ mấy
-    let selectedDays  = 7;
-    let currentPlanData = null;  // JSON plan hiện tại
-    let currentPlanId   = null;  // _id sau khi lưu
+let currentDisplayDayIndex = 0;
+let selectedDays    = 7;
+let currentPlanData = null;
+let currentPlanId   = null;
+// Lưu dinh dưỡng đã nạp hôm nay (đồng bộ với server)
+let todayNutrition  = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+// Mục tiêu dinh dưỡng ngày hiện tại (từ plan)
+let todayTarget     = { calories: 2000, protein: 130 };
+// Cờ để biết đang ở ngày nghỉ hay ngày tập
+let todayIsRest     = false;
 
-    // ── Theme toggle ──
-    const toggleBtn = document.getElementById("themeToggle");
+// ════════════════════════════════════════
+// THEME TOGGLE
+// ════════════════════════════════════════
+const toggleBtn = document.getElementById("themeToggle");
+if (toggleBtn) {
     toggleBtn.addEventListener("click", () => {
         document.body.classList.toggle("light-mode");
         const isLight = document.body.classList.contains("light-mode");
@@ -19,507 +31,1330 @@
         document.body.classList.add("light-mode");
         toggleBtn.textContent = "☀️";
     }
+}
 
-    // ── Chọn độ dài lộ trình ──
-    function selectDur(el, days) {
-        if (el.classList.contains('disabled')) return;
-        document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        selectedDays = days;
+// ════════════════════════════════════════
+// CHỌN ĐỘ DÀI LỘ TRÌNH
+// ════════════════════════════════════════
+function selectDur(el, days) {
+    if (el.classList.contains('disabled')) return;
+    document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    selectedDays = days;
+}
+
+function unlockLongPlans() {
+    document.querySelectorAll('.dur-btn.disabled').forEach(b => {
+        b.classList.remove('disabled');
+        const lock = b.querySelector('.lock');
+        if (lock) lock.remove();
+        const days = parseInt(b.dataset.days);
+        b.onclick = () => selectDur(b, days);
+    });
+    const hint = document.getElementById('durationHint');
+    if (hint) hint.innerHTML = '✅ <span style="color:var(--accent);font-weight:bold;">Tài khoản Premium</span>. Bạn có thể sử dụng mọi tính năng!';
+}
+
+function checkPremiumStatus() {
+    const userStr = localStorage.getItem('loggedInUser');
+    if (!userStr) return;
+    const localUser = JSON.parse(userStr);
+    if (localUser.isPremium === true || localUser.role === 'premium') unlockLongPlans();
+}
+checkPremiumStatus();
+
+// ════════════════════════════════════════
+// BMI LIVE PREVIEW trong sidebar
+// ════════════════════════════════════════
+function updateBmiPreview() {
+    const h = parseFloat(document.getElementById('height').value);
+    const w = parseFloat(document.getElementById('weight').value);
+    const previewEl = document.getElementById('bmiPreview');
+    if (!previewEl) return;
+    if (!h || !w || h < 100 || w < 20) {
+        previewEl.style.display = 'none';
+        return;
+    }
+    const bmi = (w / ((h / 100) ** 2)).toFixed(1);
+    let cat = '', cls = '';
+    if (bmi < 18.5)      { cat = 'Thiếu cân';  cls = 'bmi-under'; }
+    else if (bmi < 25)   { cat = 'Bình thường'; cls = 'bmi-ok'; }
+    else if (bmi < 30)   { cat = 'Thừa cân';   cls = 'bmi-over'; }
+    else                 { cat = 'Béo phì';     cls = 'bmi-obese'; }
+
+    previewEl.style.display = 'flex';
+    previewEl.innerHTML = `
+        <span class="bmi-num ${cls}">${bmi}</span>
+        <span class="bmi-cat-lbl ${cls}">${cat}</span>`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const hInput = document.getElementById('height');
+    const wInput = document.getElementById('weight');
+    if (hInput) hInput.addEventListener('input', updateBmiPreview);
+    if (wInput) wInput.addEventListener('input', updateBmiPreview);
+});
+
+// ════════════════════════════════════════
+// NÚT TẠO LỘ TRÌNH → Phân tích BMI trước
+// ════════════════════════════════════════
+document.getElementById('btn-generate').addEventListener('click', async () => {
+    const goal      = document.getElementById('goal').value;
+    const level     = document.getElementById('level').value;
+    const equipment = document.getElementById('equipment').value;
+    const userInfo  = document.getElementById('userInfo').value;
+    const height    = document.getElementById('height').value;
+    const weight    = document.getElementById('weight').value;
+    const age       = document.getElementById('age').value;
+
+    if (!height || !weight || !age) {
+        showToast('⚠️ Vui lòng nhập chiều cao, cân nặng và tuổi!', 'error');
+        return;
     }
 
-    // ── Mở khóa gói dài (gọi khi là tài khoản Premium) ──
-    function unlockLongPlans() {
-        document.querySelectorAll('.dur-btn.disabled').forEach(b => {
-            b.classList.remove('disabled');
-            const lock = b.querySelector('.lock');
-            if (lock) lock.remove();
-            const days = parseInt(b.dataset.days);
-            b.onclick = () => selectDur(b, days);
+    // ── BƯỚC 1: Gọi API phân tích BMI trước ──
+    try {
+        const bmiRes = await fetch(`${AI_SERVER_URL}/api/analyze-bmi`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ height, weight, age, goal, level })
         });
-        document.getElementById('durationHint').innerHTML = '✅ <span style="color:var(--accent);font-weight:bold;">Tài khoản Premium</span>. Bạn có thể sử dụng mọi tính năng!';
-    }
+        const bmiData = await bmiRes.json();
 
-    // ── KIỂM TRA QUYỀN PREMIUM (MỚI) ──
-    function checkPremiumStatus() {
-        const userStr = localStorage.getItem('loggedInUser');
-        if (!userStr) return;
-        
-        const localUser = JSON.parse(userStr);
-        
-        // GIẢ SỬ: Dữ liệu user của bạn có thuộc tính isPremium hoặc role là 'vip'
-        // Bạn có thể chỉnh sửa điều kiện này tùy theo cách bạn lưu trong Database
-        const isPremium = localUser.isPremium === true || localUser.role === 'premium';
-        
-        if (isPremium) {
-            unlockLongPlans(); // Nếu là VIP thì mở khóa ngay và luôn!
-        }
-    }
-    
-    // Gọi hàm kiểm tra lúc vừa load trang
-    checkPremiumStatus();
-
-    // ═══════════════════════════════════════
-    // TẠO LỘ TRÌNH
-    // ═══════════════════════════════════════
-    document.getElementById('btn-generate').addEventListener('click', async () => {
-        const goal      = document.getElementById('goal').value;
-        const level     = document.getElementById('level').value;
-        const equipment = document.getElementById('equipment').value;
-        const userInfo  = document.getElementById('userInfo').value;
-        const height    = document.getElementById('height').value;
-        const weight    = document.getElementById('weight').value;
-        const age       = document.getElementById('age').value;
-
-        document.getElementById('plan-title').innerText = `LỘ TRÌNH ${goal.toUpperCase()} — ${selectedDays} NGÀY`;
-        document.getElementById('plan-sub').innerText   = `${level} · ${height}cm · ${weight}kg · ${age} tuổi`;
-
-        const container = document.getElementById('plan-container');
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="loading-spinner"></div>
-                <p>AI đang phân tích và tạo lộ trình ${selectedDays} ngày cho bạn...</p>
-                <p style="font-size:12px;margin-top:6px;opacity:0.5">${goal} · ${level} · ${height}cm · ${weight}kg</p>
-            </div>`;
-
-        const btn = document.getElementById('btn-generate');
-        btn.disabled = true;
-        btn.innerText = 'Đang tạo...';
-
-        // Ẩn progress bar
-        document.getElementById('progressWrap').classList.remove('show');
-        currentPlanData = null;
-        currentPlanId   = null;
-
-        try {
-            const response = await fetch(`${AI_SERVER_URL}/api/generate-plan`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ goal, level, equipment, userInfo, height, weight, age, duration: selectedDays })
+        if (bmiData.need_advice) {
+            // Hiện modal tư vấn BMI, chờ người dùng chọn
+            showBmiAdviceModal(bmiData, () => {
+                // Người dùng đồng ý → dùng mục tiêu được gợi ý
+                const finalGoal = bmiData.suggested_goal || goal;
+                document.getElementById('goal').value = finalGoal;
+                doGeneratePlan(finalGoal, level, equipment, userInfo, height, weight, age);
+            }, () => {
+                // Người dùng từ chối → giữ mục tiêu gốc
+                doGeneratePlan(goal, level, equipment, userInfo, height, weight, age);
             });
+            return;
+        }
+    } catch (e) {
+        // Nếu lỗi BMI check thì vẫn tiếp tục tạo bình thường
+        console.warn('BMI check lỗi:', e);
+    }
 
-            const data = await response.json();
+    // BMI bình thường → tạo thẳng
+    doGeneratePlan(goal, level, equipment, userInfo, height, weight, age);
+});
 
-            if (data.plan_data) {
-                currentPlanData = data.plan_data;
-                renderPlan(data.plan_data, container);
-                appendPlanActions(container, data.plan_data);
-            } else if (data.error) {
-                const is429 = data.error.includes('429') || data.error.includes('Quota');
-                container.innerHTML = `<div class="empty-state" style="color:${is429 ? 'var(--accent)' : '#e74c3c'}">
-                    ${is429 ? '⏳ AI đang bận, vui lòng chờ 15 giây rồi thử lại.' : '❌ Lỗi AI: ' + data.error}
-                </div>`;
+// ════════════════════════════════════════
+// MODAL TƯ VẤN BMI
+// ════════════════════════════════════════
+function showBmiAdviceModal(bmiData, onAccept, onReject) {
+    const flagIcon = {
+        underweight: '⚠️',
+        overweight:  '📊',
+        obese:       '🔴'
+    }[bmiData.flag] || '📊';
+
+    const flagColor = {
+        underweight: '#4da8ff',
+        overweight:  '#e8ff47',
+        obese:       '#ff6b6b'
+    }[bmiData.flag] || '#e8ff47';
+
+    const modal = document.createElement('div');
+    modal.id = 'bmiAdviceModal';
+    modal.className = 'bmi-advice-overlay';
+    modal.innerHTML = `
+        <div class="bmi-advice-box">
+            <div class="bmi-advice-header">
+                <span class="bmi-advice-icon">${flagIcon}</span>
+                <div>
+                    <div class="bmi-advice-title">Phân tích chỉ số BMI</div>
+                    <div class="bmi-advice-sub">Trước khi tạo lộ trình</div>
+                </div>
+            </div>
+
+            <div class="bmi-score-row">
+                <div class="bmi-score-num" style="color:${flagColor}">${bmiData.bmi}</div>
+                <div class="bmi-score-info">
+                    <div class="bmi-score-cat" style="color:${flagColor}">${bmiData.category}</div>
+                    <div class="bmi-score-desc">Chỉ số khối cơ thể (BMI)</div>
+                </div>
+            </div>
+
+            <div class="bmi-advice-text">${bmiData.advice}</div>
+
+            ${bmiData.suggested_goal && bmiData.suggested_goal !== bmiData.original_goal ? `
+            <div class="bmi-suggestion-box">
+                <span class="bmi-sug-label">Gợi ý điều chỉnh mục tiêu</span>
+                <div class="bmi-sug-row">
+                    <span class="bmi-sug-old">❌ ${bmiData.original_goal}</span>
+                    <span class="bmi-sug-arrow">→</span>
+                    <span class="bmi-sug-new">✅ ${bmiData.suggested_goal}</span>
+                </div>
+            </div>` : ''}
+
+            <div class="bmi-advice-actions">
+                <button class="bmi-btn-accept" id="bmiAccept">
+                    ✅ Đồng ý, điều chỉnh mục tiêu
+                </button>
+                <button class="bmi-btn-reject" id="bmiReject">
+                    Giữ mục tiêu ban đầu và tiếp tục
+                </button>
+            </div>
+        </div>`;
+
+    document.body.appendChild(modal);
+    requestAnimationFrame(() => modal.classList.add('open'));
+
+    document.getElementById('bmiAccept').onclick = () => {
+        modal.remove();
+        onAccept();
+    };
+    document.getElementById('bmiReject').onclick = () => {
+        modal.remove();
+        onReject();
+    };
+}
+
+// ════════════════════════════════════════
+// THỰC SỰ GỌI API TẠO LỘ TRÌNH
+// ════════════════════════════════════════
+async function doGeneratePlan(goal, level, equipment, userInfo, height, weight, age) {
+    document.getElementById('plan-title').innerText = `LỘ TRÌNH ${goal.toUpperCase()} — ${selectedDays} NGÀY`;
+    document.getElementById('plan-sub').innerText   = `${level} · ${height}cm · ${weight}kg · ${age} tuổi`;
+
+    const container = document.getElementById('plan-container');
+    container.innerHTML = `
+        <div class="empty-state">
+            <div class="loading-spinner"></div>
+            <p>AI đang phân tích và tạo lộ trình ${selectedDays} ngày cho bạn...</p>
+            <p style="font-size:12px;margin-top:6px;opacity:0.5">${goal} · ${level} · ${height}cm · ${weight}kg</p>
+        </div>`;
+
+    const btn = document.getElementById('btn-generate');
+    btn.disabled = true;
+    btn.innerText = 'Đang tạo...';
+
+    document.getElementById('progressWrap').classList.remove('show');
+    currentPlanData = null;
+    currentPlanId   = null;
+
+    try {
+        const response = await fetch(`${AI_SERVER_URL}/api/generate-plan`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ goal, level, equipment, userInfo, height, weight, age, duration: selectedDays })
+        });
+        const data = await response.json();
+
+        if (data.plan_data) {
+            currentPlanData = data.plan_data;
+            renderPlan(data.plan_data, container);
+            appendPlanActions(container, data.plan_data);
+        } else if (data.error) {
+            const is429 = data.error.includes('429') || data.error.includes('Quota');
+            container.innerHTML = `<div class="empty-state" style="color:${is429 ? 'var(--accent)' : '#e74c3c'}">
+                ${is429 ? '⏳ AI đang bận, vui lòng chờ 15 giây rồi thử lại.' : '❌ Lỗi AI: ' + data.error}
+            </div>`;
+        }
+    } catch (err) {
+        container.innerHTML = `
+            <div class="empty-state" style="color:#e74c3c">
+                <p>❌ Không thể kết nối máy chủ AI.</p>
+                <p style="font-size:12px;margin-top:8px;opacity:0.6">Hãy chạy: <code>python ai_server.py</code> tại cổng 5001</p>
+            </div>`;
+    } finally {
+        btn.disabled = false;
+        btn.innerText = '⚡ Tạo Lộ Trình Bằng AI';
+    }
+}
+
+// ════════════════════════════════════════
+// RENDER KẾ HOẠCH
+// ════════════════════════════════════════
+function renderPlan(planData, container, progress = null) {
+    container.innerHTML = '';
+    const totalDays = planData.days.length;
+    let completedDaysCount = 0;
+    currentDisplayDayIndex = 0;
+
+    planData.days.forEach((day, index) => {
+        const dayCard = document.createElement('div');
+        dayCard.className = `day-card open ${index === 0 ? '' : 'hidden-day'}`;
+        dayCard.dataset.dayNumber = day.day_number;
+
+        let exProgress = {};
+        let pd = null;
+        if (progress) {
+            pd = progress.find(p => p.day_number === day.day_number);
+            if (pd && pd.exercises) {
+                pd.exercises.forEach(e => { exProgress[e.name] = e.completed; });
             }
+        }
 
-        } catch (err) {
-            container.innerHTML = `
-                <div class="empty-state" style="color:#e74c3c">
-                    <p>❌ Không thể kết nối máy chủ AI.</p>
-                    <p style="font-size:12px;margin-top:8px;opacity:0.6">Hãy chạy: <code>python ai_server.py</code> tại cổng 5001</p>
+        // Lấy target từ progress (có thể đã được lưu) hoặc từ plan_data
+        const targetCal  = (pd && pd.target_calories)  || day.target_calories  || planData.daily_calories_rest  || 1900;
+        const targetProt = (pd && pd.target_protein)   || day.target_protein   || planData.daily_protein_rest   || 120;
+
+        let dayDone = false;
+        if (day.is_rest) {
+            const localRestState = localStorage.getItem(`rest_${currentPlanId}_day_${day.day_number}`);
+            dayDone = localRestState !== null ? localRestState === 'true' : (pd && pd.day_done === true);
+        } else {
+            if (day.exercises && day.exercises.length > 0) {
+                dayDone = day.exercises.every(ex => exProgress[ex.name] === true);
+            }
+        }
+
+        if (dayDone) {
+            dayCard.classList.add('day-done-card');
+            completedDaysCount++;
+        }
+
+        dayCard.innerHTML = `
+            <div class="day-header">
+                <div class="day-header-left">
+                    <span class="day-num-badge">Ngày ${day.day_number}</span>
+                    <span class="day-name">${day.day_name || ''}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span class="day-focus">${day.is_rest ? 'NGHỈ NGƠI' : (day.focus || '')}</span>
+                    <span class="day-check-badge ${dayDone ? 'show' : ''}">✓ Hoàn thành</span>
+                </div>
+            </div>
+
+            <!-- NUTRITION BAR CHO MỖI NGÀY -->
+            <div class="day-nutrition-bar">
+                <div class="dn-item">
+                    <span class="dn-icon">🔥</span>
+                    <span class="dn-label">Calo mục tiêu</span>
+                    <span class="dn-val">${targetCal} <small>kcal</small></span>
+                </div>
+                <div class="dn-divider"></div>
+                <div class="dn-item">
+                    <span class="dn-icon">💪</span>
+                    <span class="dn-label">Protein mục tiêu</span>
+                    <span class="dn-val">${targetProt}g <small>protein</small></span>
+                </div>
+                <div class="dn-divider"></div>
+                <div class="dn-item">
+                    <span class="dn-icon">${day.is_rest ? '🛌' : '🏋️'}</span>
+                    <span class="dn-label">Loại ngày</span>
+                    <span class="dn-val" style="color:${day.is_rest ? '#a78bfa' : '#4ecdc4'}">${day.is_rest ? 'Nghỉ ngơi' : 'Ngày tập'}</span>
+                </div>
+            </div>
+
+            <div class="day-body" id="day-body-${day.day_number}"></div>`;
+
+        container.appendChild(dayCard);
+        const body = document.getElementById(`day-body-${day.day_number}`);
+
+        if (day.is_rest) {
+            body.innerHTML = `
+                <div class="rest-check-box ${dayDone ? 'completed' : ''}" id="rest-btn-${day.day_number}">
+                    <div class="ex-checkbox" style="background:${dayDone ? '#4ecdc4' : 'transparent'};border-color:${dayDone ? '#4ecdc4' : 'var(--border-hover)'};color:${dayDone ? '#0a0a0a' : 'transparent'}">
+                        ${dayDone ? '✓' : ''}
+                    </div>
+                    <span style="font-weight:600;color:${dayDone ? '#4ecdc4' : 'inherit'}">Xác nhận đã nghỉ ngơi & phục hồi</span>
                 </div>`;
-        } finally {
-            btn.disabled = false;
-            btn.innerText = '⚡ Tạo Lộ Trình Bằng AI';
+            const restBtn = document.getElementById(`rest-btn-${day.day_number}`);
+            restBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                checkinExercise(currentPlanId, day.day_number, 'RestDay', !restBtn.classList.contains('completed'), restBtn, dayCard, true);
+            });
+        } else {
+            day.exercises.forEach(ex => {
+                const done = exProgress[ex.name] || false;
+                const exEl = document.createElement('div');
+                exEl.className = `routine-item${done ? ' completed' : ''}`;
+                exEl.innerHTML = `
+                    <div class="ex-checkbox-wrap">
+                        <div class="ex-checkbox">${done ? '✓' : ''}</div>
+                    </div>
+                    <div class="routine-item-info">
+                        <h4>${ex.name}</h4>
+                        <div class="tags">
+                            <span class="tag tag-muscle">${ex.muscle || 'Toàn thân'}</span>
+                            <span class="tag tag-sets">${ex.sets} sets × ${ex.reps} reps</span>
+                            <span class="tag tag-rest">⏱ ${ex.rest}s</span>
+                        </div>
+                    </div>
+                    <button class="btn-ex-detail" title="Xem chi tiết">›</button>`;
+
+                exEl.querySelector('.ex-checkbox-wrap').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    checkinExercise(currentPlanId, day.day_number, ex.name, !exEl.classList.contains('completed'), exEl, dayCard, false);
+                });
+                exEl.querySelector('.routine-item-info').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openExerciseModal(ex);
+                });
+                exEl.querySelector('.btn-ex-detail').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openExerciseModal(ex);
+                });
+                body.appendChild(exEl);
+            });
         }
     });
 
-   // ═══════════════════════════════════════
-    // RENDER KẾ HOẠCH TỪ JSON (ĐÃ SỬA LỖI MẤT NGÀY 4)
-    // ═══════════════════════════════════════
-    // ═══════════════════════════════════════
-    // RENDER KẾ HOẠCH (CHẾ ĐỘ HIỂN THỊ TỪNG NGÀY)
-    // ═══════════════════════════════════════
-    function renderPlan(planData, container, progress = null) {
-        container.innerHTML = '';
-        let totalDays = planData.days.length;
-        let completedDaysCount = 0; 
-        currentDisplayDayIndex = 0; // Reset về ngày đầu tiên khi render lại
+    // Thanh điều hướng ngày
+    const navWrap = document.createElement('div');
+    navWrap.className = 'day-nav-controls';
+    navWrap.innerHTML = `
+        <button class="btn-nav-day" id="btn-prev-day" onclick="navigateDay(-1)" disabled>← Ngày trước</button>
+        <button class="btn-nav-day" id="btn-next-day" onclick="navigateDay(1)" ${totalDays <= 1 ? 'disabled' : ''}>Ngày tiếp theo →</button>`;
+    container.appendChild(navWrap);
 
-        planData.days.forEach((day, index) => {
-            const dayCard = document.createElement('div');
-            
-            // 🌟 Mặc định ép thẻ LUÔN MỞ (open). 
-            // 🌟 Nếu không phải là Ngày 1 (index 0), thì gắn thêm class 'hidden-day' để giấu nó đi
-            dayCard.className = `day-card open ${index === 0 ? '' : 'hidden-day'}`;
-            dayCard.dataset.dayNumber = day.day_number;
+    updateProgressBar(completedDaysCount, totalDays);
+}
 
-            if (day.day_number === 4 || day.day_number === 7) { day.is_rest = true; }
+// ════════════════════════════════════════
+// CHUYỂN NGÀY
+// ════════════════════════════════════════
+window.navigateDay = function(direction) {
+    const cards = document.querySelectorAll('.day-card');
+    const totalDays = cards.length;
+    if (cards[currentDisplayDayIndex]) cards[currentDisplayDayIndex].classList.add('hidden-day');
+    currentDisplayDayIndex = Math.max(0, Math.min(totalDays - 1, currentDisplayDayIndex + direction));
+    if (cards[currentDisplayDayIndex]) cards[currentDisplayDayIndex].classList.remove('hidden-day');
+    document.getElementById('btn-prev-day').disabled = (currentDisplayDayIndex === 0);
+    document.getElementById('btn-next-day').disabled = (currentDisplayDayIndex === totalDays - 1);
+};
 
-            let exProgress = {};
-            let pd = null; 
-            if (progress) {
-                pd = progress.find(p => p.day_number === day.day_number);
-                if (pd && pd.exercises) {
-                    pd.exercises.forEach(e => { exProgress[e.name] = e.completed; });
-                }
-            }
+// ════════════════════════════════════════
+// NÚT ÁP DỤNG / TẠO LẠI
+// ════════════════════════════════════════
+function appendPlanActions(container, planData) {
+    const wrap = document.createElement('div');
+    wrap.className = 'plan-actions';
+    wrap.id = 'plan-action-buttons';
+    wrap.innerHTML = `
+        <button class="btn-apply" id="btn-apply">💾 Áp dụng lộ trình này</button>
+        <button class="btn-retry" id="btn-retry">🔄 Tạo lại</button>`;
+    container.appendChild(wrap);
 
-            let dayDone = false;
-            if (day.is_rest) {
-                const localRestState = localStorage.getItem(`rest_${currentPlanId}_day_${day.day_number}`);
-                if (localRestState !== null) {
-                    dayDone = localRestState === 'true';
-                } else {
-                    dayDone = (pd && pd.day_done === true) || exProgress['RestDay'] === true;
-                }
-            } else {
-                if (day.exercises && day.exercises.length > 0) {
-                    dayDone = day.exercises.every(ex => exProgress[ex.name] === true);
-                }
-            }
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn-danger';
+    cancelBtn.id = 'btn-cancel-plan';
+    cancelBtn.innerHTML = '🗑️ HỦY LỘ TRÌNH ĐANG TẬP';
+    container.appendChild(cancelBtn);
 
-            if (dayDone) {
-                dayCard.classList.add('day-done-card');
-                completedDaysCount++;
-            }
+    document.getElementById('btn-apply').addEventListener('click', () => savePlan(planData));
+    document.getElementById('btn-retry').addEventListener('click', () => {
+        document.getElementById('btn-generate').click();
+    });
+    document.getElementById('btn-cancel-plan').addEventListener('click', cancelPlan);
+}
 
-            // Đã bỏ sự kiện onClick toggle và icon ▼ vì giờ không cần thu gọn nữa
-            dayCard.innerHTML = `
-                <div class="day-header">
-                    <div class="day-header-left">
-                        <span class="day-num-badge">Ngày ${day.day_number}</span>
-                        <span class="day-name">${day.day_name || ''}</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        <span class="day-focus">${day.is_rest ? 'NGHỈ NGƠI' : (day.focus || '')}</span>
-                        <span class="day-check-badge ${dayDone ? 'show' : ''}">✓ Hoàn thành</span>
-                    </div>
+// ════════════════════════════════════════
+// LƯU LỘ TRÌNH
+// ════════════════════════════════════════
+async function savePlan(planData) {
+    const height = document.getElementById('height').value;
+    const weight = document.getElementById('weight').value;
+    const age    = document.getElementById('age').value;
+    const btn    = document.getElementById('btn-apply');
+    if (btn) { btn.disabled = true; btn.innerText = 'Đang lưu...'; }
+
+    try {
+        const res = await fetch(`${AI_SERVER_URL}/api/save-plan`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plan_data: planData, userId: USER_ID, height, weight, age })
+        });
+        const result = await res.json();
+
+        if (result.success) {
+            currentPlanId = result.plan_id;
+            showToast('✅ Lộ trình đã kích hoạt! Bắt đầu tập thôi!', 'success');
+            updateProgressBar(0, planData.duration_days || selectedDays);
+            document.getElementById('plan-action-buttons').style.display = 'none';
+            document.getElementById('btn-cancel-plan').classList.add('show');
+            document.getElementById('btn-generate').disabled = true;
+            document.getElementById('btn-generate').innerText = 'LỘ TRÌNH ĐANG CHẠY';
+            document.getElementById('btn-generate').style.opacity = '0.5';
+
+            // ── HOÁN ĐỔI SIDEBAR → Quản lý Dinh dưỡng ──
+            switchToNutritionSidebar(planData);
+        } else {
+            showToast('❌ Lỗi lưu: ' + result.error, 'error');
+        }
+    } catch(e) {
+        showToast('❌ Không kết nối được server', 'error');
+    } finally {
+        if (btn && btn.style.display !== 'none') {
+            btn.disabled = false;
+            btn.innerText = '💾 Áp dụng lộ trình này';
+        }
+    }
+}
+
+// ════════════════════════════════════════
+// HOÁN ĐỔI SIDEBAR → QUẢN LÝ DINH DƯỠNG
+// ════════════════════════════════════════
+function switchToNutritionSidebar(planData) {
+    const sidebar = document.querySelector('.app-sidebar');
+    if (!sidebar) return;
+
+    // Xác định ngày hôm nay trong lộ trình
+    const todayDayNum = currentDisplayDayIndex + 1;
+    const todayDay    = planData.days.find(d => d.day_number === todayDayNum) || planData.days[0];
+    todayIsRest       = todayDay ? todayDay.is_rest : false;
+    todayTarget.calories = todayDay ? (todayDay.target_calories || planData.daily_calories_rest) : 2000;
+    todayTarget.protein  = todayDay ? (todayDay.target_protein  || planData.daily_protein_rest)  : 130;
+
+    sidebar.innerHTML = `
+        <div class="nutr-sidebar">
+            <div class="nutr-header">
+                <h2>🥗 Dinh dưỡng hôm nay</h2>
+                <p class="nutr-date">${new Date().toLocaleDateString('vi-VN', {weekday:'long', day:'numeric', month:'long'})}</p>
+            </div>
+
+            <!-- Mục tiêu ngày -->
+            <div class="nutr-target-card">
+                <div class="nutr-target-row">
+                    <span class="nutr-target-lbl">🔥 Calo mục tiêu</span>
+                    <span class="nutr-target-val" id="ntCalTarget">${todayTarget.calories} kcal</span>
                 </div>
-                <div class="day-body" id="day-body-${day.day_number}"></div>`;
+                <div class="nutr-target-row">
+                    <span class="nutr-target-lbl">💪 Protein mục tiêu</span>
+                    <span class="nutr-target-val" id="ntProtTarget">${todayTarget.protein}g</span>
+                </div>
+                <div class="nutr-day-type ${todayIsRest ? 'rest' : 'workout'}">
+                    ${todayIsRest ? '🛌 Ngày nghỉ — ăn nhẹ hơn' : '🏋️ Ngày tập — nạp đủ năng lượng'}
+                </div>
+            </div>
 
-            container.appendChild(dayCard);
-            const body = document.getElementById(`day-body-${day.day_number}`);
+            <!-- Thanh tiến độ dinh dưỡng -->
+            <div class="nutr-progress-wrap">
+                <div class="nutr-progress-row">
+                    <span>Calo đã nạp</span>
+                    <span id="ntCalDone">0 / ${todayTarget.calories} kcal</span>
+                </div>
+                <div class="nutr-bar-bg">
+                    <div class="nutr-bar-fill cal-bar" id="ntCalBar" style="width:0%"></div>
+                </div>
+                <div class="nutr-progress-row" style="margin-top:10px;">
+                    <span>Protein đã nạp</span>
+                    <span id="ntProtDone">0 / ${todayTarget.protein}g</span>
+                </div>
+                <div class="nutr-bar-bg">
+                    <div class="nutr-bar-fill prot-bar" id="ntProtBar" style="width:0%"></div>
+                </div>
+            </div>
 
-            // RENDER CHI TIẾT
-            if (day.is_rest) {
-                body.innerHTML = `
-                    <div class="rest-check-box ${dayDone ? 'completed' : ''}" id="rest-btn-${day.day_number}">
-                        <div class="ex-checkbox" style="background:${dayDone ? '#4ecdc4' : 'transparent'}; border-color:${dayDone ? '#4ecdc4' : 'var(--border-hover)'}; color:${dayDone ? '#0a0a0a' : 'transparent'}">
-                            ${dayDone ? '✓' : ''}
-                        </div>
-                        <span style="font-weight:600; color:${dayDone ? '#4ecdc4' : 'inherit'}">Xác nhận đã nghỉ ngơi & phục hồi</span>
-                    </div>`;
+            <!-- TABS NHẬP LIỆU -->
+            <div class="nutr-tabs">
+                <button class="nutr-tab on" data-tab="manual" onclick="switchNutrTab('manual', this)">✏️ Nhập tay</button>
+                <button class="nutr-tab" data-tab="ai" onclick="switchNutrTab('ai', this)">🤖 Nhập món ăn</button>
+            </div>
 
-                const restBtn = document.getElementById(`rest-btn-${day.day_number}`);
-                restBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const isDone = !restBtn.classList.contains('completed');
-                    checkinExercise(currentPlanId, day.day_number, 'RestDay', isDone, restBtn, dayCard, true);
-                });
-            } else {
-                day.exercises.forEach(ex => {
-                    const done = exProgress[ex.name] || false;
-                    const exEl = document.createElement('div');
-                    exEl.className = `routine-item${done ? ' completed' : ''}`;
-                    exEl.innerHTML = `
-                        <div class="ex-checkbox">${done ? '✓' : ''}</div>
-                        <div class="routine-item-info">
-                            <h4>${ex.name}</h4>
-                            <div class="tags">
-                                <span class="tag tag-muscle">${ex.muscle_group || 'Toàn thân'}</span>
-                                <span class="tag tag-sets">${ex.sets} sets × ${ex.reps} reps</span>
-                            </div>
-                        </div>`;
-                    exEl.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const isDone = !exEl.classList.contains('completed');
-                        checkinExercise(currentPlanId, day.day_number, ex.name, isDone, exEl, dayCard, false);
-                    });
-                    body.appendChild(exEl);
-                });
-            }
+            <!-- TAB NHẬP TAY -->
+            <div class="nutr-tab-pane on" id="nutr-pane-manual">
+                <div class="nutr-input-group">
+                    <label>Calories (kcal)</label>
+                    <input type="number" id="ni_cal" placeholder="VD: 500" min="0" max="5000">
+                </div>
+                <div class="nutr-input-group">
+                    <label>Protein (g)</label>
+                    <input type="number" id="ni_prot" placeholder="VD: 35" min="0" max="500">
+                </div>
+                <div class="nutr-input-group">
+                    <label>Carbs (g) <span style="opacity:.5;font-size:10px;">tuỳ chọn</span></label>
+                    <input type="number" id="ni_carbs" placeholder="VD: 60" min="0" max="1000">
+                </div>
+                <div class="nutr-input-group">
+                    <label>Fat (g) <span style="opacity:.5;font-size:10px;">tuỳ chọn</span></label>
+                    <input type="number" id="ni_fat" placeholder="VD: 15" min="0" max="500">
+                </div>
+                <button class="nutr-btn-add" onclick="addManualNutrition()">+ Cộng vào hôm nay</button>
+            </div>
+
+            <!-- TAB AI PHÂN TÍCH -->
+            <div class="nutr-tab-pane" id="nutr-pane-ai">
+                <div class="nutr-ai-hint">
+                    Nhập tên & lượng món ăn, AI sẽ tự tính dinh dưỡng cho bạn.
+                </div>
+                <textarea id="ni_food" class="nutr-food-input"
+                    placeholder="VD: 200g ức gà, 1 bát cơm trắng, 1 quả trứng luộc..." rows="3"></textarea>
+                <button class="nutr-btn-analyze" id="btnAnalyzeFood" onclick="analyzeAndAddFood()">
+                    🔍 Phân tích & Thêm vào
+                </button>
+                <!-- Kết quả AI trả về -->
+                <div id="foodAnalysisResult" class="food-analysis-result" style="display:none;"></div>
+            </div>
+
+            <!-- Ghi chú dinh dưỡng từ AI -->
+            ${planData.nutrition_note ? `
+            <div class="nutr-note-box">
+                <span class="nutr-note-icon">💡</span>
+                <span>${planData.nutrition_note}</span>
+            </div>` : ''}
+        </div>`;
+
+    // Load dữ liệu dinh dưỡng hôm nay từ server
+    loadTodayNutrition();
+}
+
+// ════════════════════════════════════════
+// CHUYỂN TAB DINH DƯỠNG
+// ════════════════════════════════════════
+function switchNutrTab(tabId, btn) {
+    document.querySelectorAll('.nutr-tab').forEach(t => t.classList.remove('on'));
+    document.querySelectorAll('.nutr-tab-pane').forEach(p => p.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('nutr-pane-' + tabId).classList.add('on');
+}
+
+// ════════════════════════════════════════
+// NHẬP TAY DINH DƯỠNG
+// ════════════════════════════════════════
+async function addManualNutrition() {
+    const cal  = parseFloat(document.getElementById('ni_cal').value) || 0;
+    const prot = parseFloat(document.getElementById('ni_prot').value) || 0;
+    const carbs= parseFloat(document.getElementById('ni_carbs').value) || 0;
+    const fat  = parseFloat(document.getElementById('ni_fat').value) || 0;
+
+    if (!cal && !prot) {
+        showToast('⚠️ Vui lòng nhập ít nhất Calories hoặc Protein', 'error');
+        return;
+    }
+
+    await saveNutritionToServer(cal, prot, carbs, fat, 'Nhập tay');
+
+    // Reset inputs
+    ['ni_cal','ni_prot','ni_carbs','ni_fat'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    showToast('✅ Đã cập nhật dinh dưỡng!', 'success');
+}
+
+// ════════════════════════════════════════
+// AI PHÂN TÍCH MÓN ĂN
+// ════════════════════════════════════════
+async function analyzeAndAddFood() {
+    const foodText = document.getElementById('ni_food').value.trim();
+    if (!foodText) {
+        showToast('⚠️ Hãy nhập món ăn trước', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('btnAnalyzeFood');
+    btn.disabled = true;
+    btn.innerText = '⏳ Đang phân tích...';
+
+    const resultBox = document.getElementById('foodAnalysisResult');
+    resultBox.style.display = 'none';
+
+    try {
+        const res = await fetch(`${AI_SERVER_URL}/api/analyze-food`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ food_text: foodText })
         });
+        const data = await res.json();
 
-        // 🌟 TẠO THANH ĐIỀU HƯỚNG TỚI/LUI
-        const navWrap = document.createElement('div');
-        navWrap.className = 'day-nav-controls';
-        navWrap.innerHTML = `
-            <button class="btn-nav-day" id="btn-prev-day" onclick="navigateDay(-1)" disabled>← Ngày trước</button>
-            <button class="btn-nav-day" id="btn-next-day" onclick="navigateDay(1)" ${totalDays <= 1 ? 'disabled' : ''}>Ngày tiếp theo →</button>
-        `;
-        container.appendChild(navWrap);
+        if (!data.success) {
+            showToast('❌ ' + (data.error || 'AI không phân tích được'), 'error');
+            return;
+        }
 
-        updateProgressBar(completedDaysCount, totalDays);
+        const { total, items, summary } = data.data;
+
+        // Hiển thị kết quả
+        resultBox.style.display = 'block';
+        resultBox.innerHTML = `
+            <div class="fa-summary">${summary}</div>
+            <div class="fa-items">
+                ${items.map(item => `
+                    <div class="fa-item">
+                        <span class="fa-item-name">${item.name} <small>${item.amount}</small></span>
+                        <span class="fa-item-nums">${item.calories} kcal · ${item.protein}g P</span>
+                    </div>`).join('')}
+            </div>
+            <div class="fa-total">
+                <div class="fa-total-row">
+                    <span>🔥 Tổng Calories</span><strong>${total.calories} kcal</strong>
+                </div>
+                <div class="fa-total-row">
+                    <span>💪 Protein</span><strong>${total.protein}g</strong>
+                </div>
+                <div class="fa-total-row">
+                    <span>🍞 Carbs</span><strong>${total.carbs}g</strong>
+                </div>
+                <div class="fa-total-row">
+                    <span>🧈 Fat</span><strong>${total.fat}g</strong>
+                </div>
+            </div>
+            <button class="nutr-btn-add" onclick="confirmAddFoodNutrition(${total.calories}, ${total.protein}, ${total.carbs}, ${total.fat})">
+                ✅ Thêm vào hôm nay
+            </button>`;
+
+    } catch(e) {
+        showToast('❌ Lỗi kết nối AI', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = '🔍 Phân tích & Thêm vào';
     }
+}
 
-    // ═══════════════════════════════════════
-    // HÀM XỬ LÝ CHUYỂN NGÀY (TRƯỢT QUA LẠI)
-    // ═══════════════════════════════════════
-    window.navigateDay = function(direction) {
-        const cards = document.querySelectorAll('.day-card');
-        const totalDays = cards.length;
-        
-        // 1. Ẩn ngày đang hiển thị
-        if (cards[currentDisplayDayIndex]) {
-            cards[currentDisplayDayIndex].classList.add('hidden-day');
-        }
-        
-        // 2. Tính toán ngày tiếp theo
-        currentDisplayDayIndex += direction;
-        
-        // Chặn không cho vượt qua Ngày 1 hoặc Ngày 7
-        if (currentDisplayDayIndex < 0) currentDisplayDayIndex = 0;
-        if (currentDisplayDayIndex >= totalDays) currentDisplayDayIndex = totalDays - 1;
-        
-        // 3. Hiển thị ngày mới lên
-        if (cards[currentDisplayDayIndex]) {
-            cards[currentDisplayDayIndex].classList.remove('hidden-day');
-        }
-        
-        // 4. Khóa/Mở khóa các nút nếu đang ở trang đầu hoặc trang cuối
-        document.getElementById('btn-prev-day').disabled = (currentDisplayDayIndex === 0);
-        document.getElementById('btn-next-day').disabled = (currentDisplayDayIndex === totalDays - 1);
-    };
-    // ═══════════════════════════════════════
-    // NÚT ÁP DỤNG / TẠO LẠI
-    // ═══════════════════════════════════════
-    function appendPlanActions(container, planData) {
-        const wrap = document.createElement('div');
-        wrap.className = 'plan-actions';
-        wrap.id = 'plan-action-buttons'; // Thêm ID để dễ gọi
-        wrap.innerHTML = `
-            <button class="btn-apply" id="btn-apply">💾 Áp dụng lộ trình này</button>
-            <button class="btn-retry" id="btn-retry">🔄 Tạo lại</button>
-        `;
-        container.appendChild(wrap);
+async function confirmAddFoodNutrition(cal, prot, carbs, fat) {
+    await saveNutritionToServer(cal, prot, carbs, fat, document.getElementById('ni_food').value);
+    document.getElementById('ni_food').value = '';
+    document.getElementById('foodAnalysisResult').style.display = 'none';
+    showToast('✅ Đã thêm dinh dưỡng từ món ăn!', 'success');
+}
 
-        // Nút hủy (nằm dưới cùng)
-        const cancelBtn = document.createElement('button');
-        cancelBtn.className = 'btn-danger';
-        cancelBtn.id = 'btn-cancel-plan';
-        cancelBtn.innerHTML = '🗑️ HỦY LỘ TRÌNH ĐANG TẬP';
-        container.appendChild(cancelBtn);
-
-        document.getElementById('btn-apply').addEventListener('click', () => savePlan(planData));
-        document.getElementById('btn-retry').addEventListener('click', () => {
-            document.getElementById('btn-generate').click();
+// ════════════════════════════════════════
+// LƯU DINH DƯỠNG LÊN SERVER & CẬP NHẬT UI
+// ════════════════════════════════════════
+async function saveNutritionToServer(cal, prot, carbs, fat, note) {
+    try {
+        const res = await fetch(`${AI_SERVER_URL}/api/save-nutrition`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: USER_ID, date: TODAY,
+                calories: cal, protein: prot, carbs, fat, note
+            })
         });
-        document.getElementById('btn-cancel-plan').addEventListener('click', cancelPlan);
-    }
-
-    // ═══════════════════════════════════════
-    // LƯU LỘ TRÌNH VÀO MONGODB
-    // ═══════════════════════════════════════
-    async function savePlan(planData) {
-        const height = document.getElementById('height').value;
-        const weight = document.getElementById('weight').value;
-        const age    = document.getElementById('age').value;
-        const btn    = document.getElementById('btn-apply');
-        if (btn) { btn.disabled = true; btn.innerText = 'Đang lưu...'; }
-
-        try {
-            const res  = await fetch(`${AI_SERVER_URL}/api/save-plan`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    plan_data: planData,
-                    plan_html: document.getElementById('plan-container').innerHTML,
-                    userId:    USER_ID,
-                    height, weight, age
-                })
-            });
-            const result = await res.json();
-
-            if (result.success) {
-                currentPlanId = result.plan_id;
-                showToast('✅ Lộ trình đã kích hoạt! Bắt đầu tập thôi!', 'success');
-
-                // 1. Cập nhật progress bar
-                updateProgressBar(0, planData.duration_days || selectedDays);
-
-                // 2. Ẩn nút "Áp dụng" và "Tạo lại"
-                document.getElementById('plan-action-buttons').style.display = 'none';
-
-                // 3. Hiện nút "Hủy lộ trình"
-                document.getElementById('btn-cancel-plan').classList.add('show');
-                
-                // 4. Khóa cái form bên trái lại không cho người dùng bấm lung tung nữa
-                document.getElementById('btn-generate').disabled = true;
-                document.getElementById('btn-generate').innerText = 'LỘ TRÌNH ĐANG CHẠY';
-                document.getElementById('btn-generate').style.opacity = '0.5';
-            } else {
-                showToast('❌ Lỗi lưu: ' + result.error, 'error');
-            }
-        } catch(e) {
-            showToast('❌ Không kết nối được server', 'error');
-        } finally {
-            if (btn && btn.style.display !== 'none') {
-                btn.disabled = false;
-                btn.innerText = '💾 Áp dụng lộ trình này';
-            }
+        const data = await res.json();
+        if (data.success) {
+            todayNutrition = data.today;
+            updateNutritionUI();
         }
-        
+    } catch(e) {
+        // Nếu server lỗi thì cập nhật local
+        todayNutrition.calories += cal;
+        todayNutrition.protein  += prot;
+        updateNutritionUI();
     }
+}
 
-    // ═══════════════════════════════════════
-    // CHECK-IN BÀI TẬP (BẢN PRO - CẬP NHẬT TỨC THỜI)
-    // ═══════════════════════════════════════
-    async function checkinExercise(planId, dayNumber, exName, completed, exEl, dayCard, isRest = false) {
-        
-        // 🌟 BƯỚC 1: ĐỔI MÀU GIAO DIỆN NGAY LẬP TỨC (Không chờ Server)
-        if (isRest) {
-            // LƯU NGAY VÀO BỘ NHỚ TRÌNH DUYỆT ĐỂ KHÔNG BAO GIỜ QUÊN NỮA
-            localStorage.setItem(`rest_${planId}_day_${dayNumber}`, completed);
-            if (completed) {
-                exEl.classList.add('completed');
-                exEl.querySelector('.ex-checkbox').textContent = '✓';
-                dayCard.classList.add('day-done-card');
-                
-                const badge = dayCard.querySelector('.day-check-badge');
-                if(badge) { badge.textContent = '✓ Hoàn thành'; badge.classList.add('show'); }
-            } else {
-                exEl.classList.remove('completed');
-                exEl.querySelector('.ex-checkbox').textContent = '';
-                dayCard.classList.remove('day-done-card');
-                
-                const badge = dayCard.querySelector('.day-check-badge');
-                if(badge) badge.classList.remove('show');
-            }
-        } 
-        else {
-            if (completed) {
-                exEl.classList.add('completed');
-                exEl.querySelector('.ex-checkbox').textContent = '✓';
-            } else {
-                exEl.classList.remove('completed');
-                exEl.querySelector('.ex-checkbox').textContent = '';
-            }
+// ════════════════════════════════════════
+// LẤY DINH DƯỠNG HÔM NAY TỪ SERVER
+// ════════════════════════════════════════
+async function loadTodayNutrition() {
+    try {
+        const res = await fetch(`${AI_SERVER_URL}/api/get-nutrition?userId=${USER_ID}&date=${TODAY}`);
+        const data = await res.json();
+        todayNutrition = data;
+        updateNutritionUI();
+    } catch(e) {
+        console.warn('Không tải được dinh dưỡng hôm nay');
+    }
+}
 
-            // Kiểm tra xem đã tick hết sạch bài tập trong ngày chưa?
-            const body = document.getElementById(`day-body-${dayNumber}`);
-            const allItems = body.querySelectorAll('.routine-item');
-            const allDone = [...allItems].every(el => el.classList.contains('completed'));
-            
+// ════════════════════════════════════════
+// CẬP NHẬT THANH TIẾN ĐỘ DINH DƯỠNG
+// ════════════════════════════════════════
+function updateNutritionUI() {
+    const calDoneEl  = document.getElementById('ntCalDone');
+    const protDoneEl = document.getElementById('ntProtDone');
+    const calBarEl   = document.getElementById('ntCalBar');
+    const protBarEl  = document.getElementById('ntProtBar');
+    if (!calDoneEl) return;
+
+    const calPct  = Math.min(100, Math.round((todayNutrition.calories / todayTarget.calories) * 100));
+    const protPct = Math.min(100, Math.round((todayNutrition.protein  / todayTarget.protein)  * 100));
+
+    calDoneEl.textContent  = `${Math.round(todayNutrition.calories)} / ${todayTarget.calories} kcal`;
+    protDoneEl.textContent = `${Math.round(todayNutrition.protein)}g / ${todayTarget.protein}g`;
+    calBarEl.style.width   = calPct  + '%';
+    protBarEl.style.width  = protPct + '%';
+
+    // Đổi màu nếu vượt mục tiêu
+    calBarEl.style.background  = calPct  >= 100 ? '#4ecdc4' : '';
+    protBarEl.style.background = protPct >= 100 ? '#4ecdc4' : '';
+}
+
+// ════════════════════════════════════════
+// CHECK-IN BÀI TẬP
+// ════════════════════════════════════════
+async function checkinExercise(planId, dayNumber, exName, completed, exEl, dayCard, isRest = false) {
+    if (isRest) {
+        localStorage.setItem(`rest_${planId}_day_${dayNumber}`, completed);
+        if (completed) {
+            exEl.classList.add('completed');
+            exEl.querySelector('.ex-checkbox').textContent = '✓';
+            dayCard.classList.add('day-done-card');
             const badge = dayCard.querySelector('.day-check-badge');
-            if (allDone) {
-                dayCard.classList.add('day-done-card');
-                if(badge) { badge.textContent = '✓ Hoàn thành'; badge.classList.add('show'); }
-            } else {
-                dayCard.classList.remove('day-done-card');
-                if(badge) badge.classList.remove('show');
-            }
+            if(badge) { badge.textContent = '✓ Hoàn thành'; badge.classList.add('show'); }
+        } else {
+            exEl.classList.remove('completed');
+            exEl.querySelector('.ex-checkbox').textContent = '';
+            dayCard.classList.remove('day-done-card');
+            const badge = dayCard.querySelector('.day-check-badge');
+            if(badge) badge.classList.remove('show');
         }
-
-        // 🌟 BƯỚC 2: ĐẾM LẠI VÀ CHẠY THANH TIẾN ĐỘ NGAY LẬP TỨC
-        const totalDaysCount = document.querySelectorAll('.day-card').length;
-        const completedDaysCount = document.querySelectorAll('.day-done-card').length;
-        
-        updateProgressBar(completedDaysCount, totalDaysCount);
-
-        if (completedDaysCount === totalDaysCount && totalDaysCount > 0) {
-            showToast('🎉 Tuyệt vời! Bạn đã hoàn thành toàn bộ lộ trình!', 'success');
-            // XÓA HOẶC COMMENT DÒNG BÊN DƯỚI LẠI
-            // if(typeof unlockLongPlans === 'function') unlockLongPlans(); 
+    } else {
+        if (completed) {
+            exEl.classList.add('completed');
+            exEl.querySelector('.ex-checkbox').textContent = '✓';
+        } else {
+            exEl.classList.remove('completed');
+            exEl.querySelector('.ex-checkbox').textContent = '';
         }
-
-        // 🌟 BƯỚC 3: GỬI BÁO CÁO CHO SERVER NGẦM PHÍA SAU
-        try {
-            fetch(`${AI_SERVER_URL}/api/checkin-exercise`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ planId, dayNumber, exerciseName: exName, completed })
-            }).then(res => {
-                if(!res.ok) console.warn("Lưu tiến độ lên server thất bại!");
-            });
-        } catch (e) {
-            console.error("Lỗi mạng khi lưu ngầm:", e);
+        const body = document.getElementById(`day-body-${dayNumber}`);
+        const allDone = [...body.querySelectorAll('.routine-item')].every(el => el.classList.contains('completed'));
+        const badge = dayCard.querySelector('.day-check-badge');
+        if (allDone) {
+            dayCard.classList.add('day-done-card');
+            if(badge) { badge.textContent = '✓ Hoàn thành'; badge.classList.add('show'); }
+        } else {
+            dayCard.classList.remove('day-done-card');
+            if(badge) badge.classList.remove('show');
         }
     }
 
-    // ═══════════════════════════════════════
-    // CẬP NHẬT THANH TIẾN ĐỘ
-    // ═══════════════════════════════════════
-    function updateProgressBar(done, total) {
-        const pct = total > 0 ? Math.round(done / total * 100) : 0;
-        document.getElementById('progressWrap').classList.add('show');
-        document.getElementById('progressPct').textContent  = pct + '%';
-        document.getElementById('progressBar').style.width  = pct + '%';
-        document.getElementById('progressDays').textContent = `${done} / ${total} ngày hoàn thành`;
+    const totalDaysCount = document.querySelectorAll('.day-card').length;
+    const completedDaysCount = document.querySelectorAll('.day-done-card').length;
+    updateProgressBar(completedDaysCount, totalDaysCount);
+
+    if (completedDaysCount === totalDaysCount && totalDaysCount > 0) {
+        showToast('🎉 Tuyệt vời! Bạn đã hoàn thành toàn bộ lộ trình!', 'success');
     }
 
-    // ═══════════════════════════════════════
-    // TOAST NOTIFICATION
-    // ═══════════════════════════════════════
-    function showToast(msg, type = 'success') {
-        const t = document.createElement('div');
-        t.className = `toast ${type}`;
-        t.textContent = msg;
-        document.body.appendChild(t);
-        setTimeout(() => t.remove(), 3500);
-    }
-    // ═══════════════════════════════════════
-    // HỦY LỘ TRÌNH
-    // ═══════════════════════════════════════
-    async function cancelPlan() {
-        if (!confirm("⚠️ Bạn có chắc chắn muốn hủy bỏ lộ trình đang tập không? Mọi tiến độ của lộ trình này sẽ bị xóa sạch!")) return;
+    try {
+        fetch(`${AI_SERVER_URL}/api/checkin-exercise`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ planId, dayNumber, exerciseName: exName, completed })
+        });
+    } catch (e) { console.error("Lỗi mạng khi lưu ngầm:", e); }
+}
 
-        try {
-            const res = await fetch(`${AI_SERVER_URL}/api/cancel-plan/${USER_ID}`, {
-                method: 'DELETE'
-            });
-            const result = await res.json();
+// ════════════════════════════════════════
+// THANH TIẾN ĐỘ LỘ TRÌNH
+// ════════════════════════════════════════
+function updateProgressBar(done, total) {
+    const pct = total > 0 ? Math.round(done / total * 100) : 0;
+    document.getElementById('progressWrap').classList.add('show');
+    document.getElementById('progressPct').textContent  = pct + '%';
+    document.getElementById('progressBar').style.width  = pct + '%';
+    document.getElementById('progressDays').textContent = `${done} / ${total} ngày hoàn thành`;
+}
 
-            if (result.success) {
-                showToast('Đã hủy lộ trình.', 'success');
-                
-                // Reset lại toàn bộ giao diện về trạng thái ban đầu
-                currentPlanId = null;
-                currentPlanData = null;
-                
-                // Ẩn thanh tiến độ
-                document.getElementById('progressWrap').classList.remove('show');
-                
-                // Đưa bảng chính về rỗng
-                document.getElementById('plan-container').innerHTML = `
-                    <div class="empty-state">
-                        <p>Đã hủy lộ trình. Hãy tạo lộ trình mới ở bảng bên trái.</p>
-                    </div>`;
-                    
-                // Mở khóa lại nút Tạo lộ trình bên sidebar
-                const btnGen = document.getElementById('btn-generate');
-                btnGen.disabled = false;
-                btnGen.innerText = '⚡ Tạo Lộ Trình Bằng AI';
-                btnGen.style.opacity = '1';
-                
-            } else {
-                showToast('Lỗi: ' + result.message, 'error');
-            }
-        } catch (e) {
-            showToast('Lỗi kết nối máy chủ.', 'error');
+// ════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════
+function showToast(msg, type = 'success') {
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+}
+
+// ════════════════════════════════════════
+// HỦY LỘ TRÌNH
+// ════════════════════════════════════════
+async function cancelPlan() {
+    if (!confirm("⚠️ Bạn có chắc chắn muốn hủy bỏ lộ trình đang tập không?")) return;
+    try {
+        const res = await fetch(`${AI_SERVER_URL}/api/cancel-plan/${USER_ID}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (result.success) {
+            showToast('Đã hủy lộ trình.', 'success');
+            currentPlanId = null;
+            currentPlanData = null;
+            document.getElementById('progressWrap').classList.remove('show');
+            document.getElementById('plan-container').innerHTML = `<div class="empty-state"><p>Đã hủy lộ trình. Hãy tạo lộ trình mới.</p></div>`;
+            location.reload(); // Reload để sidebar trở về form khởi tạo
+        } else {
+            showToast('Lỗi: ' + result.message, 'error');
         }
+    } catch (e) {
+        showToast('Lỗi kết nối máy chủ.', 'error');
     }
-    // Kiểm tra lúc vừa vào trang xem có Plan active không
-    async function checkActivePlanOnLoad() {
-        try {
-            const res = await fetch(`${AI_SERVER_URL}/api/get-active-plan?userId=${USER_ID}`);
-            const data = await res.json();
+}
 
-            if (data.plan) {
-                // Đã có lộ trình đang chạy!
-                currentPlanId = data.plan._id || data.plan.id;
-                currentPlanData = data.plan.plan_data;
-                
-                document.getElementById('plan-title').innerText = "LỘ TRÌNH ĐANG THỰC HIỆN";
-                
-                // Vẽ lại giao diện từ JSON (Hàm này giờ đã tự động tính tiến độ)
-                const container = document.getElementById('plan-container');
-                renderPlan(currentPlanData, container, data.plan.daily_progress);
-                appendPlanActions(container, currentPlanData);
-                
-                // --- ĐÃ XÓA DÒNG updateProgressBar Ở ĐÂY ĐỂ TRÁNH GÂY LỖI ĐÈ DỮ LIỆU ---
+// ════════════════════════════════════════
+// KIỂM TRA LỘ TRÌNH KHI VÀO TRANG
+// ════════════════════════════════════════
+async function checkActivePlanOnLoad() {
+    try {
+        const res  = await fetch(`${AI_SERVER_URL}/api/get-active-plan?userId=${USER_ID}`);
+        const data = await res.json();
+        if (data.plan) {
+            currentPlanId   = data.plan._id || data.plan.id;
+            currentPlanData = data.plan.plan_data;
+            document.getElementById('plan-title').innerText = "LỘ TRÌNH ĐANG THỰC HIỆN";
+            const container = document.getElementById('plan-container');
+            renderPlan(currentPlanData, container, data.plan.daily_progress);
+            appendPlanActions(container, currentPlanData);
+            document.getElementById('plan-action-buttons').style.display = 'none';
+            document.getElementById('btn-cancel-plan').classList.add('show');
+            const btnGen = document.getElementById('btn-generate');
+            btnGen.disabled = true;
+            btnGen.innerText = 'LỘ TRÌNH ĐANG CHẠY';
+            btnGen.style.opacity = '0.5';
 
-                document.getElementById('plan-action-buttons').style.display = 'none';
-                document.getElementById('btn-cancel-plan').classList.add('show');
-                
-                const btnGen = document.getElementById('btn-generate');
-                btnGen.disabled = true;
-                btnGen.innerText = 'LỘ TRÌNH ĐANG CHẠY';
-                btnGen.style.opacity = '0.5';
-            }
-        } catch (e) {
-            console.log("Không có lộ trình active hoặc server tắt");
+            // Hoán đổi sidebar → dinh dưỡng
+            switchToNutritionSidebar(currentPlanData);
         }
+    } catch (e) {
+        console.log("Không có lộ trình active hoặc server tắt");
     }
-    
-    // Gọi hàm này khi load trang
-    checkActivePlanOnLoad();
+}
+checkActivePlanOnLoad();
+
+
+// ════════════════════════════════════════════════════════════════
+// MODAL CHI TIẾT BÀI TẬP
+// ════════════════════════════════════════════════════════════════
+(function createExerciseModal() {
+    const modalHTML = `
+    <div id="exModalOverlay" class="ex-modal-overlay">
+        <div class="ex-modal">
+            <button class="ex-modal-close" id="exModalClose">✕</button>
+            <div class="ex-modal-hero">
+                <div class="ex-modal-icon" id="emIcon">🏋️</div>
+                <div class="ex-modal-hero-info">
+                    <div class="ex-modal-muscle" id="emMuscle">NGỰC</div>
+                    <div class="ex-modal-name" id="emName">Tên bài tập</div>
+                    <div class="ex-modal-badges" id="emBadges"></div>
+                </div>
+            </div>
+            <div class="ex-modal-stats" id="emStats"></div>
+            <div class="ex-modal-tabs">
+                <button class="em-tab on" data-t="steps">Hướng dẫn</button>
+                <button class="em-tab" data-t="muscles">Nhóm cơ</button>
+                <button class="em-tab" data-t="tips">Lưu ý</button>
+            </div>
+            <div class="em-pane on" id="em-pane-steps"></div>
+            <div class="em-pane" id="em-pane-muscles"></div>
+            <div class="em-pane" id="em-pane-tips"></div>
+        </div>
+    </div>`;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.getElementById('exModalClose').onclick = closeExerciseModal;
+    document.getElementById('exModalOverlay').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeExerciseModal();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeExerciseModal(); });
+    document.querySelectorAll('.em-tab').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.em-tab').forEach(t => t.classList.remove('on'));
+            document.querySelectorAll('.em-pane').forEach(t => t.classList.remove('on'));
+            btn.classList.add('on');
+            document.getElementById('em-pane-' + btn.dataset.t).classList.add('on');
+        };
+    });
+})();
+
+function openExerciseModal(ex) {
+    const diffLabel = { B: 'Người mới', I: 'Trung bình', A: 'Nâng cao' };
+    const diffCls   = { B: 'badge-b', I: 'badge-i', A: 'badge-a' };
+    document.getElementById('emIcon').textContent   = ex.icon || '🏋️';
+    document.getElementById('emMuscle').textContent = (ex.muscle || '').toUpperCase();
+    document.getElementById('emName').textContent   = ex.name;
+    document.getElementById('emBadges').innerHTML = `
+        <span class="em-badge ${diffCls[ex.diff] || 'badge-i'}">${diffLabel[ex.diff] || ex.diff || 'Trung bình'}</span>
+        <span class="em-badge" style="background:rgba(77,160,255,.12);color:#4da0ff;border:1px solid rgba(77,160,255,.25)">${ex.equip || 'Dụng cụ'}</span>`;
+    document.getElementById('emStats').innerHTML = `
+        <div class="em-stat"><div class="em-stat-num">${ex.sets}</div><div class="em-stat-lbl">Sets</div></div>
+        <div class="em-stat"><div class="em-stat-num">${ex.reps}</div><div class="em-stat-lbl">Reps</div></div>
+        <div class="em-stat"><div class="em-stat-num">${ex.rest}s</div><div class="em-stat-lbl">Nghỉ</div></div>`;
+    const stepsHtml = (ex.steps && ex.steps.length > 0)
+        ? `<ol class="em-steps">${ex.steps.map((s, i) =>
+            `<li class="em-step"><span class="em-step-num">0${i+1}</span><div class="em-step-text">${s}</div></li>`).join('')}</ol>`
+        : `<p style="color:var(--text-muted);font-size:14px;padding:16px 0;">Chưa có hướng dẫn.</p>`;
+    document.getElementById('em-pane-steps').innerHTML = stepsHtml;
+    const allMuscles = [{ role: 'Cơ chính', name: ex.muscle }];
+    if (ex.sec && ex.sec.length > 0) ex.sec.forEach(s => allMuscles.push({ role: 'Cơ phụ', name: s }));
+    document.getElementById('em-pane-muscles').innerHTML = `
+        <div class="em-muscle-list">${allMuscles.map(m =>
+            `<div class="em-muscle-item"><div class="em-muscle-role">${m.role}</div><div class="em-muscle-name">${m.name}</div></div>`
+        ).join('')}</div>`;
+    const tipsHtml = (ex.tips && ex.tips.length > 0)
+        ? `<ul class="em-tips">${ex.tips.map(t =>
+            `<li class="em-tip"><span class="em-tip-icon">⚡</span><span>${t}</span></li>`).join('')}</ul>`
+        : `<p style="color:var(--text-muted);font-size:14px;padding:16px 0;">Không có lưu ý.</p>`;
+    document.getElementById('em-pane-tips').innerHTML = tipsHtml;
+    document.querySelectorAll('.em-tab').forEach(t => t.classList.remove('on'));
+    document.querySelectorAll('.em-pane').forEach(t => t.classList.remove('on'));
+    document.querySelector('.em-tab[data-t="steps"]').classList.add('on');
+    document.getElementById('em-pane-steps').classList.add('on');
+    document.getElementById('exModalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeExerciseModal() {
+    document.getElementById('exModalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+// ════════════════════════════════════════════════════════════════
+// CSS INJECT (Modal + Nutrition Sidebar + BMI Modal)
+// ════════════════════════════════════════════════════════════════
+(function injectCSS() {
+    const s = document.createElement('style');
+    s.textContent = `
+
+    /* ──────────────────────────────────────
+       BMI LIVE PREVIEW TRONG SIDEBAR
+    ────────────────────────────────────── */
+    #bmiPreview {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-top: 8px;
+    }
+    .bmi-num { font-size: 22px; font-weight: 800; }
+    .bmi-cat-lbl { font-size: 12px; font-weight: 600; }
+    .bmi-under { color: #4da8ff; }
+    .bmi-ok    { color: #4ecdc4; }
+    .bmi-over  { color: #e8ff47; }
+    .bmi-obese { color: #ff6b6b; }
+
+    /* ──────────────────────────────────────
+       MODAL TƯ VẤN BMI
+    ────────────────────────────────────── */
+    .bmi-advice-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        display: flex; align-items: center; justify-content: center;
+        padding: 20px;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.25s;
+    }
+    .bmi-advice-overlay.open { opacity: 1; pointer-events: all; }
+    .bmi-advice-box {
+        background: var(--bg-card, #161616);
+        border: 1px solid var(--border, #2a2a2a);
+        border-radius: 20px;
+        padding: 32px 28px;
+        max-width: 460px;
+        width: 100%;
+        transform: scale(0.95);
+        transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .bmi-advice-overlay.open .bmi-advice-box { transform: scale(1); }
+    .bmi-advice-header {
+        display: flex; align-items: center; gap: 14px;
+        margin-bottom: 24px;
+    }
+    .bmi-advice-icon { font-size: 32px; }
+    .bmi-advice-title { font-size: 18px; font-weight: 700; color: var(--text-primary, #f0f0f0); }
+    .bmi-advice-sub { font-size: 12px; color: var(--text-muted, #666); margin-top: 3px; }
+    .bmi-score-row {
+        display: flex; align-items: center; gap: 16px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border, #2a2a2a);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+    }
+    .bmi-score-num { font-size: 40px; font-weight: 800; line-height: 1; }
+    .bmi-score-cat { font-size: 16px; font-weight: 700; }
+    .bmi-score-desc { font-size: 11px; color: var(--text-muted, #666); margin-top: 4px; }
+    .bmi-advice-text {
+        font-size: 14px; line-height: 1.7;
+        color: var(--text-secondary, #ccc);
+        margin-bottom: 20px;
+    }
+    .bmi-suggestion-box {
+        background: rgba(232,255,71,0.04);
+        border: 1px solid rgba(232,255,71,0.15);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 20px;
+    }
+    .bmi-sug-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted, #666); display: block; margin-bottom: 10px; }
+    .bmi-sug-row { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; }
+    .bmi-sug-old { color: #ff6b6b; text-decoration: line-through; }
+    .bmi-sug-arrow { color: var(--text-muted, #666); }
+    .bmi-sug-new { color: #4ecdc4; }
+    .bmi-advice-actions { display: flex; flex-direction: column; gap: 10px; }
+    .bmi-btn-accept {
+        width: 100%; padding: 14px;
+        background: var(--accent, #e8ff47); color: #0a0a0a;
+        border: none; border-radius: 10px;
+        font-weight: 700; font-size: 14px;
+        cursor: pointer; transition: opacity 0.2s;
+        font-family: inherit;
+    }
+    .bmi-btn-accept:hover { opacity: 0.88; }
+    .bmi-btn-reject {
+        width: 100%; padding: 12px;
+        background: transparent;
+        color: var(--text-muted, #666);
+        border: 1px solid var(--border, #2a2a2a);
+        border-radius: 10px;
+        font-size: 13px; font-weight: 500;
+        cursor: pointer; transition: all 0.2s;
+        font-family: inherit;
+    }
+    .bmi-btn-reject:hover { color: var(--text-primary); border-color: var(--border-hover); }
+
+    /* ──────────────────────────────────────
+       NUTRITION BAR TRONG MỖI DAY CARD
+    ────────────────────────────────────── */
+    .day-nutrition-bar {
+        display: flex; align-items: center;
+        background: rgba(255,255,255,0.015);
+        border-bottom: 1px solid var(--border, #2a2a2a);
+        padding: 10px 22px;
+        gap: 0;
+    }
+    .dn-item {
+        flex: 1; display: flex; align-items: center; gap: 7px;
+        padding: 4px 0;
+    }
+    .dn-icon { font-size: 14px; }
+    .dn-label { font-size: 10px; color: var(--text-muted, #666); letter-spacing: 0.5px; }
+    .dn-val { font-size: 13px; font-weight: 700; color: var(--text-primary, #f0f0f0); margin-left: auto; }
+    .dn-val small { font-size: 9px; font-weight: 400; color: var(--text-muted, #666); }
+    .dn-divider { width: 1px; height: 28px; background: var(--border, #2a2a2a); margin: 0 12px; }
+
+    /* ──────────────────────────────────────
+       NUTRITION SIDEBAR
+    ────────────────────────────────────── */
+    .nutr-sidebar { display: flex; flex-direction: column; gap: 16px; }
+    .nutr-header h2 {
+        font-size: 18px; font-weight: 700;
+        letter-spacing: 1px; color: var(--accent, #e8ff47);
+        text-transform: uppercase; margin-bottom: 4px;
+    }
+    .nutr-date { font-size: 11px; color: var(--text-muted, #666); }
+
+    .nutr-target-card {
+        background: rgba(232,255,71,0.04);
+        border: 1px solid rgba(232,255,71,0.12);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex; flex-direction: column; gap: 10px;
+    }
+    .nutr-target-row {
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 13px;
+    }
+    .nutr-target-lbl { color: var(--text-secondary, #aaa); }
+    .nutr-target-val { font-weight: 700; color: var(--accent, #e8ff47); }
+    .nutr-day-type {
+        font-size: 11px; font-weight: 600;
+        padding: 6px 10px; border-radius: 6px;
+        text-align: center; letter-spacing: 0.5px;
+    }
+    .nutr-day-type.workout { background: rgba(78,205,196,0.1); color: #4ecdc4; }
+    .nutr-day-type.rest    { background: rgba(167,139,250,0.1); color: #a78bfa; }
+
+    .nutr-progress-wrap { display: flex; flex-direction: column; gap: 6px; }
+    .nutr-progress-row {
+        display: flex; justify-content: space-between;
+        font-size: 11px; color: var(--text-secondary, #888);
+    }
+    .nutr-bar-bg {
+        height: 6px; background: var(--border, #2a2a2a);
+        border-radius: 3px; overflow: hidden;
+    }
+    .nutr-bar-fill {
+        height: 100%; border-radius: 3px;
+        transition: width 0.5s ease;
+    }
+    .cal-bar  { background: #e8ff47; }
+    .prot-bar { background: #4ecdc4; }
+
+    .nutr-tabs {
+        display: flex; gap: 4px;
+        background: var(--bg-secondary, #111);
+        border-radius: 10px; padding: 4px;
+    }
+    .nutr-tab {
+        flex: 1; padding: 9px; border: none;
+        border-radius: 8px; background: transparent;
+        color: var(--text-muted, #666);
+        font-size: 11px; font-weight: 600;
+        cursor: pointer; transition: all 0.2s;
+        font-family: inherit;
+    }
+    .nutr-tab.on { background: var(--accent, #e8ff47); color: #0a0a0a; }
+
+    .nutr-tab-pane { display: none; flex-direction: column; gap: 10px; }
+    .nutr-tab-pane.on { display: flex; }
+
+    .nutr-input-group { display: flex; flex-direction: column; gap: 5px; }
+    .nutr-input-group label {
+        font-size: 10px; font-weight: 700;
+        letter-spacing: 1.2px; text-transform: uppercase;
+        color: var(--text-muted, #666);
+    }
+    .nutr-input-group input {
+        background: var(--bg-secondary, #111);
+        border: 1px solid var(--border, #2a2a2a);
+        border-radius: 8px; padding: 10px 12px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 13px; font-family: inherit;
+        outline: none; transition: border-color 0.2s;
+        box-sizing: border-box; width: 100%;
+    }
+    .nutr-input-group input:focus { border-color: var(--accent, #e8ff47); }
+
+    .nutr-btn-add {
+        width: 100%; padding: 12px;
+        background: var(--accent, #e8ff47); color: #0a0a0a;
+        border: none; border-radius: 8px;
+        font-weight: 700; font-size: 13px;
+        cursor: pointer; transition: opacity 0.2s;
+        font-family: inherit;
+    }
+    .nutr-btn-add:hover { opacity: 0.88; }
+
+    .nutr-ai-hint {
+        font-size: 12px; color: var(--text-muted, #666);
+        line-height: 1.5; padding: 8px 0;
+    }
+    .nutr-food-input {
+        background: var(--bg-secondary, #111);
+        border: 1px solid var(--border, #2a2a2a);
+        border-radius: 8px; padding: 10px 12px;
+        color: var(--text-primary, #f0f0f0);
+        font-size: 13px; font-family: inherit;
+        resize: vertical; outline: none;
+        transition: border-color 0.2s; width: 100%;
+        box-sizing: border-box;
+    }
+    .nutr-food-input:focus { border-color: var(--accent, #e8ff47); }
+    .nutr-btn-analyze {
+        width: 100%; padding: 12px;
+        background: rgba(78,205,196,0.12); color: #4ecdc4;
+        border: 1px solid rgba(78,205,196,0.3);
+        border-radius: 8px; font-weight: 700; font-size: 13px;
+        cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .nutr-btn-analyze:hover:not(:disabled) { background: rgba(78,205,196,0.2); }
+    .nutr-btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .food-analysis-result {
+        background: var(--bg-secondary, #111);
+        border: 1px solid var(--border, #2a2a2a);
+        border-radius: 10px; padding: 14px;
+        display: flex; flex-direction: column; gap: 10px;
+    }
+    .fa-summary { font-size: 12px; color: var(--text-muted, #666); line-height: 1.5; font-style: italic; }
+    .fa-items { display: flex; flex-direction: column; gap: 6px; }
+    .fa-item {
+        display: flex; justify-content: space-between; align-items: center;
+        font-size: 12px; padding: 6px 0;
+        border-bottom: 1px solid var(--border, #2a2a2a);
+    }
+    .fa-item:last-child { border-bottom: none; }
+    .fa-item-name { color: var(--text-primary, #f0f0f0); font-weight: 500; }
+    .fa-item-name small { color: var(--text-muted, #666); margin-left: 4px; }
+    .fa-item-nums { color: var(--accent, #e8ff47); font-weight: 600; font-size: 11px; }
+    .fa-total { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; border-top: 1px solid var(--border, #2a2a2a); }
+    .fa-total-row { display: flex; justify-content: space-between; font-size: 13px; }
+    .fa-total-row strong { color: var(--accent, #e8ff47); }
+
+    .nutr-note-box {
+        display: flex; gap: 10px; align-items: flex-start;
+        background: rgba(167,139,250,0.05);
+        border: 1px solid rgba(167,139,250,0.15);
+        border-radius: 8px; padding: 12px;
+        font-size: 12px; color: var(--text-secondary, #aaa);
+        line-height: 1.5;
+    }
+    .nutr-note-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ──────────────────────────────────────
+       EXERCISE MODAL
+    ────────────────────────────────────── */
+    .routine-item { display: flex; align-items: center; gap: 14px; }
+    .ex-checkbox-wrap { flex-shrink: 0; cursor: pointer; padding: 4px; }
+    .routine-item-info { flex: 1; cursor: pointer; padding: 2px 0; }
+    .routine-item-info:hover h4 { color: var(--accent, #e8ff47); }
+    .tag-rest { color: #a78bfa; background: rgba(167,139,250,0.08); }
+    .btn-ex-detail {
+        width: 32px; height: 32px; border-radius: 8px;
+        border: 1px solid var(--border, #2a2a2a);
+        background: transparent; color: var(--text-muted, #666);
+        font-size: 20px; line-height: 1; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: all 0.2s;
+    }
+    .btn-ex-detail:hover { border-color: var(--accent); color: var(--accent); background: rgba(232,255,71,0.06); }
+
+    .ex-modal-overlay {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.75);
+        backdrop-filter: blur(6px);
+        z-index: 9000;
+        display: flex; align-items: flex-end; justify-content: center;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.25s ease;
+    }
+    .ex-modal-overlay.open { opacity: 1; pointer-events: all; }
+    .ex-modal-overlay.open .ex-modal { transform: translateY(0); }
+    .ex-modal {
+        width: 100%; max-width: 560px; max-height: 88vh;
+        overflow-y: auto;
+        background: var(--bg-card, #161616);
+        border: 1px solid var(--border, #2a2a2a);
+        border-radius: 20px 20px 0 0;
+        padding: 28px 28px 40px;
+        position: relative;
+        transform: translateY(40px);
+        transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .ex-modal-close {
+        position: absolute; top: 16px; right: 16px;
+        width: 32px; height: 32px; border-radius: 50%;
+        border: 1px solid var(--border, #2a2a2a);
+        background: var(--bg-secondary, #111);
+        color: var(--text-muted, #666); font-size: 14px;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s; z-index: 10;
+    }
+    .ex-modal-close:hover { background: #e74c3c; border-color: #e74c3c; color: #fff; }
+    .ex-modal-hero { display: flex; align-items: center; gap: 18px; margin-bottom: 24px; padding-top: 8px; }
+    .ex-modal-icon {
+        width: 72px; height: 72px; border-radius: 16px;
+        background: rgba(232,255,71,0.06); border: 1px solid rgba(232,255,71,0.15);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 28px; font-weight: 800; color: var(--accent, #e8ff47);
+        flex-shrink: 0;
+    }
+    .ex-modal-muscle { font-size: 10px; font-weight: 700; letter-spacing: 2px; color: var(--accent, #e8ff47); margin-bottom: 6px; }
+    .ex-modal-name { font-size: 22px; font-weight: 700; color: var(--text-primary, #f0f0f0); line-height: 1.2; margin-bottom: 10px; }
+    .ex-modal-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+    .em-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; }
+    .badge-b { background: rgba(78,205,196,0.12); color: #4ecdc4; border: 1px solid rgba(78,205,196,0.25); }
+    .badge-i { background: rgba(232,255,71,0.10); color: #e8ff47; border: 1px solid rgba(232,255,71,0.25); }
+    .badge-a { background: rgba(231,76,60,0.12); color: #e74c3c; border: 1px solid rgba(231,76,60,0.25); }
+    .ex-modal-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 24px; }
+    .em-stat { background: var(--bg-secondary,#111); border: 1px solid var(--border,#2a2a2a); border-radius: 10px; padding: 14px 10px; text-align: center; }
+    .em-stat-num { font-size: 22px; font-weight: 700; color: var(--accent,#e8ff47); line-height: 1; margin-bottom: 4px; }
+    .em-stat-lbl { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted,#666); }
+    .ex-modal-tabs { display: flex; gap: 4px; background: var(--bg-secondary,#111); border-radius: 10px; padding: 4px; margin-bottom: 20px; }
+    .em-tab { flex: 1; padding: 9px; border: none; border-radius: 8px; background: transparent; color: var(--text-muted,#666); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .em-tab.on { background: var(--accent,#e8ff47); color: #0a0a0a; }
+    .em-pane { display: none; }
+    .em-pane.on { display: block; }
+    .em-steps { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+    .em-step { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; background: var(--bg-secondary,#111); border: 1px solid var(--border,#2a2a2a); border-radius: 10px; }
+    .em-step-num { font-size: 11px; font-weight: 800; color: var(--accent,#e8ff47); letter-spacing: 1px; flex-shrink: 0; margin-top: 1px; }
+    .em-step-text { font-size: 13px; color: var(--text-primary,#f0f0f0); line-height: 1.6; }
+    .em-muscle-list { display: flex; flex-direction: column; gap: 10px; }
+    .em-muscle-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--bg-secondary,#111); border: 1px solid var(--border,#2a2a2a); border-radius: 10px; }
+    .em-muscle-role { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted,#666); }
+    .em-muscle-name { font-size: 14px; font-weight: 600; color: var(--text-primary,#f0f0f0); }
+    .em-tips { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+    .em-tip { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: rgba(232,255,71,0.03); border: 1px solid rgba(232,255,71,0.1); border-radius: 10px; font-size: 13px; color: var(--text-primary,#f0f0f0); line-height: 1.6; }
+    .em-tip-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    @media (min-width: 600px) {
+        .ex-modal-overlay { align-items: center; }
+        .ex-modal { border-radius: 20px; }
+    }
+    `;
+    document.head.appendChild(s);
+})();
+
+

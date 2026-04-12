@@ -1,3 +1,5 @@
+
+// đây là file main.js
 document.addEventListener("DOMContentLoaded", () => {
   // 1. TỰ ĐỘNG IN ĐẬM MENU ĐANG CHỌN
   let path = window.location.pathname;
