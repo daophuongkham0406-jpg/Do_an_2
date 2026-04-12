@@ -231,8 +231,9 @@ function openModal(id) {
         <div class="m-stat"><div class="m-stat-num">${ex.rest}</div><div class="m-stat-lbl">Nghỉ</div></div>
     `;
 
+    // Xóa đoạn gọi s.t và s.d đi, chỉ gọi thẳng chữ s ra thôi!
     const stepsHtml = (ex.steps && ex.steps.length > 0) 
-        ? ex.steps.map((s, i) => `<li class="step"><span class="step-num">0${i + 1}</span><div class="step-text"><strong>${s.t}</strong><br><br>${s.d}</div></li>`).join("")
+        ? ex.steps.map((s, i) => `<li class="step"><span class="step-num">0${i + 1}</span><div class="step-text">${s}</div></li>`).join("")
         : `<p style="color:var(--text3); font-size:14px;">Chưa có hướng dẫn.</p>`;
     document.getElementById("pane-steps").innerHTML = `<ol class="steps">${stepsHtml}</ol>`;
 
