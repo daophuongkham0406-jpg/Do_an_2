@@ -2,7 +2,7 @@
     const AI_SERVER_URL = 'http://localhost:5001';
     // ── Lấy userId từ localStorage (do check_login.js lưu) ──
     const USER_ID = localStorage.getItem('userId') || 'guest';
-
+    let currentDisplayDayIndex = 0; // Biến để nhớ xem đang hiển thị ngày thứ mấy
     let selectedDays  = 7;
     let currentPlanData = null;  // JSON plan hiện tại
     let currentPlanId   = null;  // _id sau khi lưu
@@ -123,94 +123,153 @@
         }
     });
 
+   // ═══════════════════════════════════════
+    // RENDER KẾ HOẠCH TỪ JSON (ĐÃ SỬA LỖI MẤT NGÀY 4)
+    // ═══════════════════════════════════════
+    // ═══════════════════════════════════════
+    // RENDER KẾ HOẠCH (CHẾ ĐỘ HIỂN THỊ TỪNG NGÀY)
+    // ═══════════════════════════════════════
     function renderPlan(planData, container, progress = null) {
-    container.innerHTML = '';
-    let totalDays = planData.days.length;
-    let completedDaysCount = 0;
+        container.innerHTML = '';
+        let totalDays = planData.days.length;
+        let completedDaysCount = 0; 
+        currentDisplayDayIndex = 0; // Reset về ngày đầu tiên khi render lại
 
-    planData.days.forEach((day, index) => {
-        const dayCard = document.createElement('div');
-        dayCard.className = `day-card ${index === 0 ? 'open' : ''}`;
-        dayCard.dataset.dayNumber = day.day_number;
+        planData.days.forEach((day, index) => {
+            const dayCard = document.createElement('div');
+            
+            // 🌟 Mặc định ép thẻ LUÔN MỞ (open). 
+            // 🌟 Nếu không phải là Ngày 1 (index 0), thì gắn thêm class 'hidden-day' để giấu nó đi
+            dayCard.className = `day-card open ${index === 0 ? '' : 'hidden-day'}`;
+            dayCard.dataset.dayNumber = day.day_number;
 
-        // Ép Ngày 4 và Ngày 7 thành ngày nghỉ nếu cần
-        if (day.day_number === 4 || day.day_number === 7) {
-            day.is_rest = true; 
-        }
+            if (day.day_number === 4 || day.day_number === 7) { day.is_rest = true; }
 
-        let dayDone = false;
-        let exProgress = {};
-        if (progress) {
-            const pd = progress.find(p => p.day_number === day.day_number);
-            if (pd) {
-                dayDone = pd.day_done;
-                pd.exercises.forEach(e => { exProgress[e.name] = e.completed; });
+            let exProgress = {};
+            let pd = null; 
+            if (progress) {
+                pd = progress.find(p => p.day_number === day.day_number);
+                if (pd && pd.exercises) {
+                    pd.exercises.forEach(e => { exProgress[e.name] = e.completed; });
+                }
             }
-        }
-        if (dayDone) {
-            dayCard.classList.add('day-done-card');
-        }
 
-        dayCard.innerHTML = `
-            <div class="day-header" onclick="this.parentElement.classList.toggle('open')">
-                <div class="day-header-left">
-                    <span class="day-num-badge">Ngày ${day.day_number}</span>
-                    <span class="day-name">${day.day_name || ''}</span>
+            let dayDone = false;
+            if (day.is_rest) {
+                const localRestState = localStorage.getItem(`rest_${currentPlanId}_day_${day.day_number}`);
+                if (localRestState !== null) {
+                    dayDone = localRestState === 'true';
+                } else {
+                    dayDone = (pd && pd.day_done === true) || exProgress['RestDay'] === true;
+                }
+            } else {
+                if (day.exercises && day.exercises.length > 0) {
+                    dayDone = day.exercises.every(ex => exProgress[ex.name] === true);
+                }
+            }
+
+            if (dayDone) {
+                dayCard.classList.add('day-done-card');
+                completedDaysCount++;
+            }
+
+            // Đã bỏ sự kiện onClick toggle và icon ▼ vì giờ không cần thu gọn nữa
+            dayCard.innerHTML = `
+                <div class="day-header">
+                    <div class="day-header-left">
+                        <span class="day-num-badge">Ngày ${day.day_number}</span>
+                        <span class="day-name">${day.day_name || ''}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="day-focus">${day.is_rest ? 'NGHỈ NGƠI' : (day.focus || '')}</span>
+                        <span class="day-check-badge ${dayDone ? 'show' : ''}">✓ Hoàn thành</span>
+                    </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <span class="day-focus">${day.is_rest ? 'NGHỈ NGƠI' : (day.focus || '')}</span>
-                    <span class="day-check-badge ${dayDone ? 'show' : ''}">✓ Hoàn thành</span>
-                    <span class="day-toggle-icon">▼</span>
-                </div>
-            </div>
-            <div class="day-body" id="day-body-${day.day_number}"></div>`;
+                <div class="day-body" id="day-body-${day.day_number}"></div>`;
 
-        container.appendChild(dayCard);
-        const body = document.getElementById(`day-body-${day.day_number}`);
+            container.appendChild(dayCard);
+            const body = document.getElementById(`day-body-${day.day_number}`);
 
-        if (day.is_rest) {
-            // TẠO Ô TICK CHO NGÀY NGHỈ
-            body.innerHTML = `
-                <div class="rest-check-box ${dayDone ? 'completed' : ''}" id="rest-btn-${day.day_number}">
-                    <div class="ex-checkbox">${dayDone ? '✓' : ''}</div>
-                    <span style="font-weight:600;">Xác nhận đã nghỉ ngơi & phục hồi</span>
-                </div>`;
-
-            const restBtn = document.getElementById(`rest-btn-${day.day_number}`);
-            restBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isDone = !restBtn.classList.contains('completed');
-                checkinExercise(currentPlanId, day.day_number, 'RestDay', isDone, restBtn, dayCard, true);
-            });
-        } else {
-            // RENDER BÀI TẬP NHƯ CŨ
-            day.exercises.forEach(ex => {
-                const done = exProgress[ex.name] || false;
-                const exEl = document.createElement('div');
-                exEl.className = `routine-item${done ? ' completed' : ''}`;
-                exEl.innerHTML = `
-                    <div class="ex-checkbox">${done ? '✓' : ''}</div>
-                    <div class="routine-item-info">
-                        <h4>${ex.name}</h4>
-                        <div class="tags">
-                            <span class="tag tag-muscle">${ex.muscle_group}</span>
-                            <span class="tag tag-sets">${ex.sets} sets × ${ex.reps} reps</span>
+            // RENDER CHI TIẾT
+            if (day.is_rest) {
+                body.innerHTML = `
+                    <div class="rest-check-box ${dayDone ? 'completed' : ''}" id="rest-btn-${day.day_number}">
+                        <div class="ex-checkbox" style="background:${dayDone ? '#4ecdc4' : 'transparent'}; border-color:${dayDone ? '#4ecdc4' : 'var(--border-hover)'}; color:${dayDone ? '#0a0a0a' : 'transparent'}">
+                            ${dayDone ? '✓' : ''}
                         </div>
+                        <span style="font-weight:600; color:${dayDone ? '#4ecdc4' : 'inherit'}">Xác nhận đã nghỉ ngơi & phục hồi</span>
                     </div>`;
-                exEl.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const isDone = !exEl.classList.contains('completed');
-                    checkinExercise(currentPlanId, day.day_number, ex.name, isDone, exEl, dayCard, false);
-                });
-                body.appendChild(exEl);
-            });
-        }
-    });
 
-    // Cập nhật lại thanh tiến độ dựa trên số lượng .day-done-card thực tế
-    const actualDone = document.querySelectorAll('.day-done-card').length;
-    updateProgressBar(actualDone, totalDays);
-}
+                const restBtn = document.getElementById(`rest-btn-${day.day_number}`);
+                restBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isDone = !restBtn.classList.contains('completed');
+                    checkinExercise(currentPlanId, day.day_number, 'RestDay', isDone, restBtn, dayCard, true);
+                });
+            } else {
+                day.exercises.forEach(ex => {
+                    const done = exProgress[ex.name] || false;
+                    const exEl = document.createElement('div');
+                    exEl.className = `routine-item${done ? ' completed' : ''}`;
+                    exEl.innerHTML = `
+                        <div class="ex-checkbox">${done ? '✓' : ''}</div>
+                        <div class="routine-item-info">
+                            <h4>${ex.name}</h4>
+                            <div class="tags">
+                                <span class="tag tag-muscle">${ex.muscle_group || 'Toàn thân'}</span>
+                                <span class="tag tag-sets">${ex.sets} sets × ${ex.reps} reps</span>
+                            </div>
+                        </div>`;
+                    exEl.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const isDone = !exEl.classList.contains('completed');
+                        checkinExercise(currentPlanId, day.day_number, ex.name, isDone, exEl, dayCard, false);
+                    });
+                    body.appendChild(exEl);
+                });
+            }
+        });
+
+        // 🌟 TẠO THANH ĐIỀU HƯỚNG TỚI/LUI
+        const navWrap = document.createElement('div');
+        navWrap.className = 'day-nav-controls';
+        navWrap.innerHTML = `
+            <button class="btn-nav-day" id="btn-prev-day" onclick="navigateDay(-1)" disabled>← Ngày trước</button>
+            <button class="btn-nav-day" id="btn-next-day" onclick="navigateDay(1)" ${totalDays <= 1 ? 'disabled' : ''}>Ngày tiếp theo →</button>
+        `;
+        container.appendChild(navWrap);
+
+        updateProgressBar(completedDaysCount, totalDays);
+    }
+
+    // ═══════════════════════════════════════
+    // HÀM XỬ LÝ CHUYỂN NGÀY (TRƯỢT QUA LẠI)
+    // ═══════════════════════════════════════
+    window.navigateDay = function(direction) {
+        const cards = document.querySelectorAll('.day-card');
+        const totalDays = cards.length;
+        
+        // 1. Ẩn ngày đang hiển thị
+        if (cards[currentDisplayDayIndex]) {
+            cards[currentDisplayDayIndex].classList.add('hidden-day');
+        }
+        
+        // 2. Tính toán ngày tiếp theo
+        currentDisplayDayIndex += direction;
+        
+        // Chặn không cho vượt qua Ngày 1 hoặc Ngày 7
+        if (currentDisplayDayIndex < 0) currentDisplayDayIndex = 0;
+        if (currentDisplayDayIndex >= totalDays) currentDisplayDayIndex = totalDays - 1;
+        
+        // 3. Hiển thị ngày mới lên
+        if (cards[currentDisplayDayIndex]) {
+            cards[currentDisplayDayIndex].classList.remove('hidden-day');
+        }
+        
+        // 4. Khóa/Mở khóa các nút nếu đang ở trang đầu hoặc trang cuối
+        document.getElementById('btn-prev-day').disabled = (currentDisplayDayIndex === 0);
+        document.getElementById('btn-next-day').disabled = (currentDisplayDayIndex === totalDays - 1);
+    };
     // ═══════════════════════════════════════
     // NÚT ÁP DỤNG / TẠO LẠI
     // ═══════════════════════════════════════
@@ -299,22 +358,20 @@
         
         // 🌟 BƯỚC 1: ĐỔI MÀU GIAO DIỆN NGAY LẬP TỨC (Không chờ Server)
         if (isRest) {
+            // LƯU NGAY VÀO BỘ NHỚ TRÌNH DUYỆT ĐỂ KHÔNG BAO GIỜ QUÊN NỮA
+            localStorage.setItem(`rest_${planId}_day_${dayNumber}`, completed);
             if (completed) {
                 exEl.classList.add('completed');
                 exEl.querySelector('.ex-checkbox').textContent = '✓';
-                exEl.style.borderColor = '#4ecdc4';
-                exEl.style.background = 'rgba(78,205,196,0.05)';
-                
                 dayCard.classList.add('day-done-card');
+                
                 const badge = dayCard.querySelector('.day-check-badge');
                 if(badge) { badge.textContent = '✓ Hoàn thành'; badge.classList.add('show'); }
             } else {
                 exEl.classList.remove('completed');
                 exEl.querySelector('.ex-checkbox').textContent = '';
-                exEl.style.borderColor = 'var(--border-hover)';
-                exEl.style.background = 'rgba(255,255,255,0.03)';
-                
                 dayCard.classList.remove('day-done-card');
+                
                 const badge = dayCard.querySelector('.day-check-badge');
                 if(badge) badge.classList.remove('show');
             }
@@ -444,13 +501,13 @@
                 
                 document.getElementById('plan-title').innerText = "LỘ TRÌNH ĐANG THỰC HIỆN";
                 
-                // Vẽ lại giao diện từ JSON
+                // Vẽ lại giao diện từ JSON (Hàm này giờ đã tự động tính tiến độ)
                 const container = document.getElementById('plan-container');
                 renderPlan(currentPlanData, container, data.plan.daily_progress);
                 appendPlanActions(container, currentPlanData);
                 
-                // Kích hoạt trạng thái Active (giống hệt lúc vừa bấm nút save)
-                updateProgressBar(data.plan.days_done || 0, currentPlanData.duration_days);
+                // --- ĐÃ XÓA DÒNG updateProgressBar Ở ĐÂY ĐỂ TRÁNH GÂY LỖI ĐÈ DỮ LIỆU ---
+
                 document.getElementById('plan-action-buttons').style.display = 'none';
                 document.getElementById('btn-cancel-plan').classList.add('show');
                 
