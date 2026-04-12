@@ -85,6 +85,17 @@
         <div class="s-item" onclick="switchSection('muscles')" id="nav-muscles">
           <span class="s-icon">💪</span> Nhóm cơ & Bài tập
         </div>
+        <div class="s-divider"></div>
+        <div class="s-title">Mở rộng</div>
+        <div class="s-item" onclick="switchSection('faq')" id="nav-faq">
+          <span class="s-icon">❓</span> Hỏi & Đáp (FAQ)
+        </div>
+        <div class="s-item" onclick="switchSection('about')" id="nav-about">
+          <span class="s-icon">🎯</span> Điểm nổi bật (Giới thiệu)
+        </div>
+        <div class="s-item" onclick="switchSection('contacts')" id="nav-contacts">
+          <span class="s-icon">📞</span> Thông tin Liên hệ
+        </div>
       </aside>
 
       <main class="main">
@@ -325,6 +336,93 @@
               <div class="th">Thao tác</div>
             </div>
             <div class="table-body" id="musclesTableBody">
+              <div class="empty-row">Đang tải…</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="section-faq" style="display: none">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div class="page-label">Quản lý mở rộng</div>
+              <h1>Danh sách Câu Hỏi (FAQ)</h1>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="openFaqModal()">
+                ＋ Thêm câu hỏi
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <style>
+              .faq-grid { grid-template-columns: 120px 1fr 1fr 100px; }
+              .faq-cat-badge { background: var(--bg3); padding: 4px 8px; border-radius: 4px; font-size: 12px; color: var(--text2); display: inline-block; }
+            </style>
+            <div class="table-head faq-grid">
+              <div class="th">Danh mục</div>
+              <div class="th">Câu hỏi (Q)</div>
+              <div class="th">Trả lời (A)</div>
+              <div class="th">Thao tác</div>
+            </div>
+            <div class="table-body" id="faqTableBody">
+              <div class="empty-row">Đang tải…</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="section-about" style="display: none">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div class="page-label">Quản lý Giới thiệu</div>
+              <h1>Danh sách Đặc điểm nổi bật</h1>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="openAboutModal()">＋ Thêm đặc điểm</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <style>
+              .about-grid { grid-template-columns: 80px 80px 250px 1fr 100px; }
+            </style>
+            <div class="table-head about-grid">
+              <div class="th">Thứ tự</div>
+              <div class="th">Icon</div>
+              <div class="th">Tiêu đề</div>
+              <div class="th">Mô tả</div>
+              <div class="th">Thao tác</div>
+            </div>
+            <div class="table-body" id="aboutTableBody">
+              <div class="empty-row">Đang tải…</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="section-contacts" style="display: none">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div class="page-label">Quản lý Giới thiệu</div>
+              <h1>Danh sách Liên hệ</h1>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="openContactModal()">＋ Thêm liên hệ</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <style>
+              .contacts-grid { grid-template-columns: 80px 80px 200px 1fr 200px 100px; }
+            </style>
+            <div class="table-head contacts-grid">
+              <div class="th">Thứ tự</div>
+              <div class="th">Icon</div>
+              <div class="th">Tiêu đề</div>
+              <div class="th">Mô tả</div>
+              <div class="th">Text/Link</div>
+              <div class="th">Thao tác</div>
+            </div>
+            <div class="table-body" id="contactsTableBody">
               <div class="empty-row">Đang tải…</div>
             </div>
           </div>
@@ -730,6 +828,124 @@
       </div>
     </div>
     
+    <div class="overlay" id="faqModalOverlay">
+      <div class="modal" style="max-width: 550px">
+        <div class="modal-header">
+          <div class="modal-title" id="faqModalTitle">THÊM CÂU HỎI MỚI</div>
+          <button class="modal-close" onclick="closeFaqModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="faq_id"> 
+          
+          <div class="form-grid full">
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+              <div>
+                <label>Phân loại (Category) <span class="req">*</span></label>
+                <select id="faq_cat">
+                  <option value="account">Tài khoản</option>
+                  <option value="plan">Lộ trình tập</option>
+                  <option value="payment">Gói dịch vụ</option>
+                  <option value="technical">Kỹ thuật</option>
+                </select>
+              </div>
+              <div>
+                <label>Tên Thẻ (Tag hiển thị) <span class="req">*</span></label>
+                <input type="text" id="faq_tag" placeholder="VD: Gói dịch vụ" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Câu hỏi <span class="req">*</span></label>
+              <input type="text" id="faq_question" placeholder="Nhập câu hỏi..." />
+            </div>
+            <div class="form-row">
+              <label>Câu trả lời chi tiết <span class="req">*</span></label>
+              <textarea id="faq_answer" rows="6" placeholder="Có thể dùng các thẻ HTML cơ bản như <strong>..." style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg3); color:var(--text);"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn btn-ghost" onclick="closeFaqModal()">Hủy</button>
+          <button class="btn btn-primary" onclick="saveFaq()">💾 Lưu câu hỏi</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="aboutModalOverlay">
+      <div class="modal" style="max-width: 500px">
+        <div class="modal-header">
+          <div class="modal-title" id="aboutModalTitle">THÊM ĐẶC ĐIỂM</div>
+          <button class="modal-close" onclick="closeAboutModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="abt_id"> 
+          <div class="form-grid full">
+            <div class="form-row" style="display: grid; grid-template-columns: 100px 1fr; gap: 15px;">
+              <div>
+                <label>Thứ tự <span class="req">*</span></label>
+                <input type="number" id="abt_order" value="1" />
+              </div>
+              <div>
+                <label>Icon (Emoji) <span class="req">*</span></label>
+                <input type="text" id="abt_icon" placeholder="VD: 🔬" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Tiêu đề <span class="req">*</span></label>
+              <input type="text" id="abt_title" placeholder="VD: Dựa trên khoa học" />
+            </div>
+            <div class="form-row">
+              <label>Mô tả chi tiết <span class="req">*</span></label>
+              <textarea id="abt_desc" rows="4" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg3); color:var(--text);"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top: 20px; justify-content: flex-end;">
+          <button class="btn btn-ghost" onclick="closeAboutModal()" style="margin-right:10px;">Hủy</button>
+          <button class="btn btn-primary" onclick="saveAbout()">💾 Lưu dữ liệu</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="overlay" id="contactModalOverlay">
+      <div class="modal" style="max-width: 500px">
+        <div class="modal-header">
+          <div class="modal-title" id="contactModalTitle">THÊM LIÊN HỆ</div>
+          <button class="modal-close" onclick="closeContactModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="cont_id"> 
+          <div class="form-grid full">
+            <div class="form-row" style="display: grid; grid-template-columns: 100px 1fr; gap: 15px;">
+              <div>
+                <label>Thứ tự <span class="req">*</span></label>
+                <input type="number" id="cont_order" value="1" />
+              </div>
+              <div>
+                <label>Icon (Emoji) <span class="req">*</span></label>
+                <input type="text" id="cont_icon" placeholder="VD: 📧" />
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Tiêu đề <span class="req">*</span></label>
+              <input type="text" id="cont_title" placeholder="VD: Email hỗ trợ" />
+            </div>
+            <div class="form-row">
+              <label>Đường dẫn / Text nổi bật <span class="req">*</span></label>
+              <input type="text" id="cont_link" placeholder="VD: contact@fitme.vn" />
+            </div>
+            <div class="form-row">
+              <label>Mô tả chi tiết <span class="req">*</span></label>
+              <textarea id="cont_desc" rows="3" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--bg3); color:var(--text);"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top: 20px; justify-content: flex-end;">
+          <button class="btn btn-ghost" onclick="closeContactModal()" style="margin-right:10px;">Hủy</button>
+          <button class="btn btn-primary" onclick="saveContact()">💾 Lưu dữ liệu</button>
+        </div>
+      </div>
+    </div>
+
     <div class="toast-wrap" id="toastWrap"></div>
     <script src="function_proc/admin.js"></script>
     <script src="main.js?v=1"></script>

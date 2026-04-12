@@ -7,6 +7,9 @@ const API_TIPS = 'http://127.0.0.1:5000/api/tips';
 const API_WORKOUTS = 'http://127.0.0.1:5000/api/sample-workouts';
 const API_FEATURED = 'http://127.0.0.1:5000/api/featured';
 const API_MUSCLES = 'http://127.0.0.1:5000/api/muscles-info';
+const API_FAQ = 'http://127.0.0.1:5000/api/faq';
+const API_ABOUT = 'http://127.0.0.1:5000/api/about-features';
+const API_CONTACTS = 'http://127.0.0.1:5000/api/contacts';
 
 let exercises = [];
 let usersList = []; 
@@ -158,6 +161,15 @@ function switchSection(sectionId) {
     const sectionMuscles = document.getElementById('section-muscles');
     if (sectionMuscles) sectionMuscles.style.display = 'none';
 
+    const sectionFaq = document.getElementById('section-faq');
+    if (sectionFaq) sectionFaq.style.display = 'none';
+
+    const sectionAbout = document.getElementById('section-about');
+    if (sectionAbout) sectionAbout.style.display = 'none';
+
+    const sectionContacts = document.getElementById('section-contacts');
+    if (sectionContacts) sectionContacts.style.display = 'none';
+
     // 4. Kích hoạt (Hiện) vùng nội dung tương ứng với menu vừa bấm
     const activeSection = document.getElementById('section-' + sectionId);
     if (activeSection) activeSection.style.display = 'block';
@@ -173,6 +185,12 @@ function switchSection(sectionId) {
         loadAdminFeatured();
     } else if (sectionId === 'muscles') {
         loadAdminMuscles();
+    } else if (sectionId === 'faq') {
+        loadAdminFaq();
+    } else if (sectionId === 'about') {
+        loadAdminAbout();
+    }else if (sectionId === 'contacts') {
+        loadAdminContacts();
     }
 }
 
@@ -890,5 +908,241 @@ function deleteMuscle(id, name) {
         fetch(`${API_MUSCLES}/${id}`, { method: 'DELETE' })
         .then(res => res.json())
         .then(res => { if(res.success) loadAdminMuscles(); });
+    }
+}
+// ==========================================
+// QUẢN LÝ CÂU HỎI THƯỜNG GẶP (FAQ)
+// ==========================================
+const faqCatNames = { account: "Tài khoản", plan: "Lộ trình", payment: "Dịch vụ", technical: "Kỹ thuật" };
+
+function loadAdminFaq() {
+    const tbody = document.getElementById('faqTableBody');
+    tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
+
+    fetch(API_FAQ).then(res => res.json()).then(res => {
+        if (res.success && res.data.length > 0) {
+            tbody.innerHTML = res.data.map(faq => `
+                <div class="tr faq-grid">
+                    <div class="td"><span class="faq-cat-badge">${faqCatNames[faq.cat] || faq.cat}</span></div>
+                    <div class="td" style="font-weight: 600; color: var(--accent);">${faq.question}</div>
+                    <div class="td" style="color: var(--text-muted); font-size: 13px;">${(faq.answer || '').substring(0, 70)}...</div>
+                    <div class="td" style="display:flex; gap:10px;">
+                        <span style="cursor:pointer; color:var(--accent);" onclick='editFaq(${JSON.stringify(faq).replace(/'/g, "\\'")})'>✏️</span>
+                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteFaq('${faq._id}', '${faq.question}')">🗑️</span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<div class="empty-row">Chưa có câu hỏi nào.</div>';
+        }
+    });
+}
+
+function openFaqModal() {
+    document.getElementById('faqModalOverlay').classList.add('open');
+}
+
+function closeFaqModal() {
+    document.getElementById('faqModalOverlay').classList.remove('open');
+    document.getElementById('faq_id').value = '';
+    document.getElementById('faq_cat').value = 'account';
+    document.getElementById('faq_tag').value = '';
+    document.getElementById('faq_question').value = '';
+    document.getElementById('faq_answer').value = '';
+    document.getElementById('faqModalTitle').innerText = 'THÊM CÂU HỎI MỚI';
+}
+
+function editFaq(faq) {
+    document.getElementById('faq_id').value = faq._id;
+    document.getElementById('faq_cat').value = faq.cat || 'account';
+    document.getElementById('faq_tag').value = faq.tag || '';
+    document.getElementById('faq_question').value = faq.question || '';
+    document.getElementById('faq_answer').value = faq.answer || '';
+    document.getElementById('faqModalTitle').innerText = 'SỬA CÂU HỎI';
+    openFaqModal();
+}
+
+function saveFaq() {
+    const id = document.getElementById('faq_id').value;
+    const data = {
+        cat: document.getElementById('faq_cat').value,
+        tag: document.getElementById('faq_tag').value,
+        question: document.getElementById('faq_question').value,
+        answer: document.getElementById('faq_answer').value
+    };
+
+    if(!data.question || !data.answer) return alert("Vui lòng nhập đủ Câu hỏi và Câu trả lời!");
+
+    fetch(id ? `${API_FAQ}/${id}` : API_FAQ, {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => {
+        if(res.success) {
+            closeFaqModal();
+            loadAdminFaq();
+        } else alert("Lỗi: " + res.error);
+    });
+}
+
+function deleteFaq(id, question) {
+    if (confirm(`Bạn có chắc muốn xóa câu hỏi "${question}" không?`)) {
+        fetch(`${API_FAQ}/${id}`, { method: 'DELETE' })
+        .then(res => res.json())
+        .then(res => { if(res.success) loadAdminFaq(); });
+    }
+}
+// ==========================================
+// QUẢN LÝ VÌ SAO CHỌN FIT ME (ABOUT FEATURES)
+// ==========================================
+function loadAdminAbout() {
+    const tbody = document.getElementById('aboutTableBody');
+    tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
+
+    fetch(API_ABOUT).then(res => res.json()).then(res => {
+        if (res.success && res.data.length > 0) {
+            tbody.innerHTML = res.data.map(abt => `
+                <div class="tr about-grid">
+                    <div class="td">${abt.order || 1}</div>
+                    <div class="td" style="font-size: 24px;">${abt.icon || '📌'}</div>
+                    <div class="td" style="font-weight: 600;">${abt.title}</div>
+                    <div class="td" style="color: var(--text-muted); font-size: 13px;">${(abt.description || '').substring(0, 60)}...</div>
+                    <div class="td" style="display:flex; gap:10px;">
+                        <span style="cursor:pointer; color:var(--accent);" onclick='editAbout(${JSON.stringify(abt).replace(/'/g, "\\'")})'>✏️</span>
+                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteAbout('${abt._id}', '${abt.title}')">🗑️</span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<div class="empty-row">Chưa có dữ liệu nào.</div>';
+        }
+    });
+}
+
+function openAboutModal() { document.getElementById('aboutModalOverlay').classList.add('open'); }
+
+function closeAboutModal() {
+    document.getElementById('aboutModalOverlay').classList.remove('open');
+    document.getElementById('abt_id').value = '';
+    document.getElementById('abt_order').value = '1';
+    document.getElementById('abt_icon').value = '';
+    document.getElementById('abt_title').value = '';
+    document.getElementById('abt_desc').value = '';
+    document.getElementById('aboutModalTitle').innerText = 'THÊM ĐẶC ĐIỂM';
+}
+
+function editAbout(abt) {
+    document.getElementById('abt_id').value = abt._id;
+    document.getElementById('abt_order').value = abt.order || 1;
+    document.getElementById('abt_icon').value = abt.icon || '';
+    document.getElementById('abt_title').value = abt.title || '';
+    document.getElementById('abt_desc').value = abt.description || '';
+    document.getElementById('aboutModalTitle').innerText = 'SỬA ĐẶC ĐIỂM';
+    openAboutModal();
+}
+
+function saveAbout() {
+    const id = document.getElementById('abt_id').value;
+    const data = {
+        order: parseInt(document.getElementById('abt_order').value) || 1,
+        icon: document.getElementById('abt_icon').value,
+        title: document.getElementById('abt_title').value,
+        description: document.getElementById('abt_desc').value
+    };
+
+    if(!data.title) return alert("Vui lòng nhập Tiêu đề!");
+
+    fetch(id ? `${API_ABOUT}/${id}` : API_ABOUT, {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => {
+        if(res.success) { closeAboutModal(); loadAdminAbout(); } 
+        else alert("Lỗi: " + res.error);
+    });
+}
+
+function deleteAbout(id, title) {
+    if (confirm(`Bạn có chắc muốn xóa "${title}" không?`)) {
+        fetch(`${API_ABOUT}/${id}`, { method: 'DELETE' }).then(res => res.json()).then(res => { if(res.success) loadAdminAbout(); });
+    }
+}
+// ==========================================
+// QUẢN LÝ THÔNG TIN LIÊN HỆ (CONTACTS)
+// ==========================================
+function loadAdminContacts() {
+    const tbody = document.getElementById('contactsTableBody');
+    tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
+
+    fetch(API_CONTACTS).then(res => res.json()).then(res => {
+        if (res.success && res.data.length > 0) {
+            tbody.innerHTML = res.data.map(cont => `
+                <div class="tr contacts-grid">
+                    <div class="td">${cont.order || 1}</div>
+                    <div class="td" style="font-size: 24px;">${cont.icon || '📞'}</div>
+                    <div class="td" style="font-weight: 600;">${cont.title}</div>
+                    <div class="td" style="color: var(--text-muted); font-size: 13px;">${(cont.description || '').substring(0, 40)}...</div>
+                    <div class="td" style="color: var(--accent);">${cont.link_text || ''}</div>
+                    <div class="td" style="display:flex; gap:10px;">
+                        <span style="cursor:pointer; color:var(--accent);" onclick='editContact(${JSON.stringify(cont).replace(/'/g, "\\'")})'>✏️</span>
+                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteContact('${cont._id}', '${cont.title}')">🗑️</span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<div class="empty-row">Chưa có dữ liệu liên hệ nào.</div>';
+        }
+    });
+}
+
+function openContactModal() { document.getElementById('contactModalOverlay').classList.add('open'); }
+
+function closeContactModal() {
+    document.getElementById('contactModalOverlay').classList.remove('open');
+    document.getElementById('cont_id').value = '';
+    document.getElementById('cont_order').value = '1';
+    document.getElementById('cont_icon').value = '';
+    document.getElementById('cont_title').value = '';
+    document.getElementById('cont_link').value = '';
+    document.getElementById('cont_desc').value = '';
+    document.getElementById('contactModalTitle').innerText = 'THÊM LIÊN HỆ';
+}
+
+function editContact(cont) {
+    document.getElementById('cont_id').value = cont._id;
+    document.getElementById('cont_order').value = cont.order || 1;
+    document.getElementById('cont_icon').value = cont.icon || '';
+    document.getElementById('cont_title').value = cont.title || '';
+    document.getElementById('cont_link').value = cont.link_text || '';
+    document.getElementById('cont_desc').value = cont.description || '';
+    document.getElementById('contactModalTitle').innerText = 'SỬA LIÊN HỆ';
+    openContactModal();
+}
+
+function saveContact() {
+    const id = document.getElementById('cont_id').value;
+    const data = {
+        order: parseInt(document.getElementById('cont_order').value) || 1,
+        icon: document.getElementById('cont_icon').value,
+        title: document.getElementById('cont_title').value,
+        link_text: document.getElementById('cont_link').value,
+        description: document.getElementById('cont_desc').value
+    };
+
+    if(!data.title) return alert("Vui lòng nhập Tiêu đề!");
+
+    fetch(id ? `${API_CONTACTS}/${id}` : API_CONTACTS, {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => {
+        if(res.success) { closeContactModal(); loadAdminContacts(); } 
+        else alert("Lỗi: " + res.error);
+    });
+}
+
+function deleteContact(id, title) {
+    if (confirm(`Bạn có chắc muốn xóa "${title}" không?`)) {
+        fetch(`${API_CONTACTS}/${id}`, { method: 'DELETE' }).then(res => res.json()).then(res => { if(res.success) loadAdminContacts(); });
     }
 }

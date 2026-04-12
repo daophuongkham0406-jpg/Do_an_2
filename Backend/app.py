@@ -11,6 +11,7 @@ from baitap import baitap_bp
 from qluser import user_bp
 from quanly_plan import plan_bp
 from quanly_trangchu import trangchu_bp
+from quanly_cauhoi import cauhoi_bp
 
 # 1. Tải cấu hình từ file .env
 load_dotenv()
@@ -36,6 +37,8 @@ app.register_blueprint(user_bp, url_prefix='/api/users')
 app.register_blueprint(plan_bp, url_prefix='/api/plans')
 # Thêm dòng này ở chỗ đăng ký Blueprint:
 app.register_blueprint(trangchu_bp)
+# Thêm dòng này ở chỗ đăng ký Blueprint:
+app.register_blueprint(cauhoi_bp)
 
 # 3. Kết nối MongoDB
 try:
