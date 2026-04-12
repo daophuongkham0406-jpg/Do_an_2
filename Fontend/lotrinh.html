@@ -1,179 +1,251 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lộ trình cá nhân - PUMPD</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
-    <link rel="stylesheet" href="chat.css">
-    <link rel="stylesheet" href="lotrinh.css">
-    
-</head>
-<body>
-
-<header class="navbar">
-    <div class="container header-flex">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="chat.css" />
+    <link rel="stylesheet" href="lotrinh.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="container header-flex">
         <div class="logo"><span class="logo-icon">P</span> PUMPD</div>
         <nav class="nav-menu">
-            <ul>
-                <li><a href="index.html">Trang chủ</a></li>
-                <li><a href="bt.html">Bài tập</a></li>
-                <li><a href="GioiThieuCauHoi.html">Giới thiệu & Câu hỏi</a></li>
-                <li><a href="Tcn.html">Trang cá nhân</a></li>
-                <li><a href="lotrinh.html">Lộ trình cá nhân</a></li>
-            </ul>
+          <ul>
+            <li><a href="index.html">Trang chủ</a></li>
+            <li><a href="bt.html">Bài tập</a></li>
+            <li><a href="GioiThieuCauHoi.html">Giới thiệu & Câu hỏi</a></li>
+            <li><a href="Tcn.html">Trang cá nhân</a></li>
+            <li><a href="lotrinh.html">Lộ trình cá nhân</a></li>
+          </ul>
         </nav>
-        <div class="auth-links"><a href="dangnhap.html" class="btn-signup">Đăng xuất</a></div>
-        <button id="themeToggle" class="theme-toggle">🌙</button>
-    </div>
-</header>
-
-<div class="ticker-wrap">
-    <div class="ticker-track">
-        <span class="ticker-item"><span class="ticker-dot"></span>SỨC MẠNH</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>THỂ HÌNH</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>VÓC DÁNG</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>DINH DƯỠNG</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>PHỤC HỒI</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>HIỆU SUẤT</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>SỨC MẠNH</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>THỂ HÌNH</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>VÓC DÁNG</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>DINH DƯỠNG</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>PHỤC HỒI</span>
-        <span class="ticker-item"><span class="ticker-dot"></span>HIỆU SUẤT</span>
-    </div>
-</div>
-
-<main class="main-content">
-    <div class="container">
-        <div class="app-layout">
-
-            <!-- ═══ SIDEBAR ═══ -->
-            <aside class="app-sidebar">
-                <h2>Khởi tạo lộ trình</h2>
-
-                <div class="form-group">
-                    <label>Mục tiêu</label>
-                    <select id="goal">
-                        <option value="Tăng cân">Tăng cân</option>
-                        <option value="Tăng cơ" selected>Tăng cơ (Hypertrophy)</option>
-                        <option value="Giảm mỡ">Giảm mỡ (Fat Loss)</option>
-                        <option value="Sức bền">Sức bền (Endurance)</option>
-                        <option value="Sức mạnh">Sức mạnh (Strength)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Kinh nghiệm tập luyện</label>
-                    <select id="level">
-                        <option value="Người mới">Người mới (Beginner)</option>
-                        <option value="Trung bình" selected>Trung bình (Intermediate)</option>
-                        <option value="Kỳ cựu">Kỳ cựu (Advanced)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Thông số cơ thể</label>
-                    <div class="body-stats-row">
-                        <div class="stat-input-wrap">
-                            <div class="stat-field">
-                                <input type="number" id="height" placeholder="170" min="100" max="250" value="">
-                                <span class="stat-unit">cm</span>
-                            </div>
-                            <span class="stat-label">Chiều cao</span>
-                        </div>
-                        <div class="stat-input-wrap">
-                            <div class="stat-field">
-                                <input type="number" id="weight" placeholder="65" min="30" max="200" value="">
-                                <span class="stat-unit">kg</span>
-                            </div>
-                            <span class="stat-label">Cân nặng</span>
-                        </div>
-                        <div class="stat-input-wrap">
-                            <div class="stat-field">
-                                <input type="number" id="age" placeholder="24" min="10" max="80" value="">
-                                <span class="stat-unit">tuổi</span>
-                            </div>
-                            <span class="stat-label">Độ tuổi</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Thiết bị sẵn có</label>
-                    <select id="equipment">
-                        <option value="Phòng Gym đầy đủ" selected>Phòng Gym (đầy đủ)</option>
-                        <option value="Tại nhà không tạ">Tại nhà (không tạ)</option>
-                        <option value="Chỉ có tạ đơn">Chỉ có tạ đơn</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Độ dài lộ trình</label>
-                    <div class="duration-grid">
-                        <div class="dur-btn active" data-days="7" onclick="selectDur(this,7)">
-                            7 ngày<br><span class="dur-sub">Tuần đầu</span>
-                        </div>
-                        <div class="dur-btn" data-days="14" onclick="selectDur(this,14)">
-                            14 ngày<br><span class="dur-sub">2 tuần</span>
-                        </div>
-                        <div class="dur-btn disabled" data-days="30">
-                            1 tháng<br><span class="dur-sub">30 ngày</span>
-                            <span class="lock">🔒</span>
-                        </div>
-                        <div class="dur-btn disabled" data-days="90">
-                            3 tháng<br><span class="dur-sub">90 ngày</span>
-                            <span class="lock">🔒</span>
-                        </div>
-                    </div>
-                    <div class="info-hint" id="durationHint">
-                        Hoàn thành lộ trình đầu tiên để mở khóa gói 1 tháng và 3 tháng.
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Tình trạng sức khỏe / Ghi chú</label>
-                    <textarea id="userInfo" rows="3" placeholder="Ví dụ: đau lưng mãn tính, rảnh 45 phút/ngày, tránh bài tập nhảy..."></textarea>
-                </div>
-
-                <button class="btn-primary-full" id="btn-generate">⚡ Tạo Lộ Trình Bằng AI</button>
-            </aside>
-
-            <!-- ═══ MAIN ═══ -->
-            <section class="app-main">
-                <div class="page-header">
-                    <h1 id="plan-title">LỘ TRÌNH CÁ NHÂN</h1>
-                    <p id="plan-sub">Điền thông số bên trái để AI của PUMPD thiết kế lịch tập chuẩn cá nhân hóa cho bạn.</p>
-                </div>
-
-                <!-- Thanh tiến độ (ẩn lúc đầu) -->
-                <div class="plan-progress-wrap" id="progressWrap">
-                    <div class="progress-top">
-                        <span class="progress-label">Tiến độ lộ trình</span>
-                        <span class="progress-pct" id="progressPct">0%</span>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
-                    </div>
-                    <div class="progress-days" id="progressDays">0 / 0 ngày hoàn thành</div>
-                </div>
-
-                <div id="plan-container">
-                    <div class="empty-state">Chưa có dữ liệu lộ trình.</div>
-                </div>
-            </section>
-
+        <div class="auth-links">
+          <a href="dangnhap.html" class="btn-signup">Đăng xuất</a>
         </div>
-    </div>
-</main>
+        <button id="themeToggle" class="theme-toggle">🌙</button>
+      </div>
+    </header>
 
-<script></script>
-<script src="function_proc/lotrinh.js"></script>
-<script src="function_proc/check_login.js"></script>
-<script src="Chat.js"></script>
-</body>
+    <div class="ticker-wrap">
+      <div class="ticker-track">
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>SỨC MẠNH</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>THỂ HÌNH</span
+        >
+        <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>VÓC DÁNG</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>DINH DƯỠNG</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>PHỤC HỒI</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>HIỆU SUẤT</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>SỨC MẠNH</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>THỂ HÌNH</span
+        >
+        <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>VÓC DÁNG</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>DINH DƯỠNG</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>PHỤC HỒI</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>HIỆU SUẤT</span
+        >
+      </div>
+    </div>
+
+    <main class="main-content">
+      <div class="container">
+        <div class="app-layout">
+          <!-- ═══ SIDEBAR ═══ -->
+          <aside class="app-sidebar">
+            <h2>Khởi tạo lộ trình</h2>
+
+            <div class="form-group">
+              <label>Mục tiêu</label>
+              <select id="goal">
+                <option value="Tăng cân">Tăng cân</option>
+                <option value="Tăng cơ" selected>Tăng cơ (Hypertrophy)</option>
+                <option value="Giảm mỡ">Giảm mỡ (Fat Loss)</option>
+                <option value="Sức bền">Sức bền (Endurance)</option>
+                <option value="Sức mạnh">Sức mạnh (Strength)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Kinh nghiệm tập luyện</label>
+              <select id="level">
+                <option value="Người mới">Người mới (Beginner)</option>
+                <option value="Trung bình" selected>
+                  Trung bình (Intermediate)
+                </option>
+                <option value="Kỳ cựu">Kỳ cựu (Advanced)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Thông số cơ thể</label>
+              <div class="body-stats-row">
+                <div class="stat-input-wrap">
+                  <div class="stat-field">
+                    <input
+                      type="number"
+                      id="height"
+                      placeholder="170"
+                      min="100"
+                      max="250"
+                      value=""
+                    />
+                    <span class="stat-unit">cm</span>
+                  </div>
+                  <span class="stat-label">Chiều cao</span>
+                </div>
+                <div class="stat-input-wrap">
+                  <div class="stat-field">
+                    <input
+                      type="number"
+                      id="weight"
+                      placeholder="65"
+                      min="30"
+                      max="200"
+                      value=""
+                    />
+                    <span class="stat-unit">kg</span>
+                  </div>
+                  <span class="stat-label">Cân nặng</span>
+                </div>
+                <div class="stat-input-wrap">
+                  <div class="stat-field">
+                    <input
+                      type="number"
+                      id="age"
+                      placeholder="24"
+                      min="10"
+                      max="80"
+                      value=""
+                    />
+                    <span class="stat-unit">tuổi</span>
+                  </div>
+                  <span class="stat-label">Độ tuổi</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Thiết bị sẵn có</label>
+              <select id="equipment">
+                <option value="Phòng Gym đầy đủ" selected>
+                  Phòng Gym (đầy đủ)
+                </option>
+                <option value="Tại nhà không tạ">Tại nhà (không tạ)</option>
+                <option value="Chỉ có tạ đơn">Chỉ có tạ đơn</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Độ dài lộ trình</label>
+              <div class="duration-grid">
+                <div
+                  class="dur-btn active"
+                  data-days="7"
+                  onclick="selectDur(this, 7)"
+                >
+                  7 ngày<br /><span class="dur-sub">Tuần đầu</span>
+                </div>
+                <div
+                  class="dur-btn"
+                  data-days="14"
+                  onclick="selectDur(this, 14)"
+                >
+                  14 ngày<br /><span class="dur-sub">2 tuần</span>
+                </div>
+                <div class="dur-btn disabled" data-days="30">
+                  1 tháng<br /><span class="dur-sub">30 ngày</span>
+                  <span class="lock">🔒</span>
+                </div>
+                <div class="dur-btn disabled" data-days="90">
+                  3 tháng<br /><span class="dur-sub">90 ngày</span>
+                  <span class="lock">🔒</span>
+                </div>
+              </div>
+              <div class="info-hint" id="durationHint">
+                Hoàn thành lộ trình đầu tiên để mở khóa gói 1 tháng và 3 tháng.
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Tình trạng sức khỏe / Ghi chú</label>
+              <textarea
+                id="userInfo"
+                rows="3"
+                placeholder="Ví dụ: đau lưng mãn tính, rảnh 45 phút/ngày, tránh bài tập nhảy..."
+              ></textarea>
+            </div>
+
+            <button class="btn-primary-full" id="btn-generate">
+              ⚡ Tạo Lộ Trình Bằng AI
+            </button>
+          </aside>
+
+          <!-- ═══ MAIN ═══ -->
+          <section class="app-main">
+            <div class="page-header">
+              <h1 id="plan-title">LỘ TRÌNH CÁ NHÂN</h1>
+              <p id="plan-sub">
+                Điền thông số bên trái để AI của PUMPD thiết kế lịch tập chuẩn
+                cá nhân hóa cho bạn.
+              </p>
+            </div>
+
+            <!-- Thanh tiến độ (ẩn lúc đầu) -->
+            <div class="plan-progress-wrap" id="progressWrap">
+              <div class="progress-top">
+                <span class="progress-label">Tiến độ lộ trình</span>
+                <span class="progress-pct" id="progressPct">0%</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div
+                  class="progress-bar-fill"
+                  id="progressBar"
+                  style="width: 0%"
+                ></div>
+              </div>
+              <div class="progress-days" id="progressDays">
+                0 / 0 ngày hoàn thành
+              </div>
+            </div>
+
+            <div id="plan-container">
+              <div class="empty-state">Chưa có dữ liệu lộ trình.</div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+    <script src="function_proc/lotrinh.js"></script>
+    <script src="function_proc/check_login.js"></script>
+    <script src="Chat.js"></script>
+    <script src="main.js?v=1"></script>
+  </body>
 </html>

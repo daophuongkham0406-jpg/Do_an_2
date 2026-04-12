@@ -420,69 +420,8 @@
     </div>
   </div>
 </footer>
-
-<script>
-//#region nut dieu chinh toi sang 
-    const toggleBtn = document.getElementById("themeToggle");
-    toggleBtn.addEventListener("click", () => {
-        document.body.classList.toggle("light-mode");
-        if(document.body.classList.contains("light-mode")){
-            toggleBtn.textContent = "☀️";
-            localStorage.setItem("theme","light");
-        }else{
-            toggleBtn.textContent = "🌙";
-            localStorage.setItem("theme","dark");
-        }
-    });
-
-    if(localStorage.getItem("theme") === "light"){
-        document.body.classList.add("light-mode");
-        toggleBtn.textContent = "☀️";
-    }
-    //#endregion
-// ── Scroll Reveal ──
-const reveals=document.querySelectorAll('.reveal');
-const observer=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
-},{threshold:0.1});
-reveals.forEach(el=>observer.observe(el));
-
-// ── Accordion ──
-document.querySelectorAll('.accordion-header').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const item=btn.parentElement;
-    const isOpen=item.classList.contains('open');
-    // Đóng tất cả
-    document.querySelectorAll('.accordion-item.open').forEach(i=>{
-      i.classList.remove('open');
-      i.querySelector('.acc-icon').textContent='+';
-    });
-    // Mở cái được click (nếu chưa mở)
-    if(!isOpen){
-      item.classList.add('open');
-      item.querySelector('.acc-icon').textContent='+';
-    }
-  });
-});
-
-// ── FAQ Category filter ──
-document.querySelectorAll('.faq-cat').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.faq-cat').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const cat=btn.dataset.cat;
-    document.querySelectorAll('#faqList .accordion-item').forEach(item=>{
-      if(cat==='all'||item.dataset.cat===cat){
-        item.style.display='';
-      } else {
-        item.style.display='none';
-        item.classList.remove('open');
-      }
-    });
-  });
-});
-</script>
 <script src="function_proc/check_login.js"></script>
 <script src="Chat.js"></script>
+<script src="main.js?v=1"></script>
 </body>
 </html>

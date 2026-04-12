@@ -1,26 +1,35 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // 1. Nhìn lên thanh địa chỉ (URL) để lấy tên file hiện tại
-    let path = window.location.pathname;
-    let page = path.split("/").pop();
-    
-    // Nếu người dùng vào thẳng trang chủ (không có đuôi file)
-    if (page === "" || page === "TrangChu.html") {
-        page = "index.html";
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. TỰ ĐỘNG IN ĐẬM MENU ĐANG CHỌN
+  let path = window.location.pathname;
+  let page = path.split("/").pop();
+  if (page === "" || page === "TrangChu.html") page = "index.html";
+
+  document.querySelectorAll(".nav-menu ul li a").forEach((link) => {
+    if (link.getAttribute("href") === page) {
+      link.classList.add("active-menu");
+    }
+  });
+
+  // 2. NÚT BẤM ĐỔI MÀU SÁNG/TỐI
+  const toggleBtn = document.getElementById("themeToggle");
+  if (toggleBtn) {
+    if (localStorage.getItem("theme") === "light") {
+      document.body.classList.add("light-mode");
+      toggleBtn.textContent = "☀️";
+    } else {
+      document.body.classList.remove("light-mode");
+      toggleBtn.textContent = "🌙";
     }
 
-    // 2. Tìm tất cả các link trong thanh menu của bạn
-    // (Đảm bảo HTML của bạn đang dùng class .nav-menu cho thanh điều hướng nhé)
-    let menuLinks = document.querySelectorAll(".nav-menu ul li a");
-
-    // 3. Quét từng link một
-    menuLinks.forEach(function(link) {
-        // Lấy đường dẫn của link đó (ví dụ: "bt.html", "lotrinh.html")
-        let linkHref = link.getAttribute("href");
-
-        // Nếu đường dẫn của link TRÙNG khớp với trang hiện tại
-        if (linkHref === page) {
-            // Thì nhét thêm class 'active-menu' vào để nó in đậm và gạch chân
-            link.classList.add("active-menu");
-        }
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("light-mode");
+      if (document.body.classList.contains("light-mode")) {
+        toggleBtn.textContent = "☀️";
+        localStorage.setItem("theme", "light");
+      } else {
+        toggleBtn.textContent = "🌙";
+        localStorage.setItem("theme", "dark");
+      }
     });
+  }
 });

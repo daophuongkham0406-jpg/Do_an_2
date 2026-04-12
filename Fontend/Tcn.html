@@ -1,349 +1,595 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trang Cá Nhân — PUMPD</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<!-- style.css: shared design system (dùng chung toàn dự án) -->
-<link rel="stylesheet" href="style.css">
-<!-- TrangCaNhan.css: styles riêng của trang này -->
-<link rel="stylesheet" href="TrangCaNhan.css">
-</head>
-<body>
-
-<!-- ══ NAVBAR ══ -->
-<header class="navbar">
-  <div class="container header-flex">
-    <a href="index.html" class="logo"><span class="logo-icon">P</span>PUMPD</a>
-    <nav class="nav-menu">
-      <ul>
-        <li><a href="index.html">Trang chủ</a></li>
-        <li><a href="bt.html">Bài tập</a></li>
-        <li><a href="GioiThieuCauHoi.html">Giới thiệu & Câu hỏi</a></li>
-        <li><a href="Tcn.html">Trang cá nhân</a></li>
-        <li><a href="lotrinh.html">Lộ trình cá nhân</a></li>
-      </ul>
-    </nav>
-    <a href="dangnhap.html" class="btn-signup">Đăng nhập / Đăng ký</a>
-    <button id="themeToggle" class="theme-toggle">🌙</button>
-  </div>
-</header>
-
-<!-- TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker-track">
-    <span class="ticker-item"><span class="ticker-dot"></span>SỨC MẠNH</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>THỂ HÌNH</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>VÓC DÁNG</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>DINH DƯỠNG</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>PHỤC HỒI</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>HIỆU SUẤT</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>SỨC MẠNH</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>THỂ HÌNH</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>VÓC DÁNG</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>DINH DƯỠNG</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>PHỤC HỒI</span>
-    <span class="ticker-item"><span class="ticker-dot"></span>HIỆU SUẤT</span>
-  </div>
-</div>
-
-<!-- ══ PAGE HERO ══ -->
-<section class="page-hero">
-  <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
-  <div class="container hero-inner">
-    <div class="breadcrumb"><a href="index.html">Trang chủ</a> › <span class="cur">Trang cá nhân</span></div>
-
-    <div class="profile-strip">
-      <div class="avatar-wrap">
-        <div class="avatar" id="avatarEl">N</div>
-        <div class="streak-badge" id="streakBadge">🔥 Streak 14</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trang Cá Nhân — PUMPD</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- style.css: shared design system (dùng chung toàn dự án) -->
+    <link rel="stylesheet" href="style.css" />
+    <!-- TrangCaNhan.css: styles riêng của trang này -->
+    <link rel="stylesheet" href="TrangCaNhan.css" />
+  </head>
+  <body>
+    <!-- ══ NAVBAR ══ -->
+    <header class="navbar">
+      <div class="container header-flex">
+        <a href="index.html" class="logo"
+          ><span class="logo-icon">P</span>PUMPD</a
+        >
+        <nav class="nav-menu">
+          <ul>
+            <li><a href="index.html">Trang chủ</a></li>
+            <li><a href="bt.html">Bài tập</a></li>
+            <li><a href="GioiThieuCauHoi.html">Giới thiệu & Câu hỏi</a></li>
+            <li><a href="Tcn.html">Trang cá nhân</a></li>
+            <li><a href="lotrinh.html">Lộ trình cá nhân</a></li>
+          </ul>
+        </nav>
+        <a href="dangnhap.html" class="btn-signup">Đăng nhập / Đăng ký</a>
+        <button id="themeToggle" class="theme-toggle">🌙</button>
       </div>
+    </header>
 
-      <div class="profile-info">
-        <div class="level-pill"><span class="level-dot"></span><span id="levelLbl">Đang tải...</span></div>
-        <div class="profile-name" id="profileName">ĐANG TẢI DỮ LIỆU...</div>
-        <div class="meta-row">
-          <span class="meta-chip">🎂 <span id="metaAge">--</span> tuổi</span>
-          <span class="meta-chip">⚖️ <span id="metaWeight">--</span> kg</span>
-          <span class="meta-chip">📏 <span id="metaHeight">--</span> cm</span>
-          <span class="meta-chip accent-chip" id="metaBMI">BMI --</span>
-        </div>
-        <div class="join-line">Thành viên từ tháng 1/2024 · <strong id="metaWorkouts">0</strong> buổi tập hoàn thành</div>
-      </div>
-
-      <div class="profile-ctas">
-        <button class="btn-edit" onclick="openEdit()">✏️ Chỉnh sửa</button>
-        <button class="btn-log" onclick="openLog()">＋ Cập nhật chỉ số</button>
+    <!-- TICKER -->
+    <div class="ticker-wrap">
+      <div class="ticker-track">
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>SỨC MẠNH</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>THỂ HÌNH</span
+        >
+        <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>VÓC DÁNG</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>DINH DƯỠNG</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>PHỤC HỒI</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>HIỆU SUẤT</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>SỨC MẠNH</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>THỂ HÌNH</span
+        >
+        <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>VÓC DÁNG</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>DINH DƯỠNG</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>PHỤC HỒI</span
+        >
+        <span class="ticker-item"
+          ><span class="ticker-dot"></span>HIỆU SUẤT</span
+        >
       </div>
     </div>
 
-    <div class="hero-pills">
-      <div class="hero-pill"><span class="pill-num" id="pWorkouts">38</span><span class="pill-lbl">Buổi tập</span></div>
-      <div class="hero-pill"><span class="pill-num" id="pWeightChange">−3.2</span><span class="pill-lbl">kg thay đổi</span></div>
-      <div class="hero-pill"><span class="pill-num" id="pStreak">14</span><span class="pill-lbl">Ngày streak</span></div>
-      <div class="hero-pill"><span class="pill-num" id="pRoutines">3</span><span class="pill-lbl">Lộ trình xong</span></div>
-    </div>
-  </div>
-</section>
+    <!-- ══ PAGE HERO ══ -->
+    <section class="page-hero">
+      <div class="hero-grid"></div>
+      <div class="hero-glow"></div>
+      <div class="container hero-inner">
+        <div class="breadcrumb">
+          <a href="index.html">Trang chủ</a> ›
+          <span class="cur">Trang cá nhân</span>
+        </div>
 
-<div class="divider"></div>
-
-<!-- ══ MAIN GRID ══ -->
-<div class="container">
-<div class="main-grid">
-
-  <!-- ═ LEFT ═ -->
-  <div class="col">
-
-    <!-- ══ LỘ TRÌNH ĐANG ACTIVE (MỚI THÊM) ══ -->
-    <div class="card reveal" style="margin-bottom: 28px;">
-      <div class="card-hd">
-        <div>
-          <div class="card-label">Đang thực hiện</div>
-          <div class="card-title">Lộ trình hiện tại</div>
-        </div>
-        <a href="lotrinh.html" style="font-size:11px;color:var(--text-muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);text-decoration:none;">Quản lý →</a>
-      </div>
-      <div id="activePlanWrap">
-        <div style="padding:20px 0 8px;text-align:center;color:var(--text-muted);font-size:13px;">
-          Đang tải lộ trình...
-        </div>
-      </div>
-    </div>
-
-    <!-- BODY STATS -->
-    <div class="card reveal">
-      <div class="card-hd">
-        <div><div class="card-label">Sức khỏe</div><div class="card-title">Chỉ số cơ thể</div></div>
-        <span class="card-meta" id="lastUpdated">Hôm nay</span>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-icon">⚖️</div>
-          <div class="stat-val" id="sv-w">72 kg</div>
-          <div class="stat-lbl">Cân nặng</div>
-          <div id="sv-wd" class="stat-delta d-down">▼ 3.2 kg</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-icon">📏</div>
-          <div class="stat-val" id="sv-h">175 cm</div>
-          <div class="stat-lbl">Chiều cao</div>
-          <div class="stat-delta d-neu">— ổn định</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-icon">🧮</div>
-          <div class="stat-val" id="sv-bmi">23.5</div>
-          <div class="stat-lbl">BMI</div>
-          <div id="sv-bmid" class="stat-delta d-down">▼ 1.1</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-icon">💪</div>
-          <div class="stat-val" id="sv-m">34%</div>
-          <div class="stat-lbl">Tỷ lệ cơ (ước tính)</div>
-          <div class="stat-delta d-up" id="sv-md">▲ 2.1%</div>
-        </div>
-      </div>
-      <!-- BMI gauge -->
-      <div class="bmi-wrap">
-        <div class="bmi-row">
-          <span style="font-size:10px;color:var(--text-muted);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Phân loại BMI</span>
-          <span class="bmi-cat bmi-normal" id="bmiCatChip">Bình thường</span>
-        </div>
-        <div class="bmi-track">
-          <div class="bmi-bar">
-            <div class="bmi-seg" style="background:#4da8ff;flex:2.5"></div>
-            <div class="bmi-seg" style="background:#4dff91;flex:3.8"></div>
-            <div class="bmi-seg" style="background:#e8ff47;flex:2.5"></div>
-            <div class="bmi-seg" style="background:#ff6060;flex:3"></div>
+        <div class="profile-strip">
+          <div class="avatar-wrap">
+            <div class="avatar" id="avatarEl">N</div>
+            <div class="streak-badge" id="streakBadge">🔥 Streak 14</div>
           </div>
-          <div class="bmi-needle" id="bmiNeedle" style="left:46%"></div>
+
+          <div class="profile-info">
+            <div class="level-pill">
+              <span class="level-dot"></span
+              ><span id="levelLbl">Đang tải...</span>
+            </div>
+            <div class="profile-name" id="profileName">ĐANG TẢI DỮ LIỆU...</div>
+            <div class="meta-row">
+              <span class="meta-chip"
+                >🎂 <span id="metaAge">--</span> tuổi</span
+              >
+              <span class="meta-chip"
+                >⚖️ <span id="metaWeight">--</span> kg</span
+              >
+              <span class="meta-chip"
+                >📏 <span id="metaHeight">--</span> cm</span
+              >
+              <span class="meta-chip accent-chip" id="metaBMI">BMI --</span>
+            </div>
+            <div class="join-line">
+              Thành viên từ tháng 1/2024 ·
+              <strong id="metaWorkouts">0</strong> buổi tập hoàn thành
+            </div>
+          </div>
+
+          <div class="profile-ctas">
+            <button class="btn-edit" onclick="openEdit()">✏️ Chỉnh sửa</button>
+            <button class="btn-log" onclick="openLog()">
+              ＋ Cập nhật chỉ số
+            </button>
+          </div>
         </div>
-        <div class="bmi-scale"><span>Thiếu cân</span><span>Bình thường</span><span>Thừa cân</span><span>Béo phì</span></div>
-      </div>
-    </div>
 
-    <!-- COMPLETED ROUTINES -->
-    <div class="card reveal rd1">
-      <div class="card-hd">
-        <div><div class="card-label">Thành tích</div><div class="card-title">Lộ trình đã hoàn thành</div></div>
-        <span class="count-pill" id="routineCount">0</span>
-      </div>
-      <div class="routine-list" id="routineList">
-        <div style="padding:16px 0;color:var(--text-muted);font-size:13px;">Đang tải...</div>
-      </div>
-    </div>
-
-    <!-- RECENT WORKOUTS -->
-    <div class="card reveal rd2">
-      <div class="card-hd">
-        <div><div class="card-label">Lịch sử</div><div class="card-title">Buổi tập gần đây</div></div>
-        <a href="#" style="font-size:11px;color:var(--text-muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);">Xem tất cả</a>
-      </div>
-      <div class="wlog-list" id="wlogList"></div>
-    </div>
-
-  </div>
-
-  <!-- ═ RIGHT ═ -->
-  <div class="col">
-
-    <!-- WEIGHT CHART -->
-    <div class="card reveal">
-      <div class="card-hd">
-        <div><div class="card-label">Theo dõi</div><div class="card-title">Biến động cân nặng</div></div>
-        <div class="chart-tabs" id="wtTabs">
-          <button class="ctab active" data-p="3m">3T</button>
-          <button class="ctab" data-p="6m">6T</button>
-          <button class="ctab" data-p="all">Tất cả</button>
-        </div>
-      </div>
-      <div class="chart-wrap"><canvas id="weightChart" height="230"></canvas></div>
-      <div class="chart-legend">
-        <span class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span>Cân nặng (kg)</span>
-        <span class="legend-item"><span class="legend-dot" style="background:transparent;border:1.5px dashed var(--accent);width:10px;height:10px;border-radius:50%;"></span>Mục tiêu</span>
-      </div>
-    </div>
-
-    <!-- FREQ CHART -->
-    <div class="card reveal rd1">
-      <div class="card-hd">
-        <div><div class="card-label">Tần suất</div><div class="card-title">Buổi tập theo tuần</div></div>
-        <div class="chart-tabs" id="freqTabs">
-          <button class="ctab active" data-p="8">8 tuần</button>
-          <button class="ctab" data-p="12">12 tuần</button>
+        <div class="hero-pills">
+          <div class="hero-pill">
+            <span class="pill-num" id="pWorkouts">38</span
+            ><span class="pill-lbl">Buổi tập</span>
+          </div>
+          <div class="hero-pill">
+            <span class="pill-num" id="pWeightChange">−3.2</span
+            ><span class="pill-lbl">kg thay đổi</span>
+          </div>
+          <div class="hero-pill">
+            <span class="pill-num" id="pStreak">14</span
+            ><span class="pill-lbl">Ngày streak</span>
+          </div>
+          <div class="hero-pill">
+            <span class="pill-num" id="pRoutines">3</span
+            ><span class="pill-lbl">Lộ trình xong</span>
+          </div>
         </div>
       </div>
-      <div class="chart-wrap"><canvas id="freqChart" height="200"></canvas></div>
-      <div class="chart-legend">
-        <span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>Số buổi tập</span>
-        <span class="legend-item"><span class="legend-dot" style="background:rgba(77,168,255,.3)"></span>Mục tiêu (4/tuần)</span>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ══ MAIN GRID ══ -->
+    <div class="container">
+      <div class="main-grid">
+        <!-- ═ LEFT ═ -->
+        <div class="col">
+          <!-- ══ LỘ TRÌNH ĐANG ACTIVE (MỚI THÊM) ══ -->
+          <div class="card reveal" style="margin-bottom: 28px">
+            <div class="card-hd">
+              <div>
+                <div class="card-label">Đang thực hiện</div>
+                <div class="card-title">Lộ trình hiện tại</div>
+              </div>
+              <a
+                href="lotrinh.html"
+                style="
+                  font-size: 11px;
+                  color: var(--text-muted);
+                  font-weight: 700;
+                  letter-spacing: 1px;
+                  text-transform: uppercase;
+                  border-bottom: 1px solid var(--border);
+                  text-decoration: none;
+                "
+                >Quản lý →</a
+              >
+            </div>
+            <div id="activePlanWrap">
+              <div
+                style="
+                  padding: 20px 0 8px;
+                  text-align: center;
+                  color: var(--text-muted);
+                  font-size: 13px;
+                "
+              >
+                Đang tải lộ trình...
+              </div>
+            </div>
+          </div>
+
+          <!-- BODY STATS -->
+          <div class="card reveal">
+            <div class="card-hd">
+              <div>
+                <div class="card-label">Sức khỏe</div>
+                <div class="card-title">Chỉ số cơ thể</div>
+              </div>
+              <span class="card-meta" id="lastUpdated">Hôm nay</span>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-box">
+                <div class="stat-icon">⚖️</div>
+                <div class="stat-val" id="sv-w">72 kg</div>
+                <div class="stat-lbl">Cân nặng</div>
+                <div id="sv-wd" class="stat-delta d-down">▼ 3.2 kg</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-icon">📏</div>
+                <div class="stat-val" id="sv-h">175 cm</div>
+                <div class="stat-lbl">Chiều cao</div>
+                <div class="stat-delta d-neu">— ổn định</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-icon">🧮</div>
+                <div class="stat-val" id="sv-bmi">23.5</div>
+                <div class="stat-lbl">BMI</div>
+                <div id="sv-bmid" class="stat-delta d-down">▼ 1.1</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-icon">💪</div>
+                <div class="stat-val" id="sv-m">34%</div>
+                <div class="stat-lbl">Tỷ lệ cơ (ước tính)</div>
+                <div class="stat-delta d-up" id="sv-md">▲ 2.1%</div>
+              </div>
+            </div>
+            <!-- BMI gauge -->
+            <div class="bmi-wrap">
+              <div class="bmi-row">
+                <span
+                  style="
+                    font-size: 10px;
+                    color: var(--text-muted);
+                    font-weight: 700;
+                    letter-spacing: 1.5px;
+                    text-transform: uppercase;
+                  "
+                  >Phân loại BMI</span
+                >
+                <span class="bmi-cat bmi-normal" id="bmiCatChip"
+                  >Bình thường</span
+                >
+              </div>
+              <div class="bmi-track">
+                <div class="bmi-bar">
+                  <div
+                    class="bmi-seg"
+                    style="background: #4da8ff; flex: 2.5"
+                  ></div>
+                  <div
+                    class="bmi-seg"
+                    style="background: #4dff91; flex: 3.8"
+                  ></div>
+                  <div
+                    class="bmi-seg"
+                    style="background: #e8ff47; flex: 2.5"
+                  ></div>
+                  <div
+                    class="bmi-seg"
+                    style="background: #ff6060; flex: 3"
+                  ></div>
+                </div>
+                <div class="bmi-needle" id="bmiNeedle" style="left: 46%"></div>
+              </div>
+              <div class="bmi-scale">
+                <span>Thiếu cân</span><span>Bình thường</span
+                ><span>Thừa cân</span><span>Béo phì</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- COMPLETED ROUTINES -->
+          <div class="card reveal rd1">
+            <div class="card-hd">
+              <div>
+                <div class="card-label">Thành tích</div>
+                <div class="card-title">Lộ trình đã hoàn thành</div>
+              </div>
+              <span class="count-pill" id="routineCount">0</span>
+            </div>
+            <div class="routine-list" id="routineList">
+              <div
+                style="
+                  padding: 16px 0;
+                  color: var(--text-muted);
+                  font-size: 13px;
+                "
+              >
+                Đang tải...
+              </div>
+            </div>
+          </div>
+
+          <!-- RECENT WORKOUTS -->
+          <div class="card reveal rd2">
+            <div class="card-hd">
+              <div>
+                <div class="card-label">Lịch sử</div>
+                <div class="card-title">Buổi tập gần đây</div>
+              </div>
+              <a
+                href="#"
+                style="
+                  font-size: 11px;
+                  color: var(--text-muted);
+                  font-weight: 700;
+                  letter-spacing: 1px;
+                  text-transform: uppercase;
+                  border-bottom: 1px solid var(--border);
+                "
+                >Xem tất cả</a
+              >
+            </div>
+            <div class="wlog-list" id="wlogList"></div>
+          </div>
+        </div>
+
+        <!-- ═ RIGHT ═ -->
+        <div class="col">
+          <!-- WEIGHT CHART -->
+          <div class="card reveal">
+            <div class="card-hd">
+              <div>
+                <div class="card-label">Theo dõi</div>
+                <div class="card-title">Biến động cân nặng</div>
+              </div>
+              <div class="chart-tabs" id="wtTabs">
+                <button class="ctab active" data-p="3m">3T</button>
+                <button class="ctab" data-p="6m">6T</button>
+                <button class="ctab" data-p="all">Tất cả</button>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="weightChart" height="230"></canvas>
+            </div>
+            <div class="chart-legend">
+              <span class="legend-item"
+                ><span
+                  class="legend-dot"
+                  style="background: var(--accent)"
+                ></span
+                >Cân nặng (kg)</span
+              >
+              <span class="legend-item"
+                ><span
+                  class="legend-dot"
+                  style="
+                    background: transparent;
+                    border: 1.5px dashed var(--accent);
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                  "
+                ></span
+                >Mục tiêu</span
+              >
+            </div>
+          </div>
+
+          <!-- FREQ CHART -->
+          <div class="card reveal rd1">
+            <div class="card-hd">
+              <div>
+                <div class="card-label">Tần suất</div>
+                <div class="card-title">Buổi tập theo tuần</div>
+              </div>
+              <div class="chart-tabs" id="freqTabs">
+                <button class="ctab active" data-p="8">8 tuần</button>
+                <button class="ctab" data-p="12">12 tuần</button>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="freqChart" height="200"></canvas>
+            </div>
+            <div class="chart-legend">
+              <span class="legend-item"
+                ><span class="legend-dot" style="background: var(--blue)"></span
+                >Số buổi tập</span
+              >
+              <span class="legend-item"
+                ><span
+                  class="legend-dot"
+                  style="background: rgba(77, 168, 255, 0.3)"
+                ></span
+                >Mục tiêu (4/tuần)</span
+              >
+            </div>
+          </div>
+
+          <!-- RADAR -->
+          <div class="card reveal rd2">
+            <div class="card-hd">
+              <div>
+                <div class="card-label">Phân tích</div>
+                <div class="card-title">Phân bổ nhóm cơ</div>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: center">
+              <canvas id="radarChart" width="280" height="280"></canvas>
+            </div>
+          </div>
+
+          <!-- GOALS -->
+          <div class="card reveal rd3">
+            <div class="card-hd">
+              <div>
+                <div class="card-label">Mục tiêu</div>
+                <div class="card-title">Tiến độ</div>
+              </div>
+            </div>
+            <div class="goals-list" id="goalsList"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- RADAR -->
-    <div class="card reveal rd2">
-      <div class="card-hd">
-        <div><div class="card-label">Phân tích</div><div class="card-title">Phân bổ nhóm cơ</div></div>
+    <div class="divider"></div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a href="#" class="logo" style="font-size: 24px"
+              ><span class="logo-icon">P</span>PUMPD</a
+            >
+            <p>Nền tảng tập luyện khoa học hàng đầu Việt Nam.</p>
+          </div>
+          <div>
+            <h4>Khám phá</h4>
+            <ul class="footer-links">
+              <li><a href="bt.html">Thư viện bài tập</a></li>
+              <li><a href="#">Lộ trình</a></li>
+              <li><a href="#">Blog</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Liên hệ</h4>
+            <ul class="footer-links">
+              <li><a href="#">contact@pumpd.vn</a></li>
+              <li><a href="#">Facebook</a></li>
+              <li><a href="#">Instagram</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2024 PUMPD. All rights reserved.</p>
+          <p>Thiết kế cho người Việt yêu thể thao 🇻🇳</p>
+        </div>
       </div>
-      <div style="display:flex;justify-content:center;">
-        <canvas id="radarChart" width="280" height="280"></canvas>
+    </footer>
+
+    <!-- ══ MODAL: EDIT PROFILE ══ -->
+    <div class="overlay" id="editOverlay">
+      <div class="modal">
+        <div class="modal-hd">
+          <div>
+            <div class="card-label" style="margin-bottom: 4px">Hồ sơ</div>
+            <div class="modal-title">CHỈNH SỬA THÔNG TIN</div>
+          </div>
+          <button class="modal-close" onclick="closeEdit()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="frow s2">
+              <label>Họ và tên <span class="req">*</span></label
+              ><input type="text" id="f_name" placeholder="Nguyễn Văn A" />
+            </div>
+            <div class="frow">
+              <label>Tuổi <span class="req">*</span></label
+              ><input
+                type="number"
+                id="f_age"
+                min="10"
+                max="100"
+                placeholder="24"
+              />
+            </div>
+            <div class="frow">
+              <label>Giới tính</label
+              ><select id="f_gender">
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+                <option value="other">Khác</option>
+              </select>
+            </div>
+            <div class="frow">
+              <label>Cân nặng (kg) <span class="req">*</span></label
+              ><input type="number" id="f_weight" step="0.1" placeholder="72" />
+            </div>
+            <div class="frow">
+              <label>Chiều cao (cm) <span class="req">*</span></label
+              ><input
+                type="number"
+                id="f_height"
+                step="0.1"
+                placeholder="175"
+              />
+            </div>
+            <div class="frow">
+              <label>Mục tiêu cân nặng (kg)</label
+              ><input type="number" id="f_gw" step="0.1" placeholder="68" />
+            </div>
+            <div class="frow">
+              <label>Trình độ</label
+              ><select id="f_level">
+                <option value="B">Người mới</option>
+                <option value="I" selected>Trung bình</option>
+                <option value="A">Nâng cao</option>
+              </select>
+            </div>
+            <div class="frow s2">
+              <label>Mục tiêu chính</label
+              ><select id="f_gtype">
+                <option value="lose">Giảm mỡ</option>
+                <option value="gain">Tăng cơ</option>
+                <option value="maintain">Duy trì</option>
+                <option value="endurance">Sức bền</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-ft">
+          <button class="btn-ghost" onclick="closeEdit()">Hủy</button>
+          <button class="btn-primary" onclick="saveProfile()">
+            💾 Lưu thay đổi
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- GOALS -->
-    <div class="card reveal rd3">
-      <div class="card-hd">
-        <div><div class="card-label">Mục tiêu</div><div class="card-title">Tiến độ</div></div>
-      </div>
-      <div class="goals-list" id="goalsList"></div>
-    </div>
-
-  </div>
-
-</div>
-</div>
-
-<div class="divider"></div>
-
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a href="#" class="logo" style="font-size:24px;"><span class="logo-icon">P</span>PUMPD</a>
-        <p>Nền tảng tập luyện khoa học hàng đầu Việt Nam.</p>
-      </div>
-      <div><h4>Khám phá</h4><ul class="footer-links"><li><a href="bt.html">Thư viện bài tập</a></li><li><a href="#">Lộ trình</a></li><li><a href="#">Blog</a></li></ul></div>
-      <div><h4>Liên hệ</h4><ul class="footer-links"><li><a href="#">contact@pumpd.vn</a></li><li><a href="#">Facebook</a></li><li><a href="#">Instagram</a></li></ul></div>
-    </div>
-    <div class="footer-bottom"><p>© 2024 PUMPD. All rights reserved.</p><p>Thiết kế cho người Việt yêu thể thao 🇻🇳</p></div>
-  </div>
-</footer>
-
-<!-- ══ MODAL: EDIT PROFILE ══ -->
-<div class="overlay" id="editOverlay">
-  <div class="modal">
-    <div class="modal-hd">
-      <div><div class="card-label" style="margin-bottom:4px;">Hồ sơ</div><div class="modal-title">CHỈNH SỬA THÔNG TIN</div></div>
-      <button class="modal-close" onclick="closeEdit()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-grid">
-        <div class="frow s2"><label>Họ và tên <span class="req">*</span></label><input type="text" id="f_name" placeholder="Nguyễn Văn A"></div>
-        <div class="frow"><label>Tuổi <span class="req">*</span></label><input type="number" id="f_age" min="10" max="100" placeholder="24"></div>
-        <div class="frow"><label>Giới tính</label><select id="f_gender"><option value="male">Nam</option><option value="female">Nữ</option><option value="other">Khác</option></select></div>
-        <div class="frow"><label>Cân nặng (kg) <span class="req">*</span></label><input type="number" id="f_weight" step="0.1" placeholder="72"></div>
-        <div class="frow"><label>Chiều cao (cm) <span class="req">*</span></label><input type="number" id="f_height" step="0.1" placeholder="175"></div>
-        <div class="frow"><label>Mục tiêu cân nặng (kg)</label><input type="number" id="f_gw" step="0.1" placeholder="68"></div>
-        <div class="frow"><label>Trình độ</label><select id="f_level"><option value="B">Người mới</option><option value="I" selected>Trung bình</option><option value="A">Nâng cao</option></select></div>
-        <div class="frow s2"><label>Mục tiêu chính</label><select id="f_gtype"><option value="lose">Giảm mỡ</option><option value="gain">Tăng cơ</option><option value="maintain">Duy trì</option><option value="endurance">Sức bền</option></select></div>
-      </div>
-    </div>
-    <div class="modal-ft">
-      <button class="btn-ghost" onclick="closeEdit()">Hủy</button>
-      <button class="btn-primary" onclick="saveProfile()">💾 Lưu thay đổi</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ MODAL: LOG ENTRY ══ -->
-<div class="overlay" id="logOverlay">
-  <div class="modal">
-    <div class="modal-hd">
-      <div><div class="card-label" style="margin-bottom:4px;">Nhật ký</div><div class="modal-title">CẬP NHẬT CHỈ SỐ</div></div>
-      <button class="modal-close" onclick="closeLog()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="log-date-chip" id="logDateChip"></div>
-      <div class="form-grid">
-        <div class="frow"><label>Cân nặng hôm nay (kg)</label><input type="number" id="l_w" step="0.1" placeholder="72.0"></div>
-        <div class="frow"><label>Tỷ lệ mỡ (%) <span style="color:var(--text-muted);font-size:9px;">nếu có</span></label><input type="number" id="l_f" step="0.1" min="3" max="60" placeholder="18.5"></div>
-        <div class="frow"><label>Vòng eo (cm)</label><input type="number" id="l_waist" step="0.5" placeholder="78"></div>
-        <div class="frow"><label>Buổi tập tuần này</label><input type="number" id="l_s" min="0" max="14" placeholder="4"></div>
-        <div class="frow s2"><label>Ghi chú</label><textarea id="l_note" placeholder="Cảm giác, chế độ ăn, giấc ngủ…"></textarea></div>
+    <!-- ══ MODAL: LOG ENTRY ══ -->
+    <div class="overlay" id="logOverlay">
+      <div class="modal">
+        <div class="modal-hd">
+          <div>
+            <div class="card-label" style="margin-bottom: 4px">Nhật ký</div>
+            <div class="modal-title">CẬP NHẬT CHỈ SỐ</div>
+          </div>
+          <button class="modal-close" onclick="closeLog()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="log-date-chip" id="logDateChip"></div>
+          <div class="form-grid">
+            <div class="frow">
+              <label>Cân nặng hôm nay (kg)</label
+              ><input type="number" id="l_w" step="0.1" placeholder="72.0" />
+            </div>
+            <div class="frow">
+              <label
+                >Tỷ lệ mỡ (%)
+                <span style="color: var(--text-muted); font-size: 9px"
+                  >nếu có</span
+                ></label
+              ><input
+                type="number"
+                id="l_f"
+                step="0.1"
+                min="3"
+                max="60"
+                placeholder="18.5"
+              />
+            </div>
+            <div class="frow">
+              <label>Vòng eo (cm)</label
+              ><input type="number" id="l_waist" step="0.5" placeholder="78" />
+            </div>
+            <div class="frow">
+              <label>Buổi tập tuần này</label
+              ><input type="number" id="l_s" min="0" max="14" placeholder="4" />
+            </div>
+            <div class="frow s2">
+              <label>Ghi chú</label
+              ><textarea
+                id="l_note"
+                placeholder="Cảm giác, chế độ ăn, giấc ngủ…"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-ft">
+          <button class="btn-ghost" onclick="closeLog()">Hủy</button>
+          <button class="btn-primary" onclick="saveLog()">📊 Lưu chỉ số</button>
+        </div>
       </div>
     </div>
-    <div class="modal-ft">
-      <button class="btn-ghost" onclick="closeLog()">Hủy</button>
-      <button class="btn-primary" onclick="saveLog()">📊 Lưu chỉ số</button>
-    </div>
-  </div>
-</div>
 
-<div class="toast-wrap" id="toastWrap"></div>
-
-<script>
-  // ── Theme toggle ──
-  const toggleBtn = document.getElementById("themeToggle");
-  toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("light-mode");
-    if (document.body.classList.contains("light-mode")) {
-      toggleBtn.textContent = "☀️";
-      localStorage.setItem("theme", "light");
-    } else {
-      toggleBtn.textContent = "🌙";
-      localStorage.setItem("theme", "dark");
-    }
-  });
-  if (localStorage.getItem("theme") === "light") {
-    document.body.classList.add("light-mode");
-    toggleBtn.textContent = "☀️";
-  }
-
-  // ── Scroll reveal ──
-  const ro = new IntersectionObserver(es => {
-    es.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: .1 });
-  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
-</script>
-
-<script src="function_proc/check_login.js"></script>
-<script src="function_proc/Tcn.js"></script>
-<script src="Chat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</body>
+    <div class="toast-wrap" id="toastWrap"></div>
+    <script src="function_proc/check_login.js"></script>
+    <script src="function_proc/Tcn.js"></script>
+    <script src="Chat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="main.js?v=1"></script>
+  </body>
 </html>
