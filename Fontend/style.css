@@ -2403,13 +2403,13 @@ body {
 .page-header h1,
 .hero-inner h1 {
   font-size: clamp(36px, 5vw, 64px) !important;
-  line-height: 1.25 !important; 
-  font-weight: 700 !important; 
-  letter-spacing: -1px !important; 
+  line-height: 1.25 !important;
+  font-weight: 700 !important;
+  letter-spacing: -1px !important;
   margin-bottom: 20px !important;
 }
 
-.page-title em, 
+.page-title em,
 .page-header h1 em {
   font-style: normal;
   color: var(--accent);
@@ -2419,13 +2419,20 @@ body {
 .home-hero h1,
 .main-title,
 h1.hero-heading {
-  line-height: 1.35 !important; 
-  font-size: clamp(40px, 6vw, 72px) !important; 
+  line-height: 1.35 !important;
+  font-size: clamp(40px, 6vw, 72px) !important;
   padding-bottom: 15px !important;
 }
 
-.hero-title span, 
+.hero-title span,
 .hero h1 span {
   line-height: 1.35 !important;
   display: inline-block;
+}
+.profile-name {
+  font-size: clamp(28px, 4vw, 42px) !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 8px !important;
 }
