@@ -8,13 +8,11 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <!-- style.css: shared design system (dùng chung toàn dự án) -->
+    <link rel="stylesheet" href="chat.css" />
+    <link rel="stylesheet" href="Tcn.css" />
     <link rel="stylesheet" href="style.css" />
-    <!-- TrangCaNhan.css: styles riêng của trang này -->
-    <link rel="stylesheet" href="TrangCaNhan.css" />
   </head>
   <body>
-    <!-- ══ NAVBAR ══ -->
     <header class="navbar">
       <div class="container header-flex">
         <a href="index.html" class="logo"
@@ -29,12 +27,13 @@
             <li><a href="lotrinh.html">Lộ trình cá nhân</a></li>
           </ul>
         </nav>
-        <a href="dangnhap.html" class="btn-signup">Đăng nhập / Đăng ký</a>
+        <div class="auth-links">
+          <a href="dangnhap.html" class="btn-signup">Đăng nhập / Đăng ký</a>
+        </div>
         <button id="themeToggle" class="theme-toggle">🌙</button>
       </div>
     </header>
 
-    <!-- TICKER -->
     <div class="ticker-wrap">
       <div class="ticker-track">
         <span class="ticker-item"
@@ -78,7 +77,6 @@
       </div>
     </div>
 
-    <!-- ══ PAGE HERO ══ -->
     <section class="page-hero">
       <div class="hero-grid"></div>
       <div class="hero-glow"></div>
@@ -88,7 +86,7 @@
           <span class="cur">Trang cá nhân</span>
         </div>
 
-        <div class="profile-strip">
+        <div class="profile-strip" style="padding-top: 15px">
           <div class="avatar-wrap">
             <div class="avatar" id="avatarEl">N</div>
             <div class="streak-badge" id="streakBadge">🔥 Streak 14</div>
@@ -99,7 +97,13 @@
               <span class="level-dot"></span
               ><span id="levelLbl">Đang tải...</span>
             </div>
-            <div class="profile-name" id="profileName">ĐANG TẢI DỮ LIỆU...</div>
+            <div
+              class="profile-name"
+              id="profileName"
+              style="padding-top: 10px"
+            >
+              ĐANG TẢI DỮ LIỆU...
+            </div>
             <div class="meta-row">
               <span class="meta-chip"
                 >🎂 <span id="metaAge">--</span> tuổi</span
@@ -128,19 +132,19 @@
 
         <div class="hero-pills">
           <div class="hero-pill">
-            <span class="pill-num" id="pWorkouts">38</span
+            <span class="pill-num" id="pWorkouts">0</span
             ><span class="pill-lbl">Buổi tập</span>
           </div>
           <div class="hero-pill">
-            <span class="pill-num" id="pWeightChange">−3.2</span
+            <span class="pill-num" id="pWeightChange">0</span
             ><span class="pill-lbl">kg thay đổi</span>
           </div>
           <div class="hero-pill">
-            <span class="pill-num" id="pStreak">14</span
+            <span class="pill-num" id="pStreak">0</span
             ><span class="pill-lbl">Ngày streak</span>
           </div>
           <div class="hero-pill">
-            <span class="pill-num" id="pRoutines">3</span
+            <span class="pill-num" id="pRoutines">0</span
             ><span class="pill-lbl">Lộ trình xong</span>
           </div>
         </div>
@@ -149,12 +153,9 @@
 
     <div class="divider"></div>
 
-    <!-- ══ MAIN GRID ══ -->
     <div class="container">
       <div class="main-grid">
-        <!-- ═ LEFT ═ -->
         <div class="col">
-          <!-- ══ LỘ TRÌNH ĐANG ACTIVE (MỚI THÊM) ══ -->
           <div class="card reveal" style="margin-bottom: 28px">
             <div class="card-hd">
               <div>
@@ -189,7 +190,6 @@
             </div>
           </div>
 
-          <!-- BODY STATS -->
           <div class="card reveal">
             <div class="card-hd">
               <div>
@@ -201,30 +201,29 @@
             <div class="stats-grid">
               <div class="stat-box">
                 <div class="stat-icon">⚖️</div>
-                <div class="stat-val" id="sv-w">72 kg</div>
+                <div class="stat-val" id="sv-w">-- kg</div>
                 <div class="stat-lbl">Cân nặng</div>
-                <div id="sv-wd" class="stat-delta d-down">▼ 3.2 kg</div>
+                <div id="sv-wd" class="stat-delta d-neu">--</div>
               </div>
               <div class="stat-box">
                 <div class="stat-icon">📏</div>
-                <div class="stat-val" id="sv-h">175 cm</div>
+                <div class="stat-val" id="sv-h">-- cm</div>
                 <div class="stat-lbl">Chiều cao</div>
                 <div class="stat-delta d-neu">— ổn định</div>
               </div>
               <div class="stat-box">
                 <div class="stat-icon">🧮</div>
-                <div class="stat-val" id="sv-bmi">23.5</div>
+                <div class="stat-val" id="sv-bmi">--</div>
                 <div class="stat-lbl">BMI</div>
-                <div id="sv-bmid" class="stat-delta d-down">▼ 1.1</div>
+                <div id="sv-bmid" class="stat-delta d-neu">--</div>
               </div>
               <div class="stat-box">
                 <div class="stat-icon">💪</div>
-                <div class="stat-val" id="sv-m">34%</div>
+                <div class="stat-val" id="sv-m">--</div>
                 <div class="stat-lbl">Tỷ lệ cơ (ước tính)</div>
-                <div class="stat-delta d-up" id="sv-md">▲ 2.1%</div>
+                <div class="stat-delta d-neu" id="sv-md">--</div>
               </div>
             </div>
-            <!-- BMI gauge -->
             <div class="bmi-wrap">
               <div class="bmi-row">
                 <span
@@ -260,7 +259,7 @@
                     style="background: #ff6060; flex: 3"
                   ></div>
                 </div>
-                <div class="bmi-needle" id="bmiNeedle" style="left: 46%"></div>
+                <div class="bmi-needle" id="bmiNeedle" style="left: 0%"></div>
               </div>
               <div class="bmi-scale">
                 <span>Thiếu cân</span><span>Bình thường</span
@@ -269,7 +268,6 @@
             </div>
           </div>
 
-          <!-- COMPLETED ROUTINES -->
           <div class="card reveal rd1">
             <div class="card-hd">
               <div>
@@ -291,7 +289,6 @@
             </div>
           </div>
 
-          <!-- RECENT WORKOUTS -->
           <div class="card reveal rd2">
             <div class="card-hd">
               <div>
@@ -315,9 +312,7 @@
           </div>
         </div>
 
-        <!-- ═ RIGHT ═ -->
         <div class="col">
-          <!-- WEIGHT CHART -->
           <div class="card reveal">
             <div class="card-hd">
               <div>
@@ -357,7 +352,6 @@
             </div>
           </div>
 
-          <!-- FREQ CHART -->
           <div class="card reveal rd1">
             <div class="card-hd">
               <div>
@@ -387,7 +381,6 @@
             </div>
           </div>
 
-          <!-- RADAR -->
           <div class="card reveal rd2">
             <div class="card-hd">
               <div>
@@ -400,7 +393,6 @@
             </div>
           </div>
 
-          <!-- GOALS -->
           <div class="card reveal rd3">
             <div class="card-hd">
               <div>
@@ -416,7 +408,6 @@
 
     <div class="divider"></div>
 
-    <!-- FOOTER -->
     <footer class="footer">
       <div class="container">
         <div class="footer-grid">
@@ -450,7 +441,6 @@
       </div>
     </footer>
 
-    <!-- ══ MODAL: EDIT PROFILE ══ -->
     <div class="overlay" id="editOverlay">
       <div class="modal">
         <div class="modal-hd">
@@ -529,7 +519,6 @@
       </div>
     </div>
 
-    <!-- ══ MODAL: LOG ENTRY ══ -->
     <div class="overlay" id="logOverlay">
       <div class="modal">
         <div class="modal-hd">
@@ -586,10 +575,11 @@
     </div>
 
     <div class="toast-wrap" id="toastWrap"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="function_proc/check_login.js"></script>
     <script src="function_proc/Tcn.js"></script>
     <script src="Chat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="main.js?v=1"></script>
   </body>
 </html>
