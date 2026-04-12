@@ -370,18 +370,24 @@
             background: #e74c3c; color: #fff;
         }
         .btn-danger.show { display: block; }
+        /* ── CSS CHUẨN CHO NÚT NGÀY NGHỈ ── */
         .rest-check-box {
-            display: flex; align-items: center; gap: 12px;
-            padding: 15px; border-radius: 10px;
-            background: rgba(232, 255, 71, 0.03);
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px; border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px dashed var(--border);
-            cursor: pointer; transition: 0.2s;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .rest-check-box:hover {
+            border-color: var(--border-hover); background: rgba(255, 255, 255, 0.05);
         }
         .rest-check-box.completed {
-            border-color: #4ecdc4; background: rgba(78, 205, 196, 0.05);
-            color: #4ecdc4;
+            border-color: #4ecdc4; background: rgba(78, 205, 196, 0.05); color: #4ecdc4;
         }
+        /* Ép buộc ô tròn nhỏ phải đổi màu xanh ngọc */
         .rest-check-box.completed .ex-checkbox {
-            background: #4ecdc4; border-color: #4ecdc4; color: #0a0a0a;
+            background: #4ecdc4 !important; 
+            border-color: #4ecdc4 !important; 
+            color: #0a0a0a !important;
         }
     
