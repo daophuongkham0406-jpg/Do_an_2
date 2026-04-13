@@ -10,6 +10,7 @@ const API_MUSCLES = 'http://127.0.0.1:5000/api/muscles-info';
 const API_FAQ = 'http://127.0.0.1:5000/api/faq';
 const API_ABOUT = 'http://127.0.0.1:5000/api/about-features';
 const API_CONTACTS = 'http://127.0.0.1:5000/api/contacts';
+const API_HERO_STATS = 'http://127.0.0.1:5000/api/hero-stats';
 
 let exercises = [];
 let usersList = []; 
@@ -44,7 +45,7 @@ function showErrorToast(error, actionName) {
 }
 
 // ════════════════════════════════════════════════════════════════
-// 3. API BÀI TẬP (EXERCISES)
+// 3. API BÀI TẬP & USER
 // ════════════════════════════════════════════════════════════════
 async function apiGet() {
     try {
@@ -87,14 +88,12 @@ async function apiDelete(id) {
     }
 }
 
-// ════════════════════════════════════════════════════════════════
-// 4. API NGƯỜI DÙNG (USERS)
-// ════════════════════════════════════════════════════════════════
 async function fetchUsers() {
     try {
         const r = await fetch(USER_API_URL, { headers: getHeaders() });
         usersList = await checkResponse(r);
-        document.getElementById('userCountBadge').textContent = usersList.length;
+        const badge = document.getElementById('userCountBadge');
+        if(badge) badge.textContent = usersList.length;
         renderUserTable();
     } catch (e) {
         showErrorToast(e, 'Tai danh sach Nguoi dung');
@@ -103,7 +102,7 @@ async function fetchUsers() {
 }
 
 // ════════════════════════════════════════════════════════════════
-// 5. KHỞI TẠO & ĐIỀU HƯỚNG MÀN HÌNH
+// 4. KHỞI TẠO & ĐIỀU HƯỚNG MÀN HÌNH
 // ════════════════════════════════════════════════════════════════
 async function init() {
     const userStr = localStorage.getItem('loggedInUser');
@@ -113,12 +112,9 @@ async function init() {
     }
     const user = JSON.parse(userStr);
     
-    // Đã sửa thành showToast thay vì alert
     if (user.role !== 'admin') {
         showToast('⛔ Bạn không có quyền truy cập trang Quản trị!', 'error');
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 1500);
+        setTimeout(() => { window.location.href = 'index.html'; }, 1500);
         return;
     }
 
@@ -132,70 +128,71 @@ async function init() {
 
     renderStats();
     renderTable();
+    
+    // GỌI HÀM NÀY ĐỂ TẢI TRƯỚC SỐ LƯỢNG CHO TẤT CẢ BADGE TRÊN SIDEBAR KHI F5
+    loadAllSidebarBadges(); 
 }
 
-// ════════════════════════════════════════════════════════════════
-// ĐÃ SỬA: HÀM ĐIỀU HƯỚNG MÀN HÌNH (HỖ TRỢ THÊM TAB TIPS)
-// ════════════════════════════════════════════════════════════════
+// HÀM MỚI: Tải trước con số cho tất cả Sidebar để không bị 0 khi reload
+function loadAllSidebarBadges() {
+    const endpoints = [
+        { url: USER_API_URL, id: 'userCountBadge' },
+        { url: API_TIPS, id: 'badge-tips' },
+        { url: API_WORKOUTS, id: 'badge-workouts' },
+        { url: API_FEATURED, id: 'badge-featured' },
+        { url: API_MUSCLES, id: 'badge-muscles' },
+        { url: API_FAQ, id: 'badge-faq' },
+        { url: API_ABOUT, id: 'badge-about' },
+        { url: API_CONTACTS, id: 'badge-contacts' },
+        { url: API_HERO_STATS, id: 'badge-hero-stats' }
+    ];
+    
+    endpoints.forEach(ep => {
+        // Luôn kèm ?admin=true để đếm cả mục bị ẩn
+        const fetchUrl = ep.url === USER_API_URL ? ep.url : `${ep.url}?admin=true`;
+        fetch(fetchUrl)
+            .then(r => r.json())
+            .then(res => {
+                const badge = document.getElementById(ep.id);
+                // Users trả thẳng list, các api khác bọc trong res.data
+                const dataLength = ep.url === USER_API_URL ? (res.length || 0) : (res.data ? res.data.length : 0);
+                if (badge) badge.textContent = dataLength;
+            })
+            .catch(e => console.log("Lỗi tải badge:", e));
+    });
+}
+
 function switchSection(sectionId) {
-    // 1. Gỡ bỏ trạng thái sáng (active) của tất cả các menu bên trái
     document.querySelectorAll('.sidebar .s-item').forEach(el => el.classList.remove('active'));
     
-    // 2. Làm sáng cái menu vừa được click
     const navItem = document.getElementById('nav-' + sectionId);
     if(navItem) navItem.classList.add('active');
 
-    // 3. Ẩn TẤT CẢ các vùng nội dung bên phải
     document.getElementById('section-exercises').style.display = 'none';
     document.getElementById('section-users').style.display = 'none';
     
-    const sectionTips = document.getElementById('section-tips');
-    if (sectionTips) sectionTips.style.display = 'none'; // Ẩn tab tips
+    const sections = ['tips', 'workouts', 'featured', 'muscles', 'faq', 'about', 'contacts', 'hero-stats'];
+    sections.forEach(sec => {
+        const el = document.getElementById('section-' + sec);
+        if(el) el.style.display = 'none';
+    });
 
-    const sectionWorkouts = document.getElementById('section-workouts');
-    if (sectionWorkouts) sectionWorkouts.style.display = 'none';
-
-    const sectionFeatured = document.getElementById('section-featured');
-    if (sectionFeatured) sectionFeatured.style.display = 'none';
-
-    const sectionMuscles = document.getElementById('section-muscles');
-    if (sectionMuscles) sectionMuscles.style.display = 'none';
-
-    const sectionFaq = document.getElementById('section-faq');
-    if (sectionFaq) sectionFaq.style.display = 'none';
-
-    const sectionAbout = document.getElementById('section-about');
-    if (sectionAbout) sectionAbout.style.display = 'none';
-
-    const sectionContacts = document.getElementById('section-contacts');
-    if (sectionContacts) sectionContacts.style.display = 'none';
-
-    // 4. Kích hoạt (Hiện) vùng nội dung tương ứng với menu vừa bấm
     const activeSection = document.getElementById('section-' + sectionId);
     if (activeSection) activeSection.style.display = 'block';
 
-    // 5. Tự động tải dữ liệu nếu cần thiết
-    if (sectionId === 'users' && usersList.length === 0) {
-        fetchUsers();
-    } else if (sectionId === 'tips') {
-        loadAdminTips(); // Tự động gọi API lấy danh sách mẹo khi chuyển sang tab này
-    } else if (sectionId === 'workouts') {
-        loadAdminWorkouts(); // Tự động gọi API lấy danh sách bài tập mẫu khi chuyển sang tab này
-    } else if (sectionId === 'featured') {
-        loadAdminFeatured();
-    } else if (sectionId === 'muscles') {
-        loadAdminMuscles();
-    } else if (sectionId === 'faq') {
-        loadAdminFaq();
-    } else if (sectionId === 'about') {
-        loadAdminAbout();
-    }else if (sectionId === 'contacts') {
-        loadAdminContacts();
-    }
+    if (sectionId === 'users' && usersList.length === 0) fetchUsers();
+    else if (sectionId === 'tips') loadAdminTips();
+    else if (sectionId === 'workouts') loadAdminWorkouts();
+    else if (sectionId === 'featured') loadAdminFeatured();
+    else if (sectionId === 'muscles') loadAdminMuscles();
+    else if (sectionId === 'faq') loadAdminFaq();
+    else if (sectionId === 'about') loadAdminAbout();
+    else if (sectionId === 'contacts') loadAdminContacts();
+    else if (sectionId === 'hero-stats') loadAdminStats();
 }
 
 // ════════════════════════════════════════════════════════════════
-// 6. RENDER GIAO DIỆN (BÀI TẬP & USER)
+// 5. RENDER BÀI TẬP VÀ USER
 // ════════════════════════════════════════════════════════════════
 function renderStats() {
     const t = exercises.length;
@@ -273,14 +270,14 @@ function renderUserTable() {
 }
 
 // ════════════════════════════════════════════════════════════════
-// 7. XỬ LÝ FORM THÊM/SỬA BÀI TẬP
+// 6. XỬ LÝ FORM THÊM/SỬA BÀI TẬP VÀ XÓA CHUNG
 // ════════════════════════════════════════════════════════════════
+// (Giữ nguyên toàn bộ logic mở form, xóa bài tập, xóa user của bạn)
 function openAdd() {
     editingId = null;
     document.getElementById('formTitle').textContent = 'THEM BAI TAP MOI';
     clearForm();
-    addStep(); addStep();
-    addTip();
+    addStep(); addStep(); addTip();
     document.getElementById('formOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -359,7 +356,6 @@ async function submitForm() {
         const equip = document.getElementById('f_equip').value;
 
         if (!name || !muscle || !icon || !diff || !equip) {
-            // Đã đổi sang showToast
             showToast('Vui lòng điền đầy đủ các trường bắt buộc (*)', 'error');
             return;
         }
@@ -392,16 +388,11 @@ async function submitForm() {
         closeForm();
         renderStats();
         renderTable();
-
     } catch (error) {
-        console.error("Loi:", error);
-        showToast("Đã xảy ra lỗi khi lưu! Vui lòng xem Console (F12).", "error");
+        showToast("Đã xảy ra lỗi khi lưu!", "error");
     }
 }
 
-// ════════════════════════════════════════════════════════════════
-// 8. XỬ LÝ XÓA CHUNG (BÀI TẬP VÀ NGƯỜI DÙNG)
-// ════════════════════════════════════════════════════════════════
 function askDelete(id) {
     deleteType = 'exercise';
     deleteId = id;
@@ -441,7 +432,8 @@ async function confirmDelete() {
             await checkResponse(r);
             usersList = usersList.filter(u => u.id !== deleteId);
             showToast('Đã xóa người dùng', 'info');
-            document.getElementById('userCountBadge').textContent = usersList.length;
+            const badge = document.getElementById('userCountBadge');
+            if(badge) badge.textContent = usersList.length;
             renderUserTable();
         } catch (e) {
             showErrorToast(e, 'Xóa người dùng');
@@ -450,16 +442,11 @@ async function confirmDelete() {
     closeConfirm();
 }
 
-// ════════════════════════════════════════════════════════════════
-// 9. TIỆN ÍCH THÔNG BÁO (TOAST ĐƯỢC NÂNG CẤP)
-// ════════════════════════════════════════════════════════════════
 function showToast(msg, type = 'info') {
     const wrap = document.getElementById('toastWrap');
     if (!wrap) return;
     const t = document.createElement('div');
     t.className = `toast ${type}`;
-    
-    // Gắn thêm icon cho xịn xò
     let icon = 'ℹ️';
     if(type === 'success') icon = '✅';
     if(type === 'error') icon = '❌';
@@ -474,42 +461,32 @@ function showToast(msg, type = 'info') {
 document.getElementById('formOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeForm(); });
 document.getElementById('confirmOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeConfirm(); });
 
-// ════════════════════════════════════════════════════════════════
-// 10. XỬ LÝ MODAL THÔNG TIN USER
-// ════════════════════════════════════════════════════════════════
+// MODAL THÔNG TIN USER
 function openUserModal(id) {
     const u = usersList.find(e => e.id === id);
     if (!u) return;
 
-    // Đổ dữ liệu vào Modal
     document.getElementById('u_fullName').textContent = u.fullName || 'Chưa cập nhật';
-    
-    // Xử lý Badge quyền
     const roleBadge = document.getElementById('u_role');
     roleBadge.textContent = u.role.toUpperCase();
     roleBadge.className = `badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}`;
-    
     document.getElementById('u_username').value = '@' + (u.username || 'N/A');
     document.getElementById('u_email').value = u.email || 'N/A';
     document.getElementById('u_age').value = u.age || 'N/A';
     
-    // Chuyển đổi giới tính
     let genderStr = 'N/A';
     if(u.gender === 'nam') genderStr = 'Nam';
     else if(u.gender === 'nu') genderStr = 'Nữ';
     else if(u.gender === 'khac') genderStr = 'Khác';
     document.getElementById('u_gender').value = genderStr;
     
-    // Xử lý ngày giờ đẹp mắt
     let dateStr = 'Chưa rõ';
     if (u.createdAt) {
         const d = new Date(u.createdAt);
-        // Format: DD/MM/YYYY lúc HH:MM
         dateStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} lúc ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
     }
     document.getElementById('u_created').value = dateStr;
 
-    // Hiển thị Modal với hiệu ứng
     document.getElementById('userModalOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -518,107 +495,105 @@ function closeUserModal() {
     document.getElementById('userModalOverlay').classList.remove('open');
     document.body.style.overflow = '';
 }
-
-// Bấm ra ngoài vùng tối để đóng Modal User
 document.getElementById('userModalOverlay').addEventListener('click', e => { 
     if (e.target === e.currentTarget) closeUserModal(); 
 });
-
-// Khởi chạy khi load trang
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeForm(); closeConfirm(); closeUserModal(); } });
-init();
-// --------------------------------------------------------------
-// 1. TẢI DỮ LIỆU ĐỔ VÀO BẢNG
+
+// ==========================================
+// HÀM BẬT/TẮT ẨN HIỆN VẠN NĂNG (DÙNG CHUNG)
+// ==========================================
+function toggleVisibility(apiEndpoint, itemId, currentHiddenStatus, reloadFunction) {
+    const newStatus = !currentHiddenStatus; 
+    fetch(`${apiEndpoint}/${itemId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_hidden: newStatus })
+    })
+    .then(res => res.json())
+    .then(res => {
+        if(res.success) reloadFunction(); 
+        else alert("Lỗi khi thay đổi trạng thái: " + res.error);
+    });
+}
+
+// ==========================================
+// QUẢN LÝ MẸO TẬP LUYỆN
+// ==========================================
 function loadAdminTips() {
     const tbody = document.getElementById('tipsTableBody');
     tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
 
-    fetch(API_TIPS)
-        .then(res => res.json())
-        .then(res => {
-            if (res.success && res.data.length > 0) {
-                tbody.innerHTML = res.data.map(tip => `
-                    <div class="tr tips-grid">
+    fetch(`${API_TIPS}?admin=true`).then(res => res.json()).then(res => {
+        if (res.success) {
+            const dataList = res.data;
+            const badge = document.getElementById('badge-tips');
+            if(badge) badge.textContent = dataList.length;
+
+            if (dataList.length > 0) {
+                tbody.innerHTML = dataList.map(tip => {
+                    const isHidden = tip.is_hidden ? true : false;
+                    const rowClass = isHidden ? "tr tips-grid is-hidden" : "tr tips-grid";
+                    const eyeIcon = isHidden ? "🙈" : "👁️";
+
+                    return `
+                    <div class="${rowClass}">
                         <div class="td">${tip.order}</div>
                         <div class="td" style="font-weight: 600;">${tip.title}</div>
                         <div class="td" style="color: var(--text-muted); font-size: 13px;">${tip.content.substring(0, 60)}...</div>
-                        <div class="td" style="display:flex; gap:10px;">
-                            <span style="cursor:pointer; color:var(--accent);" onclick='editTip(${JSON.stringify(tip)})'>✏️</span>
-                            <span style="cursor:pointer; color:#ff6060;" onclick="deleteTip('${tip._id}', '${tip.title}')">🗑️</span>
+                        <div class="td" style="display:flex; gap:12px;">
+                            <span class="action-icon" title="Ẩn/Hiện" onclick="toggleVisibility('${API_TIPS}', '${tip._id}', ${isHidden}, loadAdminTips)">${eyeIcon}</span>
+                            <span class="action-icon" onclick='editTip(${JSON.stringify(tip).replace(/'/g, "\\'")})'>✏️</span>
+                            <span class="action-icon" onclick="deleteTip('${tip._id}', '${tip.title}')">🗑️</span>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             } else {
                 tbody.innerHTML = '<div class="empty-row">Chưa có mẹo nào.</div>';
             }
-        });
+        }
+    });
 }
 
-// 2. MỞ VÀ ĐÓNG MODAL
-function openTipModal() {
-    document.getElementById('tipModalOverlay').classList.add('open');
-}
-
+function openTipModal() { document.getElementById('tipModalOverlay').classList.add('open'); }
 function closeTipModal() {
     document.getElementById('tipModalOverlay').classList.remove('open');
-    // Reset Form
     document.getElementById('tip_id').value = '';
     document.getElementById('tip_order').value = '1';
     document.getElementById('tip_title').value = '';
     document.getElementById('tip_content').value = '';
     document.getElementById('tipModalTitle').innerText = 'THÊM MẸO MỚI';
 }
-
-// 3. BẤM NÚT SỬA (Điền dữ liệu lên Form)
 function editTip(tip) {
     document.getElementById('tip_id').value = tip._id;
-    document.getElementById('tip_order').value = tip.order;
+    document.getElementById('tip_order').value = tip.order || 1;
     document.getElementById('tip_title').value = tip.title;
     document.getElementById('tip_content').value = tip.content;
     document.getElementById('tipModalTitle').innerText = 'SỬA MẸO TẬP LUYỆN';
     openTipModal();
 }
-
-// 4. LƯU DỮ LIỆU (POST hoặc PUT)
 function saveTip() {
     const id = document.getElementById('tip_id').value;
     const data = {
-        order: parseInt(document.getElementById('tip_order').value),
+        order: parseInt(document.getElementById('tip_order').value) || 1,
         title: document.getElementById('tip_title').value,
         content: document.getElementById('tip_content').value
     };
-
     if(!data.title || !data.content) return alert("Vui lòng nhập đủ Tiêu đề và Nội dung!");
-
-    const method = id ? 'PUT' : 'POST';
-    const url = id ? `${API_TIPS}/${id}` : API_TIPS;
-
-    fetch(url, {
-        method: method,
+    fetch(id ? `${API_TIPS}/${id}` : API_TIPS, {
+        method: id ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
-    })
-    .then(res => res.json())
-    .then(res => {
-        if(res.success) {
-            closeTipModal();
-            loadAdminTips(); // Load lại bảng
-        } else {
-            alert("Lỗi: " + res.error);
-        }
+    }).then(res => res.json()).then(res => {
+        if(res.success) { closeTipModal(); loadAdminTips(); } else alert("Lỗi: " + res.error);
     });
 }
-
-// 5. XÓA DỮ LIỆU (DELETE)
 function deleteTip(id, title) {
     if (confirm(`Bạn có chắc muốn xóa mẹo "${title}" không?`)) {
-        fetch(`${API_TIPS}/${id}`, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(res => {
-            if(res.success) loadAdminTips();
-        });
+        fetch(`${API_TIPS}/${id}`, { method: 'DELETE' }).then(res => res.json()).then(res => { if(res.success) loadAdminTips(); });
     }
 }
+
 // ==========================================
 // QUẢN LÝ LỊCH TẬP MẪU
 // ==========================================
@@ -628,22 +603,34 @@ function loadAdminWorkouts() {
     const tbody = document.getElementById('workoutsTableBody');
     tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
 
-    fetch(API_WORKOUTS).then(res => res.json()).then(res => {
-        if (res.success && res.data.length > 0) {
-            tbody.innerHTML = res.data.map(wo => `
-                <div class="tr workouts-grid">
-                    <div class="td"><span class="tab-badge">${catNames[wo.category] || wo.category}</span></div>
-                    <div class="td">${wo.order}</div>
-                    <div class="td" style="font-weight: 600;">${wo.title}</div>
-                    <div class="td">${wo.is_rest_day ? '<span style="color:#4ecdc4;">Có</span>' : '<span style="color:var(--text-muted);">Không</span>'}</div>
-                    <div class="td" style="display:flex; gap:10px;">
-                        <span style="cursor:pointer; color:var(--accent);" onclick='editWorkout(${JSON.stringify(wo).replace(/'/g, "\\'")})'>✏️</span>
-                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteWorkout('${wo._id}', '${wo.title}')">🗑️</span>
+    fetch(`${API_WORKOUTS}?admin=true`).then(res => res.json()).then(res => {
+        if (res.success) {
+            const dataList = res.data;
+            const badge = document.getElementById('badge-workouts');
+            if(badge) badge.textContent = dataList.length;
+
+            if (dataList.length > 0) {
+                tbody.innerHTML = dataList.map(wo => {
+                    const isHidden = wo.is_hidden ? true : false;
+                    const rowClass = isHidden ? "tr workouts-grid is-hidden" : "tr workouts-grid";
+                    const eyeIcon = isHidden ? "🙈" : "👁️";
+
+                    return `
+                    <div class="${rowClass}">
+                        <div class="td"><span class="tab-badge">${catNames[wo.category] || wo.category}</span></div>
+                        <div class="td">${wo.order}</div>
+                        <div class="td" style="font-weight: 600;">${wo.title}</div>
+                        <div class="td">${wo.is_rest_day ? '<span style="color:#4ecdc4;">Có</span>' : '<span style="color:var(--text-muted);">Không</span>'}</div>
+                        <div class="td" style="display:flex; gap:12px;">
+                            <span class="action-icon" title="Ẩn/Hiện" onclick="toggleVisibility('${API_WORKOUTS}', '${wo._id}', ${isHidden}, loadAdminWorkouts)">${eyeIcon}</span>
+                            <span class="action-icon" onclick='editWorkout(${JSON.stringify(wo).replace(/'/g, "\\'")})'>✏️</span>
+                            <span class="action-icon" onclick="deleteWorkout('${wo._id}', '${wo.title}')">🗑️</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<div class="empty-row">Chưa có lịch tập mẫu nào.</div>';
+                `}).join('');
+            } else {
+                tbody.innerHTML = '<div class="empty-row">Chưa có lịch tập mẫu nào.</div>';
+            }
         }
     });
 }
@@ -652,27 +639,18 @@ function toggleWorkoutExercises() {
     const isRest = document.getElementById('wo_is_rest').checked;
     document.getElementById('wo_exercises_section').style.display = isRest ? 'none' : 'block';
 }
-
 function addWorkoutExercise(name = '', sets_reps = '') {
     const div = document.createElement('div');
     div.className = 'dynamic-item';
     div.style.cssText = 'display:grid; grid-template-columns: 1fr 1fr auto; gap:8px;';
-    div.innerHTML = `
-        <input type="text" placeholder="Tên bài (VD: Bench Press)" value="${name}">
+    div.innerHTML = `<input type="text" placeholder="Tên bài (VD: Bench Press)" value="${name}">
         <input type="text" placeholder="Sets x Reps (VD: 4x8)" value="${sets_reps}">
         <button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
     document.getElementById('wo_exerciseList').appendChild(div);
 }
-
-function openWorkoutModal() {
-    document.getElementById('workoutModalOverlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-}
-
+function openWorkoutModal() { document.getElementById('workoutModalOverlay').classList.add('open'); document.body.style.overflow = 'hidden'; }
 function closeWorkoutModal() {
-    document.getElementById('workoutModalOverlay').classList.remove('open');
-    document.body.style.overflow = '';
-    // Reset form
+    document.getElementById('workoutModalOverlay').classList.remove('open'); document.body.style.overflow = '';
     document.getElementById('wo_id').value = '';
     document.getElementById('wo_title').value = '';
     document.getElementById('wo_order').value = '1';
@@ -681,70 +659,45 @@ function closeWorkoutModal() {
     toggleWorkoutExercises();
     document.getElementById('workoutModalTitle').innerText = 'THÊM NGÀY TẬP MỚI';
 }
-
 function editWorkout(wo) {
     document.getElementById('wo_id').value = wo._id;
     document.getElementById('wo_category').value = wo.category;
     document.getElementById('wo_order').value = wo.order || 1;
     document.getElementById('wo_title').value = wo.title;
     document.getElementById('wo_is_rest').checked = wo.is_rest_day || false;
-    
     document.getElementById('wo_exerciseList').innerHTML = '';
-    if(wo.exercises && wo.exercises.length > 0) {
-        wo.exercises.forEach(ex => addWorkoutExercise(ex.name, ex.sets_reps));
-    }
-    
+    if(wo.exercises && wo.exercises.length > 0) wo.exercises.forEach(ex => addWorkoutExercise(ex.name, ex.sets_reps));
     toggleWorkoutExercises();
     document.getElementById('workoutModalTitle').innerText = 'SỬA NGÀY TẬP';
     openWorkoutModal();
 }
-
 function saveWorkout() {
     const id = document.getElementById('wo_id').value;
     const is_rest = document.getElementById('wo_is_rest').checked;
-    
-    // Thu thập danh sách bài tập từ các thẻ input
     const exercises = [];
     if(!is_rest) {
         document.querySelectorAll('#wo_exerciseList .dynamic-item').forEach(row => {
             const inputs = row.querySelectorAll('input');
-            const name = inputs[0].value.trim();
-            const sets_reps = inputs[1].value.trim();
-            if(name) exercises.push({ name: name, sets_reps: sets_reps });
+            if(inputs[0].value.trim()) exercises.push({ name: inputs[0].value.trim(), sets_reps: inputs[1].value.trim() });
         });
     }
-
     const data = {
         category: document.getElementById('wo_category').value,
         order: parseInt(document.getElementById('wo_order').value),
         title: document.getElementById('wo_title').value,
-        is_rest_day: is_rest,
-        exercises: exercises
+        is_rest_day: is_rest, exercises: exercises
     };
-
     if(!data.title) return alert("Vui lòng nhập Tiêu đề Ngày!");
-
     fetch(id ? `${API_WORKOUTS}/${id}` : API_WORKOUTS, {
-        method: id ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
-    .then(res => res.json())
-    .then(res => {
-        if(res.success) {
-            closeWorkoutModal();
-            loadAdminWorkouts();
-        } else alert("Lỗi: " + res.error);
-    });
+        method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => { if(res.success) { closeWorkoutModal(); loadAdminWorkouts(); } else alert("Lỗi: " + res.error); });
 }
-
 function deleteWorkout(id, title) {
     if (confirm(`Bạn có chắc muốn xóa "${title}" không?`)) {
-        fetch(`${API_WORKOUTS}/${id}`, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(res => { if(res.success) loadAdminWorkouts(); });
+        fetch(`${API_WORKOUTS}/${id}`, { method: 'DELETE' }).then(r => r.json()).then(r => { if(r.success) loadAdminWorkouts(); });
     }
 }
+
 // ==========================================
 // QUẢN LÝ NỘI DUNG NỔI BẬT
 // ==========================================
@@ -752,30 +705,38 @@ function loadAdminFeatured() {
     const tbody = document.getElementById('featuredTableBody');
     tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
 
-    fetch(API_FEATURED).then(res => res.json()).then(res => {
-        if (res.success && res.data.length > 0) {
-            tbody.innerHTML = res.data.map(feat => `
-                <div class="tr featured-grid">
-                    <div class="td">${feat.order || 1}</div>
-                    <div class="td" style="font-size: 24px;">${feat.icon || '📌'}</div>
-                    <div class="td" style="font-weight: 600;">${feat.title}</div>
-                    <div class="td" style="color: var(--text-muted); font-size: 13px;">${(feat.description || '').substring(0, 60)}...</div>
-                    <div class="td" style="display:flex; gap:10px;">
-                        <span style="cursor:pointer; color:var(--accent);" onclick='editFeatured(${JSON.stringify(feat).replace(/'/g, "\\'")})'>✏️</span>
-                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteFeatured('${feat._id}', '${feat.title}')">🗑️</span>
+    fetch(`${API_FEATURED}?admin=true`).then(res => res.json()).then(res => {
+        if (res.success) {
+            const dataList = res.data;
+            const badge = document.getElementById('badge-featured');
+            if(badge) badge.textContent = dataList.length;
+
+            if (dataList.length > 0) {
+                tbody.innerHTML = dataList.map(feat => {
+                    const isHidden = feat.is_hidden ? true : false;
+                    const rowClass = isHidden ? "tr featured-grid is-hidden" : "tr featured-grid";
+                    const eyeIcon = isHidden ? "🙈" : "👁️";
+
+                    return `
+                    <div class="${rowClass}">
+                        <div class="td">${feat.order || 1}</div>
+                        <div class="td" style="font-size: 24px;">${feat.icon || '📌'}</div>
+                        <div class="td" style="font-weight: 600;">${feat.title}</div>
+                        <div class="td" style="color: var(--text-muted); font-size: 13px;">${(feat.description || '').substring(0, 60)}...</div>
+                        <div class="td" style="display:flex; gap:12px;">
+                            <span class="action-icon" title="Ẩn/Hiện" onclick="toggleVisibility('${API_FEATURED}', '${feat._id}', ${isHidden}, loadAdminFeatured)">${eyeIcon}</span>
+                            <span class="action-icon" onclick='editFeatured(${JSON.stringify(feat).replace(/'/g, "\\'")})'>✏️</span>
+                            <span class="action-icon" onclick="deleteFeatured('${feat._id}', '${feat.title}')">🗑️</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<div class="empty-row">Chưa có nội dung nổi bật nào.</div>';
+                `}).join('');
+            } else {
+                tbody.innerHTML = '<div class="empty-row">Chưa có nội dung nổi bật nào.</div>';
+            }
         }
     });
 }
-
-function openFeaturedModal() {
-    document.getElementById('featuredModalOverlay').classList.add('open');
-}
-
+function openFeaturedModal() { document.getElementById('featuredModalOverlay').classList.add('open'); }
 function closeFeaturedModal() {
     document.getElementById('featuredModalOverlay').classList.remove('open');
     document.getElementById('feat_id').value = '';
@@ -786,7 +747,6 @@ function closeFeaturedModal() {
     document.getElementById('feat_desc').value = '';
     document.getElementById('featuredModalTitle').innerText = 'THÊM NỘI DUNG NỔI BẬT';
 }
-
 function editFeatured(feat) {
     document.getElementById('feat_id').value = feat._id;
     document.getElementById('feat_order').value = feat.order || 1;
@@ -797,7 +757,6 @@ function editFeatured(feat) {
     document.getElementById('featuredModalTitle').innerText = 'SỬA NỘI DUNG';
     openFeaturedModal();
 }
-
 function saveFeatured() {
     const id = document.getElementById('feat_id').value;
     const data = {
@@ -807,28 +766,17 @@ function saveFeatured() {
         title: document.getElementById('feat_title').value,
         description: document.getElementById('feat_desc').value
     };
-
     if(!data.title) return alert("Vui lòng nhập Tiêu đề!");
-
     fetch(id ? `${API_FEATURED}/${id}` : API_FEATURED, {
-        method: id ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }).then(res => res.json()).then(res => {
-        if(res.success) {
-            closeFeaturedModal();
-            loadAdminFeatured();
-        } else alert("Lỗi: " + res.error);
-    });
+        method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => { if(res.success) { closeFeaturedModal(); loadAdminFeatured(); } else alert("Lỗi: " + res.error); });
 }
-
 function deleteFeatured(id, title) {
     if (confirm(`Bạn có chắc muốn xóa "${title}" không?`)) {
-        fetch(`${API_FEATURED}/${id}`, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(res => { if(res.success) loadAdminFeatured(); });
+        fetch(`${API_FEATURED}/${id}`, { method: 'DELETE' }).then(r => r.json()).then(r => { if(r.success) loadAdminFeatured(); });
     }
 }
+
 // ==========================================
 // QUẢN LÝ NHÓM CƠ & BÀI TẬP
 // ==========================================
@@ -836,30 +784,38 @@ function loadAdminMuscles() {
     const tbody = document.getElementById('musclesTableBody');
     tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
 
-    fetch(API_MUSCLES).then(res => res.json()).then(res => {
-        if (res.success && res.data.length > 0) {
-            tbody.innerHTML = res.data.map(mus => `
-                <div class="tr muscles-grid">
-                    <div class="td">${mus.order || 1}</div>
-                    <div class="td" style="font-size: 24px;">${mus.icon || '💪'}</div>
-                    <div class="td" style="font-weight: 600;">${mus.name}</div>
-                    <div class="td" style="color: var(--text-muted);">${mus.exercise_count || ''}</div>
-                    <div class="td" style="display:flex; gap:10px;">
-                        <span style="cursor:pointer; color:var(--accent);" onclick='editMuscle(${JSON.stringify(mus).replace(/'/g, "\\'")})'>✏️</span>
-                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteMuscle('${mus._id}', '${mus.name}')">🗑️</span>
+    fetch(`${API_MUSCLES}?admin=true`).then(res => res.json()).then(res => {
+        if (res.success) {
+            const dataList = res.data;
+            const badge = document.getElementById('badge-muscles');
+            if(badge) badge.textContent = dataList.length;
+
+            if (dataList.length > 0) {
+                tbody.innerHTML = dataList.map(mus => {
+                    const isHidden = mus.is_hidden ? true : false;
+                    const rowClass = isHidden ? "tr muscles-grid is-hidden" : "tr muscles-grid";
+                    const eyeIcon = isHidden ? "🙈" : "👁️";
+
+                    return `
+                    <div class="${rowClass}">
+                        <div class="td">${mus.order || 1}</div>
+                        <div class="td" style="font-size: 24px;">${mus.icon || '💪'}</div>
+                        <div class="td" style="font-weight: 600;">${mus.name}</div>
+                        <div class="td" style="color: var(--text-muted);">${mus.exercise_count || ''}</div>
+                        <div class="td" style="display:flex; gap:12px;">
+                            <span class="action-icon" title="Ẩn/Hiện" onclick="toggleVisibility('${API_MUSCLES}', '${mus._id}', ${isHidden}, loadAdminMuscles)">${eyeIcon}</span>
+                            <span class="action-icon" onclick='editMuscle(${JSON.stringify(mus).replace(/'/g, "\\'")})'>✏️</span>
+                            <span class="action-icon" onclick="deleteMuscle('${mus._id}', '${mus.name}')">🗑️</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<div class="empty-row">Chưa có nhóm cơ nào.</div>';
+                `}).join('');
+            } else {
+                tbody.innerHTML = '<div class="empty-row">Chưa có nhóm cơ nào.</div>';
+            }
         }
     });
 }
-
-function openMuscleModal() {
-    document.getElementById('muscleModalOverlay').classList.add('open');
-}
-
+function openMuscleModal() { document.getElementById('muscleModalOverlay').classList.add('open'); }
 function closeMuscleModal() {
     document.getElementById('muscleModalOverlay').classList.remove('open');
     document.getElementById('mus_id').value = '';
@@ -869,7 +825,6 @@ function closeMuscleModal() {
     document.getElementById('mus_count').value = '';
     document.getElementById('muscleModalTitle').innerText = 'THÊM NHÓM CƠ';
 }
-
 function editMuscle(mus) {
     document.getElementById('mus_id').value = mus._id;
     document.getElementById('mus_order').value = mus.order || 1;
@@ -879,7 +834,6 @@ function editMuscle(mus) {
     document.getElementById('muscleModalTitle').innerText = 'SỬA NHÓM CƠ';
     openMuscleModal();
 }
-
 function saveMuscle() {
     const id = document.getElementById('mus_id').value;
     const data = {
@@ -888,28 +842,17 @@ function saveMuscle() {
         name: document.getElementById('mus_name').value,
         exercise_count: document.getElementById('mus_count').value
     };
-
     if(!data.name || !data.icon) return alert("Vui lòng nhập Tên và Icon!");
-
     fetch(id ? `${API_MUSCLES}/${id}` : API_MUSCLES, {
-        method: id ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }).then(res => res.json()).then(res => {
-        if(res.success) {
-            closeMuscleModal();
-            loadAdminMuscles();
-        } else alert("Lỗi: " + res.error);
-    });
+        method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => { if(res.success) { closeMuscleModal(); loadAdminMuscles(); } else alert("Lỗi: " + res.error); });
 }
-
 function deleteMuscle(id, name) {
     if (confirm(`Bạn có chắc muốn xóa "${name}" không?`)) {
-        fetch(`${API_MUSCLES}/${id}`, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(res => { if(res.success) loadAdminMuscles(); });
+        fetch(`${API_MUSCLES}/${id}`, { method: 'DELETE' }).then(r => r.json()).then(r => { if(r.success) loadAdminMuscles(); });
     }
 }
+
 // ==========================================
 // QUẢN LÝ CÂU HỎI THƯỜNG GẶP (FAQ)
 // ==========================================
@@ -919,29 +862,37 @@ function loadAdminFaq() {
     const tbody = document.getElementById('faqTableBody');
     tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
 
-    fetch(API_FAQ).then(res => res.json()).then(res => {
-        if (res.success && res.data.length > 0) {
-            tbody.innerHTML = res.data.map(faq => `
-                <div class="tr faq-grid">
-                    <div class="td"><span class="faq-cat-badge">${faqCatNames[faq.cat] || faq.cat}</span></div>
-                    <div class="td" style="font-weight: 600; color: var(--accent);">${faq.question}</div>
-                    <div class="td" style="color: var(--text-muted); font-size: 13px;">${(faq.answer || '').substring(0, 70)}...</div>
-                    <div class="td" style="display:flex; gap:10px;">
-                        <span style="cursor:pointer; color:var(--accent);" onclick='editFaq(${JSON.stringify(faq).replace(/'/g, "\\'")})'>✏️</span>
-                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteFaq('${faq._id}', '${faq.question}')">🗑️</span>
+    fetch(`${API_FAQ}?admin=true`).then(res => res.json()).then(res => {
+        if (res.success) {
+            const dataList = res.data;
+            const badge = document.getElementById('badge-faq');
+            if(badge) badge.textContent = dataList.length;
+
+            if (dataList.length > 0) {
+                tbody.innerHTML = dataList.map(faq => {
+                    const isHidden = faq.is_hidden ? true : false;
+                    const rowClass = isHidden ? "tr faq-grid is-hidden" : "tr faq-grid";
+                    const eyeIcon = isHidden ? "🙈" : "👁️";
+
+                    return `
+                    <div class="${rowClass}">
+                        <div class="td"><span class="faq-cat-badge">${faqCatNames[faq.cat] || faq.cat}</span></div>
+                        <div class="td" style="font-weight: 600; color: var(--accent);">${faq.question}</div>
+                        <div class="td" style="color: var(--text-muted); font-size: 13px;">${(faq.answer || '').substring(0, 70)}...</div>
+                        <div class="td" style="display:flex; gap:12px;">
+                            <span class="action-icon" title="Ẩn/Hiện" onclick="toggleVisibility('${API_FAQ}', '${faq._id}', ${isHidden}, loadAdminFaq)">${eyeIcon}</span>
+                            <span class="action-icon" onclick='editFaq(${JSON.stringify(faq).replace(/'/g, "\\'")})'>✏️</span>
+                            <span class="action-icon" onclick="deleteFaq('${faq._id}', '${faq.question}')">🗑️</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<div class="empty-row">Chưa có câu hỏi nào.</div>';
+                `}).join('');
+            } else {
+                tbody.innerHTML = '<div class="empty-row">Chưa có câu hỏi nào.</div>';
+            }
         }
     });
 }
-
-function openFaqModal() {
-    document.getElementById('faqModalOverlay').classList.add('open');
-}
-
+function openFaqModal() { document.getElementById('faqModalOverlay').classList.add('open'); }
 function closeFaqModal() {
     document.getElementById('faqModalOverlay').classList.remove('open');
     document.getElementById('faq_id').value = '';
@@ -951,7 +902,6 @@ function closeFaqModal() {
     document.getElementById('faq_answer').value = '';
     document.getElementById('faqModalTitle').innerText = 'THÊM CÂU HỎI MỚI';
 }
-
 function editFaq(faq) {
     document.getElementById('faq_id').value = faq._id;
     document.getElementById('faq_cat').value = faq.cat || 'account';
@@ -961,7 +911,6 @@ function editFaq(faq) {
     document.getElementById('faqModalTitle').innerText = 'SỬA CÂU HỎI';
     openFaqModal();
 }
-
 function saveFaq() {
     const id = document.getElementById('faq_id').value;
     const data = {
@@ -970,28 +919,17 @@ function saveFaq() {
         question: document.getElementById('faq_question').value,
         answer: document.getElementById('faq_answer').value
     };
-
     if(!data.question || !data.answer) return alert("Vui lòng nhập đủ Câu hỏi và Câu trả lời!");
-
     fetch(id ? `${API_FAQ}/${id}` : API_FAQ, {
-        method: id ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }).then(res => res.json()).then(res => {
-        if(res.success) {
-            closeFaqModal();
-            loadAdminFaq();
-        } else alert("Lỗi: " + res.error);
-    });
+        method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => { if(res.success) { closeFaqModal(); loadAdminFaq(); } else alert("Lỗi: " + res.error); });
 }
-
 function deleteFaq(id, question) {
     if (confirm(`Bạn có chắc muốn xóa câu hỏi "${question}" không?`)) {
-        fetch(`${API_FAQ}/${id}`, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(res => { if(res.success) loadAdminFaq(); });
+        fetch(`${API_FAQ}/${id}`, { method: 'DELETE' }).then(r => r.json()).then(r => { if(r.success) loadAdminFaq(); });
     }
 }
+
 // ==========================================
 // QUẢN LÝ VÌ SAO CHỌN FIT ME (ABOUT FEATURES)
 // ==========================================
@@ -999,28 +937,38 @@ function loadAdminAbout() {
     const tbody = document.getElementById('aboutTableBody');
     tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
 
-    fetch(API_ABOUT).then(res => res.json()).then(res => {
-        if (res.success && res.data.length > 0) {
-            tbody.innerHTML = res.data.map(abt => `
-                <div class="tr about-grid">
-                    <div class="td">${abt.order || 1}</div>
-                    <div class="td" style="font-size: 24px;">${abt.icon || '📌'}</div>
-                    <div class="td" style="font-weight: 600;">${abt.title}</div>
-                    <div class="td" style="color: var(--text-muted); font-size: 13px;">${(abt.description || '').substring(0, 60)}...</div>
-                    <div class="td" style="display:flex; gap:10px;">
-                        <span style="cursor:pointer; color:var(--accent);" onclick='editAbout(${JSON.stringify(abt).replace(/'/g, "\\'")})'>✏️</span>
-                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteAbout('${abt._id}', '${abt.title}')">🗑️</span>
+    fetch(`${API_ABOUT}?admin=true`).then(res => res.json()).then(res => {
+        if (res.success) {
+            const dataList = res.data;
+            const badge = document.getElementById('badge-about');
+            if(badge) badge.textContent = dataList.length;
+
+            if (dataList.length > 0) {
+                tbody.innerHTML = dataList.map(abt => {
+                    const isHidden = abt.is_hidden ? true : false;
+                    const rowClass = isHidden ? "tr about-grid is-hidden" : "tr about-grid";
+                    const eyeIcon = isHidden ? "🙈" : "👁️";
+
+                    return `
+                    <div class="${rowClass}">
+                        <div class="td">${abt.order || 1}</div>
+                        <div class="td" style="font-size: 24px;">${abt.icon || '📌'}</div>
+                        <div class="td" style="font-weight: 600;">${abt.title}</div>
+                        <div class="td" style="color: var(--text-muted); font-size: 13px;">${(abt.description || '').substring(0, 60)}...</div>
+                        <div class="td" style="display:flex; gap:12px;">
+                            <span class="action-icon" title="Ẩn/Hiện" onclick="toggleVisibility('${API_ABOUT}', '${abt._id}', ${isHidden}, loadAdminAbout)">${eyeIcon}</span>
+                            <span class="action-icon" onclick='editAbout(${JSON.stringify(abt).replace(/'/g, "\\'")})'>✏️</span>
+                            <span class="action-icon" onclick="deleteAbout('${abt._id}', '${abt.title}')">🗑️</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<div class="empty-row">Chưa có dữ liệu nào.</div>';
+                `}).join('');
+            } else {
+                tbody.innerHTML = '<div class="empty-row">Chưa có dữ liệu nào.</div>';
+            }
         }
     });
 }
-
 function openAboutModal() { document.getElementById('aboutModalOverlay').classList.add('open'); }
-
 function closeAboutModal() {
     document.getElementById('aboutModalOverlay').classList.remove('open');
     document.getElementById('abt_id').value = '';
@@ -1030,7 +978,6 @@ function closeAboutModal() {
     document.getElementById('abt_desc').value = '';
     document.getElementById('aboutModalTitle').innerText = 'THÊM ĐẶC ĐIỂM';
 }
-
 function editAbout(abt) {
     document.getElementById('abt_id').value = abt._id;
     document.getElementById('abt_order').value = abt.order || 1;
@@ -1040,7 +987,6 @@ function editAbout(abt) {
     document.getElementById('aboutModalTitle').innerText = 'SỬA ĐẶC ĐIỂM';
     openAboutModal();
 }
-
 function saveAbout() {
     const id = document.getElementById('abt_id').value;
     const data = {
@@ -1049,54 +995,63 @@ function saveAbout() {
         title: document.getElementById('abt_title').value,
         description: document.getElementById('abt_desc').value
     };
-
     if(!data.title) return alert("Vui lòng nhập Tiêu đề!");
-
     fetch(id ? `${API_ABOUT}/${id}` : API_ABOUT, {
-        method: id ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }).then(res => res.json()).then(res => {
-        if(res.success) { closeAboutModal(); loadAdminAbout(); } 
-        else alert("Lỗi: " + res.error);
-    });
+        method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => { if(res.success) { closeAboutModal(); loadAdminAbout(); } else alert("Lỗi: " + res.error); });
 }
-
 function deleteAbout(id, title) {
     if (confirm(`Bạn có chắc muốn xóa "${title}" không?`)) {
-        fetch(`${API_ABOUT}/${id}`, { method: 'DELETE' }).then(res => res.json()).then(res => { if(res.success) loadAdminAbout(); });
+        fetch(`${API_ABOUT}/${id}`, { method: 'DELETE' }).then(r => r.json()).then(r => { if(r.success) loadAdminAbout(); });
     }
 }
+
 // ==========================================
 // QUẢN LÝ THÔNG TIN LIÊN HỆ (CONTACTS)
 // ==========================================
 function loadAdminContacts() {
     const tbody = document.getElementById('contactsTableBody');
-    tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
+    tbody.innerHTML = '<div class="empty-row">Đang tải...</div>';
 
-    fetch(API_CONTACTS).then(res => res.json()).then(res => {
-        if (res.success && res.data.length > 0) {
-            tbody.innerHTML = res.data.map(cont => `
-                <div class="tr contacts-grid">
-                    <div class="td">${cont.order || 1}</div>
-                    <div class="td" style="font-size: 24px;">${cont.icon || '📞'}</div>
-                    <div class="td" style="font-weight: 600;">${cont.title}</div>
-                    <div class="td" style="color: var(--text-muted); font-size: 13px;">${(cont.description || '').substring(0, 40)}...</div>
-                    <div class="td" style="color: var(--accent);">${cont.link_text || ''}</div>
-                    <div class="td" style="display:flex; gap:10px;">
-                        <span style="cursor:pointer; color:var(--accent);" onclick='editContact(${JSON.stringify(cont).replace(/'/g, "\\'")})'>✏️</span>
-                        <span style="cursor:pointer; color:#ff6060;" onclick="deleteContact('${cont._id}', '${cont.title}')">🗑️</span>
+    fetch(`${API_CONTACTS}?admin=true`).then(res => res.json()).then(res => {
+        if (res.success) {
+            const dataList = res.data;
+            const badge = document.getElementById('badge-contacts');
+            if(badge) badge.textContent = dataList.length;
+
+            if (dataList.length > 0) {
+                tbody.innerHTML = dataList.map(item => {
+                    const isHidden = item.is_hidden ? true : false;
+                    const rowClass = isHidden ? "tr contacts-grid is-hidden" : "tr contacts-grid";
+                    const eyeIcon = isHidden ? "🙈" : "👁️";
+                    
+                    const icon = item.icon || '';
+                    const title = item.title || item.name || '';
+                    const desc = item.desc || item.description || item.content || '';
+                    const linkText = item.link_text || item.link || item.url || '';
+
+                    return `
+                    <div class="${rowClass}">
+                        <div class="td">${item.order || 1}</div>
+                        <div class="td" style="font-size: 20px;">${icon}</div>
+                        <div class="td" style="font-weight: 600; color: var(--text-main);">${title}</div>
+                        <div class="td" style="color: var(--text-muted); font-size: 13px;">${desc}</div>
+                        <div class="td" style="color: var(--accent);">${linkText}</div>
+                        <div class="td" style="display:flex; gap:12px;">
+                            <span class="action-icon" title="Ẩn/Hiện" onclick="toggleVisibility('${API_CONTACTS}', '${item._id}', ${isHidden}, loadAdminContacts)">${eyeIcon}</span>
+                            <span class="action-icon" onclick='editContact(${JSON.stringify(item).replace(/'/g, "\\'")})'>✏️</span>
+                            <span class="action-icon" onclick="deleteContact('${item._id}', '${title}')">🗑️</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
-        } else {
-            tbody.innerHTML = '<div class="empty-row">Chưa có dữ liệu liên hệ nào.</div>';
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = '<div class="empty-row">Chưa có thông tin liên hệ nào.</div>';
+            }
         }
     });
 }
-
 function openContactModal() { document.getElementById('contactModalOverlay').classList.add('open'); }
-
 function closeContactModal() {
     document.getElementById('contactModalOverlay').classList.remove('open');
     document.getElementById('cont_id').value = '';
@@ -1107,7 +1062,6 @@ function closeContactModal() {
     document.getElementById('cont_desc').value = '';
     document.getElementById('contactModalTitle').innerText = 'THÊM LIÊN HỆ';
 }
-
 function editContact(cont) {
     document.getElementById('cont_id').value = cont._id;
     document.getElementById('cont_order').value = cont.order || 1;
@@ -1118,7 +1072,6 @@ function editContact(cont) {
     document.getElementById('contactModalTitle').innerText = 'SỬA LIÊN HỆ';
     openContactModal();
 }
-
 function saveContact() {
     const id = document.getElementById('cont_id').value;
     const data = {
@@ -1128,21 +1081,89 @@ function saveContact() {
         link_text: document.getElementById('cont_link').value,
         description: document.getElementById('cont_desc').value
     };
-
     if(!data.title) return alert("Vui lòng nhập Tiêu đề!");
-
     fetch(id ? `${API_CONTACTS}/${id}` : API_CONTACTS, {
-        method: id ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    }).then(res => res.json()).then(res => {
-        if(res.success) { closeContactModal(); loadAdminContacts(); } 
-        else alert("Lỗi: " + res.error);
-    });
+        method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => { if(res.success) { closeContactModal(); loadAdminContacts(); } else alert("Lỗi: " + res.error); });
 }
-
 function deleteContact(id, title) {
     if (confirm(`Bạn có chắc muốn xóa "${title}" không?`)) {
-        fetch(`${API_CONTACTS}/${id}`, { method: 'DELETE' }).then(res => res.json()).then(res => { if(res.success) loadAdminContacts(); });
+        fetch(`${API_CONTACTS}/${id}`, { method: 'DELETE' }).then(r => r.json()).then(r => { if(r.success) loadAdminContacts(); });
     }
 }
+
+// ==========================================
+// QUẢN LÝ THỐNG KÊ (HERO STATS)
+// ==========================================
+function loadAdminStats() {
+    const tbody = document.getElementById('statsTableBody');
+    tbody.innerHTML = '<div class="empty-row">Đang tải dữ liệu…</div>';
+
+    fetch(`${API_HERO_STATS}?admin=true`).then(res => res.json()).then(res => {
+        if (res.success) {
+            const dataList = res.data;
+            const badge = document.getElementById('badge-hero-stats');
+            if(badge) badge.textContent = dataList.length;
+
+            if (dataList.length > 0) {
+                tbody.innerHTML = dataList.map(stat => {
+                    const isHidden = stat.is_hidden ? true : false;
+                    const rowClass = isHidden ? "tr stats-grid is-hidden" : "tr stats-grid";
+                    const eyeIcon = isHidden ? "🙈" : "👁️"; 
+                    
+                    return `
+                    <div class="${rowClass}">
+                        <div class="td">${stat.order || 1}</div>
+                        <div class="td" style="font-weight: bold; color: var(--accent);">${stat.number_text}</div>
+                        <div class="td">${stat.label_text}</div>
+                        <div class="td" style="display:flex; gap:12px;">
+                            <span class="action-icon" title="Ẩn/Hiện" onclick="toggleVisibility('${API_HERO_STATS}', '${stat._id}', ${isHidden}, loadAdminStats)">${eyeIcon}</span>
+                            <span class="action-icon" title="Sửa" onclick='editStat(${JSON.stringify(stat).replace(/'/g, "\\'")})'>✏️</span>
+                            <span class="action-icon" title="Xóa" onclick="deleteStat('${stat._id}', '${stat.label_text}')">🗑️</span>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = '<div class="empty-row">Chưa có chỉ số nào.</div>';
+            }
+        }
+    });
+}
+function openStatModal() { document.getElementById('statModalOverlay').classList.add('open'); }
+function closeStatModal() {
+    document.getElementById('statModalOverlay').classList.remove('open');
+    document.getElementById('stat_id').value = '';
+    document.getElementById('stat_order').value = '1';
+    document.getElementById('stat_num').value = '';
+    document.getElementById('stat_label').value = '';
+    document.getElementById('statModalTitle').innerText = 'THÊM CHỈ SỐ';
+}
+function editStat(stat) {
+    document.getElementById('stat_id').value = stat._id;
+    document.getElementById('stat_order').value = stat.order || 1;
+    document.getElementById('stat_num').value = stat.number_text || '';
+    document.getElementById('stat_label').value = stat.label_text || '';
+    document.getElementById('statModalTitle').innerText = 'SỬA CHỈ SỐ';
+    openStatModal();
+}
+function saveStat() {
+    const id = document.getElementById('stat_id').value;
+    const data = {
+        order: parseInt(document.getElementById('stat_order').value) || 1,
+        number_text: document.getElementById('stat_num').value,
+        label_text: document.getElementById('stat_label').value
+    };
+    if(!data.number_text || !data.label_text) return alert("Vui lòng nhập đầy đủ thông tin!");
+    fetch(id ? `${API_HERO_STATS}/${id}` : API_HERO_STATS, {
+        method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+    }).then(res => res.json()).then(res => { if(res.success) { closeStatModal(); loadAdminStats(); } else alert("Lỗi: " + res.error); });
+}
+function deleteStat(id, title) {
+    if (confirm(`Bạn có chắc muốn xóa "${title}" không?`)) {
+        fetch(`${API_HERO_STATS}/${id}`, { method: 'DELETE' }).then(r => r.json()).then(r => { if(r.success) loadAdminStats(); });
+    }
+}
+
+// Khởi chạy file
+init();

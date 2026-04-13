@@ -26,6 +26,20 @@
       .tr.user-grid {
         grid-template-columns: 80px 1fr 150px 100px 100px 80px;
       }
+      
+      /* ĐẢM BẢO HIỆU ỨNG ẨN (SOFT DELETE) VÀ HOVER HOẠT ĐỘNG */
+      .tr.is-hidden {
+        opacity: 0.4;
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+      .action-icon {
+        cursor: pointer;
+        font-size: 16px;
+        transition: transform 0.2s ease;
+      }
+      .action-icon:hover {
+        transform: scale(1.2);
+      }
     </style>
   </head>
   <body>
@@ -66,35 +80,49 @@
           <span class="s-badge" id="exCountBadge">0</span>
         </div>
         <div class="s-divider"></div>
+        
         <div class="s-title">Hệ thống</div>
         <div class="s-item" onclick="switchSection('users')" id="nav-users">
           <span class="s-icon">👥</span> Người dùng
           <span class="s-badge" id="userCountBadge">0</span>
         </div>
         <div class="s-divider"></div>
+        
         <div class="s-title">Trang chủ</div>
         <div class="s-item" onclick="switchSection('tips')" id="nav-tips">
           <span class="s-icon">💡</span> Mẹo tập luyện
+          <span class="sidebar-badge" id="badge-tips">0</span>
         </div> 
         <div class="s-item" onclick="switchSection('workouts')" id="nav-workouts">
           <span class="s-icon">📅</span> Lịch tập mẫu
+          <span class="sidebar-badge" id="badge-workouts">0</span>
         </div>
         <div class="s-item" onclick="switchSection('featured')" id="nav-featured">
           <span class="s-icon">🔥</span> Nội dung nổi bật
+          <span class="sidebar-badge" id="badge-featured">0</span>
         </div>
         <div class="s-item" onclick="switchSection('muscles')" id="nav-muscles">
           <span class="s-icon">💪</span> Nhóm cơ & Bài tập
+          <span class="sidebar-badge" id="badge-muscles">0</span>
         </div>
         <div class="s-divider"></div>
+        
         <div class="s-title">Mở rộng</div>
         <div class="s-item" onclick="switchSection('faq')" id="nav-faq">
           <span class="s-icon">❓</span> Hỏi & Đáp (FAQ)
+          <span class="sidebar-badge" id="badge-faq">0</span>
         </div>
         <div class="s-item" onclick="switchSection('about')" id="nav-about">
           <span class="s-icon">🎯</span> Điểm nổi bật (Giới thiệu)
+          <span class="sidebar-badge" id="badge-about">0</span>
         </div>
         <div class="s-item" onclick="switchSection('contacts')" id="nav-contacts">
           <span class="s-icon">📞</span> Thông tin Liên hệ
+          <span class="sidebar-badge" id="badge-contacts">0</span>
+        </div>
+        <div class="s-item" onclick="switchSection('hero-stats')" id="nav-hero-stats">
+          <span class="s-icon">📊</span> Thống kê Nền tảng
+          <span class="sidebar-badge" id="badge-hero-stats">0</span>
         </div>
       </aside>
 
@@ -427,8 +455,66 @@
             </div>
           </div>
         </section>
+
+        <section id="section-hero-stats" style="display: none">
+          <div class="page-header">
+            <div class="page-title-wrap">
+              <div class="page-label">Quản lý Trang chủ & Giới thiệu</div>
+              <h1>Thống kê Nền tảng</h1>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="openStatModal()">＋ Thêm chỉ số</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <style>
+              .stats-grid { grid-template-columns: 80px 150px 1fr 100px; }
+            </style>
+            <div class="table-head stats-grid">
+              <div class="th">Thứ tự</div>
+              <div class="th">Con số (VD: 50K+)</div>
+              <div class="th">Nhãn (VD: Người dùng)</div>
+              <div class="th">Thao tác</div>
+            </div>
+            <div class="table-body" id="statsTableBody">
+              <div class="empty-row">Đang tải…</div>
+            </div>
+          </div>
+        </section>
+
       </main>
-    
+      
+    <div class="overlay" id="statModalOverlay">
+      <div class="modal" style="max-width: 400px">
+        <div class="modal-header">
+          <div class="modal-title" id="statModalTitle">THÊM CHỈ SỐ</div>
+          <button class="modal-close" onclick="closeStatModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="stat_id"> 
+          <div class="form-grid full">
+            <div class="form-row">
+              <label>Thứ tự hiển thị <span class="req">*</span></label>
+              <input type="number" id="stat_order" value="1" />
+            </div>
+            <div class="form-row">
+              <label>Con số hiển thị <span class="req">*</span></label>
+              <input type="text" id="stat_num" placeholder="VD: 50K+, 98%, 2022..." />
+            </div>
+            <div class="form-row">
+              <label>Tên Nhãn <span class="req">*</span></label>
+              <input type="text" id="stat_label" placeholder="VD: Người dùng, Hài lòng..." />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top: 20px; justify-content: flex-end;">
+          <button class="btn btn-ghost" onclick="closeStatModal()" style="margin-right:10px;">Hủy</button>
+          <button class="btn btn-primary" onclick="saveStat()">💾 Lưu dữ liệu</button>
+        </div>
+      </div>
+    </div>
+
     <div class="overlay" id="tipModalOverlay">
       <div class="modal" style="max-width: 500px">
         <div class="modal-header">
@@ -469,8 +555,8 @@
         <div class="modal-body">
           <div class="form-grid">
             <div class="form-row span2">
-              <label>Tên bài tập <span class="req">*</span></label
-              ><input
+              <label>Tên bài tập <span class="req">*</span></label>
+              <input
                 type="text"
                 id="f_name"
                 placeholder="VD: Barbell Bench Press"
@@ -492,8 +578,8 @@
               </select>
             </div>
             <div class="form-row">
-              <label>Icon (Emoji) <span class="req">*</span></label
-              ><input
+              <label>Icon (Emoji) <span class="req">*</span></label>
+              <input
                 type="text"
                 id="f_icon"
                 placeholder="VD: 🏋️"
@@ -522,16 +608,16 @@
               </select>
             </div>
             <div class="form-row">
-              <label>Sets <span class="req">*</span></label
-              ><input type="text" id="f_sets" placeholder="VD: 4" />
+              <label>Sets <span class="req">*</span></label>
+              <input type="text" id="f_sets" placeholder="VD: 4" />
             </div>
             <div class="form-row">
-              <label>Reps <span class="req">*</span></label
-              ><input type="text" id="f_reps" placeholder="VD: 8-12" />
+              <label>Reps <span class="req">*</span></label>
+              <input type="text" id="f_reps" placeholder="VD: 8-12" />
             </div>
             <div class="form-row span2">
-              <label>Thời gian nghỉ <span class="req">*</span></label
-              ><input type="text" id="f_rest" placeholder="VD: 90 giây" />
+              <label>Thời gian nghỉ <span class="req">*</span></label>
+              <input type="text" id="f_rest" placeholder="VD: 90 giây" />
             </div>
           </div>
 

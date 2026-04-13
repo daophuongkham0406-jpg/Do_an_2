@@ -54,7 +54,7 @@ def get_date_from_val(val):
     return datetime.today().date()
 
 # ==========================================
-# 1. API LẤY TỔNG QUAN & ƯỚC TÍNH CƠ BẮP (CHUẨN INBODY)
+# 1. API LẤY TỔNG QUAN, TẦN SUẤT & STREAK
 # ==========================================
 @tcn_bp.route('/api/tcn/overview', methods=['GET'])
 def get_tcn_overview():
@@ -68,6 +68,7 @@ def get_tcn_overview():
 
         weight = safe_float(user.get("weight", 0))
         height_cm = safe_float(user.get("height", 0)) 
+        age = safe_float(user.get("age", 25))
         gender = str(user.get("gender", "nam")).lower()
         is_male = 1 if gender in ['nam', 'male'] else 0
 
@@ -79,6 +80,9 @@ def get_tcn_overview():
         workouts_completed = 0
         all_workouts = []
         all_days_status = [] 
+        
+        # Biến mới để lưu các ngày thực tế có tập (dùng để tính Streak)
+        workout_dates_set = set()
 
         today = datetime.today().date()
         current_monday = today - timedelta(days=today.weekday())
@@ -101,6 +105,10 @@ def get_tcn_overview():
                     workouts_completed += 1
                     day_num = int(day.get('day_number', i + 1))
                     workout_date = start_date + timedelta(days=day_num - 1)
+                    
+                    # Thêm ngày tập vào danh sách để tính Streak
+                    workout_dates_set.add(workout_date)
+                    
                     days_ago = (current_monday - workout_date).days
                     
                     if -7 < days_ago <= 0: freq_data[7] += 1
@@ -116,28 +124,47 @@ def get_tcn_overview():
                     })
 
         # =========================================================
-        # --- LOGIC ƯỚC TÍNH TỶ LỆ CƠ BẮP (CHUẨN BẢNG THAM KHẢO) ---
+        # --- LOGIC TÍNH NGÀY STREAK (CHUỖI LIÊN TIẾP) ---
         # =========================================================
+        current_streak = 0
+        sorted_dates = sorted(list(workout_dates_set), reverse=True) # Sắp xếp từ mới nhất về cũ nhất
+        yesterday = today - timedelta(days=1)
+
+        if sorted_dates:
+            # Nếu ngày tập gần nhất là hôm nay hoặc hôm qua thì Streak đang "sống"
+            if sorted_dates[0] == today:
+                current_streak = 1
+                check_date = today
+            elif sorted_dates[0] == yesterday:
+                current_streak = 1
+                check_date = yesterday
+            else:
+                check_date = None # Đã đứt chuỗi vì ngày tập cuối cùng cách đây > 2 ngày
+
+            # Lùi về quá khứ xem các ngày liên tiếp
+            if current_streak > 0:
+                for i in range(1, len(sorted_dates)):
+                    if sorted_dates[i] == check_date - timedelta(days=1):
+                        current_streak += 1
+                        check_date = sorted_dates[i]
+                    else:
+                        break # Đứt chuỗi
+
+        # --- LOGIC ƯỚC TÍNH CƠ BẮP ---
         muscle_pct = 0
         if bmi > 0:
-            # 1. Base (Người chưa tập)
             base_muscle = 36.0
             if is_male:
-                if bmi < 18.5: base_muscle = 32.5  # Nam thiếu cân
-                elif bmi >= 25: base_muscle = 33.0 # Nam thừa cân (Mỡ nhiều che cơ)
-                else: base_muscle = 36.0           # Nam bình thường
+                if bmi < 18.5: base_muscle = 32.5
+                elif bmi >= 25: base_muscle = 33.0
+                else: base_muscle = 36.0
             else:
-                if bmi < 18.5: base_muscle = 23.5  # Nữ thiếu cân
-                elif bmi >= 25: base_muscle = 24.0 # Nữ thừa cân
-                else: base_muscle = 27.0           # Nữ bình thường
+                if bmi < 18.5: base_muscle = 23.5
+                elif bmi >= 25: base_muscle = 24.0
+                else: base_muscle = 27.0
 
-            # 2. Buff tăng trưởng (Đường cong cơ bắp)
-            # Tập càng lâu càng khó lên. 30 buổi (+3.8%), 100 buổi (+7.9%)
             workout_bonus = (workouts_completed ** 0.6) * 0.5 if workouts_completed > 0 else 0
-            
-            # Cáp giới hạn cơ thể tự nhiên
             max_limit = 55.0 if is_male else 45.0
-            
             muscle_pct = round(min(base_muscle + workout_bonus, max_limit), 1)
 
         all_workouts = all_workouts[::-1]
@@ -150,10 +177,11 @@ def get_tcn_overview():
             "weight": weight,
             "height": height_cm, 
             "bmi": bmi,
-            "musclePct": muscle_pct, # Trả về số chuẩn
+            "musclePct": muscle_pct, 
             "workoutsCompleted": workouts_completed,
             "routinesCompleted": routines_completed,
             "weightChange": weight_change,
+            "currentStreak": current_streak, # BIẾN STREAK TRUYỀN XUỐNG JS
             "recentWorkouts": recent_workouts,
             "allWorkouts": all_workouts,
             "freqData": freq_data
@@ -162,6 +190,8 @@ def get_tcn_overview():
     except Exception as e:
         print(f"❌ Lỗi API Overview: {e}")
         return jsonify({"success": False, "error": str(e)})
+
+
 # ==========================================
 # 2. API BIỂU ĐỒ MẠNG NHỆN (CHỈ SỐ THỰC TẾ = 0)
 # ==========================================

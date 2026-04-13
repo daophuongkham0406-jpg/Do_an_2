@@ -1,6 +1,7 @@
 const API_FAQ = 'http://127.0.0.1:5000/api/faq';
 const API_ABOUT = 'http://127.0.0.1:5000/api/about-features';
 const API_CONTACTS = 'http://127.0.0.1:5000/api/contacts';
+const API_HERO_STATS = 'http://127.0.0.1:5000/api/hero-stats';
 let faqData = []; // Biến lưu trữ toàn bộ câu hỏi
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -38,7 +39,18 @@ async function loadPageData() {
                 </div>
             `).join('');
         }
-
+        // --- TẢI DỮ LIỆU THỐNG KÊ (HERO STATS) ---
+        const resStats = await fetch(API_HERO_STATS).then(r => r.json()).catch(() => null);
+        const statsGrid = document.getElementById('about-stats-grid');
+        
+        if (statsGrid && resStats && resStats.success) {
+            statsGrid.innerHTML = resStats.data.map(item => `
+                <div class="hero-pill">
+                    <span class="hero-pill-num">${item.number_text}</span>
+                    <span class="hero-pill-lbl">${item.label_text}</span>
+                </div>
+            `).join('');
+        }
         // --- TẢI DỮ LIỆU LIÊN HỆ (Đã được đưa vào đúng chỗ) ---
         const resContact = await fetch(API_CONTACTS).then(r => r.json()).catch(() => null);
         const contactGrid = document.getElementById('contact-grid');

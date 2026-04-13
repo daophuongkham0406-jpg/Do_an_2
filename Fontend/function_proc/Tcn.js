@@ -140,6 +140,17 @@ async function fetchTcnOverview() {
             document.getElementById("sv-h").textContent = `${d.height} cm`;
             document.getElementById("sv-bmi").textContent = d.bmi;
             
+            document.getElementById("metaAge").textContent = d.age;
+            document.getElementById("metaWeight").textContent = d.weight;
+            document.getElementById("metaHeight").textContent = d.height;
+            document.getElementById("metaBMI").textContent = `BMI ${d.bmi}`;
+            
+            // 4 Ô HERO PILLS CHÍNH XÁC TỪ DATABASE
+            document.getElementById("pWorkouts").textContent = d.workoutsCompleted;
+            document.getElementById("pRoutines").textContent = d.routinesCompleted;
+            document.getElementById("pWeightChange").textContent = d.weightChange;
+            document.getElementById("pStreak").textContent = d.currentStreak; // HIỆN STREAK
+
             // Render số lượng lộ trình xong
             document.getElementById('routineCount').textContent = d.routinesCompleted;
             if(d.routinesCompleted > 0) {
@@ -147,11 +158,16 @@ async function fetchTcnOverview() {
             } else {
                 document.getElementById('routineList').innerHTML = `<p style='color:#888; font-size:13px; padding: 10px 0;'>Bạn chưa hoàn thành lộ trình nào.</p>`;
             }
-            
+            // CHỮ BÊN DƯỚI TÊN USER
+            document.getElementById("metaWorkouts").textContent = d.workoutsCompleted;
+            const streakBadge = document.getElementById("streakBadge");
+            if(streakBadge) {
+                streakBadge.textContent = `🔥 Streak ${d.currentStreak}`;
+                // Tùy chọn: Đổi màu lửa nếu Streak > 3 để tạo động lực
+                if(d.currentStreak > 3) streakBadge.style.color = "#ff6060"; 
+            }
+
             document.getElementById("sv-w").textContent = `${d.weight} kg`;
-            document.getElementById("sv-h").textContent = `${d.height} cm`;
-            document.getElementById("sv-bmi").textContent = d.bmi;
-            
             // DÒNG MỚI THÊM: Đổ dữ liệu Tỷ lệ cơ ra ô giao diện
             const muscleEl = document.getElementById("sv-m");
             if(muscleEl) {

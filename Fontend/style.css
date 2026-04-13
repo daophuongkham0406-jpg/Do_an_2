@@ -2075,7 +2075,7 @@ body {
 .m-stat {
   text-align: center;
 }
-
+/* ─── FAQ LAYOUT ─── */
 .faq-layout {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -2134,12 +2134,12 @@ body {
   border-color: rgba(56, 189, 248, 0.2);
   color: var(--accent);
 }
-
 .faq-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+/* Accordion styles */
 .accordion-item {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -2435,4 +2435,97 @@ h1.hero-heading {
   line-height: 1.2 !important;
   letter-spacing: 0.5px !important;
   margin-bottom: 8px !important;
+}
+/* =======================================================
+   SỬA LỖI BỂ FORM (GIÃN THẺ) & THÊM THANH CUỘN CHO LƯỚI
+   ======================================================= */
+
+/* 1. Đổi sang 'auto-fill' để giữ nguyên kích thước thẻ dù chỉ có 1 item */
+/* .topics-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+    align-content: start;
+} */
+.muscles-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+    align-content: start;
+}
+.tips-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+    align-content: start;
+}
+.plan-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+    align-content: start;
+}
+
+/* 2. Giới hạn chiều cao và bật thanh cuộn dọc (Tiêu đề vẫn đứng im) */
+/* .topics-grid,  */
+.muscles-grid, 
+.tips-grid, 
+.plan-grid {
+    max-height: 480px; /* Bạn có thể chỉnh số này (cao/thấp) tùy ý */
+    overflow-y: auto;  /* Hiện thanh cuộn dọc khi thẻ tràn quá chiều cao */
+    overflow-x: hidden;
+    padding-right: 12px; /* Tránh thanh cuộn đè sát vào chữ */
+    padding-bottom: 20px;
+}
+
+/* 3. Trang trí thanh cuộn (Scrollbar) phong cách bóng bẩy */
+.topics-grid::-webkit-scrollbar,
+.muscles-grid::-webkit-scrollbar,
+.tips-grid::-webkit-scrollbar,
+.plan-grid::-webkit-scrollbar {
+    width: 6px;
+}
+.topics-grid::-webkit-scrollbar-track,
+.muscles-grid::-webkit-scrollbar-track,
+.tips-grid::-webkit-scrollbar-track,
+.plan-grid::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05); /* Màu nền track mờ */
+    border-radius: 8px;
+}
+.topics-grid::-webkit-scrollbar-thumb,
+.muscles-grid::-webkit-scrollbar-thumb,
+.tips-grid::-webkit-scrollbar-thumb,
+.plan-grid::-webkit-scrollbar-thumb {
+    background: #333; /* Màu thanh cuộn lúc bình thường */
+    border-radius: 8px;
+}
+.topics-grid::-webkit-scrollbar-thumb:hover,
+.muscles-grid::-webkit-scrollbar-thumb:hover,
+.tips-grid::-webkit-scrollbar-thumb:hover,
+.plan-grid::-webkit-scrollbar-thumb:hover {
+    background: #e8ff47; /* Đổi màu xanh neon khi di chuột vào */
+}
+/* =======================================================
+   SỬA LỖI BẸP DÍ & BẬT THANH CUỘN CHO FAQ
+   ======================================================= */
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 550px;     /* Khóa chiều cao khung */
+    overflow-y: auto;      /* Bật thanh cuộn dọc */
+    padding-right: 10px;
+}
+
+/* ĐÂY LÀ DÒNG QUAN TRỌNG NHẤT: Cấm các câu hỏi bị bóp méo */
+.faq-list .accordion-item {
+    flex-shrink: 0; 
+}
+
+/* Trang trí thanh cuộn xịn xò giống hệt trang chủ */
+.faq-list::-webkit-scrollbar {
+    width: 6px;
+}
+.faq-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+.faq-list::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 8px;
+}
+.faq-list::-webkit-scrollbar-thumb:hover {
+    background: #4da8ff; /* Chuyển màu xanh dương khi di chuột */
 }

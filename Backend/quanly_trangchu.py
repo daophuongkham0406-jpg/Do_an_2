@@ -27,7 +27,14 @@ except Exception as e:
 @trangchu_bp.route('/api/featured', methods=['GET', 'POST'])
 def api_featured():
     if request.method == 'GET':
-        data = list(featured_collection.find().sort("order", 1))
+        # Kiểm tra xem có phải Admin đang gọi API không
+        is_admin = request.args.get('admin') == 'true'
+        
+        if is_admin:
+            data = list(featured_collection.find().sort("order", 1))
+        else:
+            data = list(featured_collection.find({"is_hidden": {"$ne": True}}).sort("order", 1))
+            
         for d in data: d['_id'] = str(d['_id'])
         return jsonify({"success": True, "data": data})
         
@@ -58,7 +65,13 @@ def api_featured_detail(item_id):
 @trangchu_bp.route('/api/muscles-info', methods=['GET', 'POST'])
 def api_muscles_info():
     if request.method == 'GET':
-        data = list(muscles_info_collection.find().sort("order", 1))
+        is_admin = request.args.get('admin') == 'true'
+        
+        if is_admin:
+            data = list(muscles_info_collection.find().sort("order", 1))
+        else:
+            data = list(muscles_info_collection.find({"is_hidden": {"$ne": True}}).sort("order", 1))
+            
         for d in data: d['_id'] = str(d['_id'])
         return jsonify({"success": True, "data": data})
         
@@ -86,28 +99,29 @@ def api_muscles_info_detail(item_id):
 # ==========================================
 # 3. API MẸO TẬP LUYỆN (CRUD HOÀN CHỈNH)
 # ==========================================
-
-# Xử lý LẤY (GET) danh sách và THÊM MỚI (POST)
 @trangchu_bp.route('/api/tips', methods=['GET', 'POST'])
 def api_tips():
     if request.method == 'GET':
-        data = list(tips_collection.find().sort("order", 1))
+        is_admin = request.args.get('admin') == 'true'
+        
+        if is_admin:
+            data = list(tips_collection.find().sort("order", 1))
+        else:
+            data = list(tips_collection.find({"is_hidden": {"$ne": True}}).sort("order", 1))
+            
         for d in data: d['_id'] = str(d['_id'])
         return jsonify({"success": True, "data": data})
         
     elif request.method == 'POST':
         new_tip = request.json
-        # Gán thứ tự mặc định nếu chưa có
         if "order" not in new_tip: new_tip["order"] = 99 
         tips_collection.insert_one(new_tip)
         return jsonify({"success": True, "message": "Đã thêm mẹo mới"})
 
-# Xử lý SỬA (PUT) và XÓA (DELETE) dựa trên ID
 @trangchu_bp.route('/api/tips/<item_id>', methods=['PUT', 'DELETE'])
 def api_tips_detail(item_id):
     try:
         obj_id = ObjectId(item_id)
-        
         if request.method == 'PUT':
             update_data = request.json
             tips_collection.update_one({"_id": obj_id}, {"$set": update_data})
@@ -116,7 +130,6 @@ def api_tips_detail(item_id):
         elif request.method == 'DELETE':
             tips_collection.delete_one({"_id": obj_id})
             return jsonify({"success": True, "message": "Đã xóa"})
-            
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
@@ -126,8 +139,14 @@ def api_tips_detail(item_id):
 @trangchu_bp.route('/api/sample-workouts', methods=['GET', 'POST'])
 def api_workouts():
     if request.method == 'GET':
+        is_admin = request.args.get('admin') == 'true'
+        
         # Sắp xếp theo Category trước, rồi đến Order
-        data = list(sample_workouts_collection.find().sort([("category", 1), ("order", 1)]))
+        if is_admin:
+            data = list(sample_workouts_collection.find().sort([("category", 1), ("order", 1)]))
+        else:
+            data = list(sample_workouts_collection.find({"is_hidden": {"$ne": True}}).sort([("category", 1), ("order", 1)]))
+            
         for d in data: d['_id'] = str(d['_id'])
         return jsonify({"success": True, "data": data})
         

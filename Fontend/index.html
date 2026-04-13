@@ -90,19 +90,7 @@
             <a href="#topics" class="btn-outline">Khám phá</a>
           </div>
         </div>
-        <div class="hero-stats">
-          <div class="stat-card">
-            <div class="stat-num">500+</div>
-            <div class="stat-label">Bài tập</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">50K+</div>
-            <div class="stat-label">Người dùng</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-num">98%</div>
-            <div class="stat-label">Hài lòng</div>
-          </div>
+        <div class="hero-stats" id="home-stats-grid">
         </div>
       </div>
     </section>
@@ -117,7 +105,6 @@
             <div class="section-label">Khám phá</div>
             <h2 class="section-title">Nội dung nổi bật</h2>
           </div>
-          <a href="#" class="section-link">Xem tất cả →</a>
         </div>
         <div class="topics-grid" id="featured-grid"></div>
       </div>
@@ -133,7 +120,6 @@
             <div class="section-label">Thư viện</div>
             <h2 class="section-title">Nhóm cơ & Bài tập</h2>
           </div>
-          <a href="#" class="section-link">Xem tất cả →</a>
         </div>
         <div class="muscles-grid" id="muscles-grid"></div>
       </div>
@@ -288,7 +274,17 @@
               </div>
             `).join('');
           }
-
+          // --- Tải Thống kê (Hero Stats) ---
+          const resStats = await fetch(`${API_BASE}/hero-stats`).then(r => r.json()).catch(()=>null);
+          const statsGrid = document.getElementById('home-stats-grid');
+          if(statsGrid && resStats && resStats.success) {
+            statsGrid.innerHTML = resStats.data.map(item => `
+              <div class="stat-card">
+                <div class="stat-num">${item.number_text}</div>
+                <div class="stat-label">${item.label_text}</div>
+              </div>
+            `).join('');
+          }
           // --- Tải Lịch tập mẫu ---
           // Nếu bạn chưa làm API Lịch tập mẫu, nó sẽ bỏ qua không bị lỗi
           const resPlans = await fetch(`${API_BASE}/sample-workouts`).then(r => r.json()).catch(()=>null);

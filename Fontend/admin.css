@@ -213,3 +213,60 @@ textarea{resize:vertical;min-height:80px;line-height:1.6;}
   .form-grid{grid-template-columns:1fr;}
   .form-row.span2{grid-column:span 1;}
 }
+/* BONG BÓNG SỐ LƯỢNG TRONG SIDEBAR */
+.sidebar-badge {
+    background: rgba(255, 255, 255, 0.08);
+    color: #aaa;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: auto; /* Tự động đẩy con số sát mép phải */
+}
+
+/* HIỆU ỨNG LÀM MỜ DÒNG DỮ LIỆU BỊ ẨN */
+.tr.is-hidden {
+    opacity: 0.4; /* Làm mờ đi 60% */
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* HIỆU ỨNG HOVER CHO CÁC NÚT THAO TÁC */
+.action-icon {
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+.action-icon:hover {
+    transform: scale(1.2);
+}
+.tr.is-hidden {
+    opacity: 0.4;
+    background-color: rgba(0, 0, 0, 0.1);
+    filter: grayscale(0.5); /* Thêm hiệu ứng xám để dễ nhìn hơn */
+}
+
+.sidebar-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: #888;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    margin-left: auto;
+}
+/* =======================================================
+   HIỆU ỨNG SÁNG (GLOW) CHO BONG BÓNG SỐ TRONG SIDEBAR
+   ======================================================= */
+
+/* Khi mục được chọn (Active): Nền vàng chanh, chữ đen, tỏa sáng */
+.s-item.active .sidebar-badge {
+    background: var(--accent, #e8ff47);
+    color: #111; /* Chữ màu đen đậm để nổi bật trên nền sáng */
+    font-weight: 800;
+    box-shadow: 0 0 12px rgba(232, 255, 71, 0.6); /* Hiệu ứng phát sáng Glow */
+}
+
+/* Khi rê chuột qua (Hover) mục chưa chọn: Nền sáng nhẹ lên */
+.s-item:not(.active):hover .sidebar-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
