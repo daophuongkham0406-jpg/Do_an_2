@@ -1,14 +1,10 @@
-
 <!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lộ trình cá nhân - FIT ME</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="chat.css" />
     <link rel="stylesheet" href="lotrinh.css" />
@@ -35,44 +31,20 @@
 
     <div class="ticker-wrap">
       <div class="ticker-track">
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>SỨC MẠNH</span
-        >
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>THỂ HÌNH</span
-        >
+        <span class="ticker-item"><span class="ticker-dot"></span>SỨC MẠNH</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>THỂ HÌNH</span>
         <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>VÓC DÁNG</span
-        >
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>DINH DƯỠNG</span
-        >
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>PHỤC HỒI</span
-        >
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>HIỆU SUẤT</span
-        >
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>SỨC MẠNH</span
-        >
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>THỂ HÌNH</span
-        >
+        <span class="ticker-item"><span class="ticker-dot"></span>VÓC DÁNG</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>DINH DƯỠNG</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>PHỤC HỒI</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>HIỆU SUẤT</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>SỨC MẠNH</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>THỂ HÌNH</span>
         <span class="ticker-item"><span class="ticker-dot"></span>SỨC BỀN</span>
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>VÓC DÁNG</span
-        >
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>DINH DƯỠNG</span
-        >
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>PHỤC HỒI</span
-        >
-        <span class="ticker-item"
-          ><span class="ticker-dot"></span>HIỆU SUẤT</span
-        >
+        <span class="ticker-item"><span class="ticker-dot"></span>VÓC DÁNG</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>DINH DƯỠNG</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>PHỤC HỒI</span>
+        <span class="ticker-item"><span class="ticker-dot"></span>HIỆU SUẤT</span>
       </div>
     </div>
 
@@ -98,66 +70,13 @@
               <label>Kinh nghiệm tập luyện</label>
               <select id="level">
                 <option value="Người mới">Người mới (Beginner)</option>
-                <option value="Trung bình" selected>
-                  Trung bình (Intermediate)
-                </option>
+                <option value="Trung bình" selected>Trung bình (Intermediate)</option>
                 <option value="Kỳ cựu">Kỳ cựu (Advanced)</option>
               </select>
             </div>
+            
+            <!-- Đã XÓA thẻ <div id="bmiPreview"></div> dư thừa ở đây -->
 
-            <div class="form-group">
-              <label>Thông số cơ thể</label>
-              <div class="body-stats-row">
-                <div class="stat-input-wrap">
-                  <div class="stat-field">
-                    <input
-                      type="number"
-                      id="height"
-                      placeholder="170"
-                      min="100"
-                      max="250"
-                      value=""
-                    />
-                    <span class="stat-unit">cm</span>
-                  </div>
-                  <span class="stat-label">Chiều cao</span>
-                </div>
-                <div class="stat-input-wrap">
-                  <div class="stat-field">
-                    <input
-                      type="number"
-                      id="weight"
-                      placeholder="65"
-                      min="30"
-                      max="200"
-                      value=""
-                    />
-                    <span class="stat-unit">kg</span>
-                  </div>
-                  <span class="stat-label">Cân nặng</span>
-                </div>
-                <div class="stat-input-wrap">
-                  <div class="stat-field">
-                    <input
-                      type="number"
-                      id="age"
-                      placeholder="24"
-                      min="10"
-                      max="80"
-                      value=""
-                    />
-                    <span class="stat-unit">tuổi</span>
-                  </div>
-                  <span class="stat-label">Độ tuổi</span>
-                </div>
-              </div>
-            </div>
-<!-- Thêm ngay vào đây: -->
- 
-<div id="bmiPreview"></div>
- 
-<!-- Ví dụ đoạn HTML hoàn chỉnh sau khi thêm: -->
- 
             <div class="form-group">
               <label>Thông số cơ thể</label>
               <div class="body-stats-row">
@@ -183,17 +102,14 @@
                   <span class="stat-label">Độ tuổi</span>
                 </div>
               </div>
- 
-              <!-- ← THÊM DÒNG NÀY -->
+              <!-- Vị trí đúng của bmiPreview -->
               <div id="bmiPreview"></div>
- 
             </div>
+
             <div class="form-group">
               <label>Thiết bị sẵn có</label>
               <select id="equipment">
-                <option value="Phòng Gym đầy đủ" selected>
-                  Phòng Gym (đầy đủ)
-                </option>
+                <option value="Phòng Gym đầy đủ" selected>Phòng Gym (đầy đủ)</option>
                 <option value="Tại nhà không tạ">Tại nhà (không tạ)</option>
                 <option value="Chỉ có tạ đơn">Chỉ có tạ đơn</option>
               </select>
@@ -202,18 +118,10 @@
             <div class="form-group">
               <label>Độ dài lộ trình</label>
               <div class="duration-grid">
-                <div
-                  class="dur-btn active"
-                  data-days="7"
-                  onclick="selectDur(this, 7)"
-                >
+                <div class="dur-btn active" data-days="7" onclick="selectDur(this, 7)">
                   7 ngày<br /><span class="dur-sub">Tuần đầu</span>
                 </div>
-                <div
-                  class="dur-btn"
-                  data-days="14"
-                  onclick="selectDur(this, 14)"
-                >
+                <div class="dur-btn" data-days="14" onclick="selectDur(this, 14)">
                   14 ngày<br /><span class="dur-sub">2 tuần</span>
                 </div>
                 <div class="dur-btn disabled" data-days="30">
@@ -226,7 +134,7 @@
                 </div>
               </div>
               <div class="info-hint" id="durationHint">
-                nạp tiền để mở khóa lộ trình dài hơn!
+                Nạp tiền để mở khóa lộ trình dài hơn!
               </div>
             </div>
 
@@ -249,23 +157,17 @@
             <div class="page-header">
               <h1 id="plan-title">LỘ TRÌNH CÁ NHÂN</h1>
               <p id="plan-sub">
-                Điền thông số bên trái để AI của FIT ME thiết kế lịch tập chuẩn
-                cá nhân hóa cho bạn.
+                Điền thông số bên trái để AI của FIT ME thiết kế lịch tập chuẩn cá nhân hóa cho bạn.
               </p>
             </div>
 
-            <!-- Thanh tiến độ (ẩn lúc đầu) -->
             <div class="plan-progress-wrap" id="progressWrap">
               <div class="progress-top">
                 <span class="progress-label">Tiến độ lộ trình</span>
                 <span class="progress-pct" id="progressPct">0%</span>
               </div>
               <div class="progress-bar-bg">
-                <div
-                  class="progress-bar-fill"
-                  id="progressBar"
-                  style="width: 0%"
-                ></div>
+                <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
               </div>
               <div class="progress-days" id="progressDays">
                 0 / 0 ngày hoàn thành
@@ -278,8 +180,8 @@
           </section>
         </div>
       </div>
-      
     </main>
+
     <script src="function_proc/lotrinh.js"></script>
     <script src="function_proc/check_login.js"></script>
     <script src="Chat.js"></script>
