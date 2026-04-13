@@ -12,7 +12,7 @@ let currentPlanId   = null;
 let todayNutrition  = { calories: 0, protein: 0, carbs: 0, fat: 0 };
 let todayTarget     = { calories: 2000, protein: 130 };
 let todayIsRest     = false;
-
+let planStartDateStr = null;
 // ════════════════════════════════════════
 // THEME TOGGLE
 // ════════════════════════════════════════
@@ -245,8 +245,12 @@ function renderPlan(planData, container, progress = null) {
     const defaultProtRest    = planData.daily_protein_rest      || 120;
 
     planData.days.forEach((day, index) => {
+        // ─── BƯỚC 1: KIỂM TRA XEM NGÀY NÀY ĐÃ ĐƯỢC MỞ KHÓA CHƯA ───
+        const unlocked = isDayUnlocked(day.day_number);
+
         const dayCard = document.createElement('div');
-        dayCard.className = `day-card open ${index === 0 ? '' : 'hidden-day'}`;
+        // Thêm class 'future-locked' nếu chưa đến ngày
+        dayCard.className = `day-card open ${index === 0 ? '' : 'hidden-day'} ${!unlocked ? 'future-locked' : ''}`;
         dayCard.dataset.dayNumber = day.day_number;
 
         let exProgress = {};
@@ -366,6 +370,32 @@ function renderPlan(planData, container, progress = null) {
                 body.appendChild(exEl);
             });
         }
+
+        // ─── BƯỚC 2: LOGIC KHÓA UI NGÀY TẬP & NGÀY TƯƠNG LAI ───
+        const isDayLocked = pd && pd.is_locked === true;
+        if (isDayLocked) {
+            dayCard.classList.add('day-locked');
+        }
+
+        // Chỉ hiện nút khóa/cảnh báo khi lộ trình đã được lưu (currentPlanId tồn tại)
+        if (currentPlanId) {
+            const lockDayWrap = document.createElement('div');
+            lockDayWrap.style.marginTop = '16px';
+            
+            if (isDayLocked) {
+                // Đã hoàn thành và chốt sổ
+                lockDayWrap.innerHTML = `<div class="locked-success-msg">✅ Ngày này đã được chốt sổ!</div>`;
+            } else if (!unlocked) {
+                // CHƯA TỚI NGÀY -> Hiện thông báo chờ thay vì nút chốt
+                lockDayWrap.innerHTML = `<div class="locked-future-msg">⏳ Bài tập sẽ mở khóa vào ngày thứ ${day.day_number} của lộ trình</div>`;
+            } else {
+                // HÔM NAY -> Hiện nút chốt sổ
+                lockDayWrap.innerHTML = `<button class="btn-lock-target" onclick="lockPlanDay('${currentPlanId}', ${day.day_number})">🔒 HOÀN THÀNH & CHỐT SỔ NGÀY ${day.day_number}</button>`;
+            }
+            body.appendChild(lockDayWrap);
+        }
+        // ───────────────────────────────────────────────────────
+
     });
 
     const navWrap = document.createElement('div');
@@ -414,7 +444,7 @@ function appendPlanActions(container, planData) {
     document.getElementById('btn-cancel-plan').addEventListener('click', cancelPlan);
 }
 
-// ════════════════════════════════════════
+/// ════════════════════════════════════════
 // LƯU LỘ TRÌNH
 // ════════════════════════════════════════
 async function savePlan(planData) {
@@ -434,14 +464,25 @@ async function savePlan(planData) {
 
         if (result.success) {
             currentPlanId = result.plan_id;
+            
+            // ─── THÊM 2 DÒNG NÀY: Lưu lại ngày bắt đầu lúc vừa tạo ───
+            const tObj = new Date();
+            planStartDateStr = `${tObj.getDate().toString().padStart(2, '0')}/${(tObj.getMonth()+1).toString().padStart(2, '0')}/${tObj.getFullYear()}`;
+            // ─────────────────────────────────────────────────────────
+
             showToast('✅ Lộ trình đã kích hoạt! Bắt đầu tập thôi!', 'success');
             updateProgressBar(0, planData.duration_days || selectedDays);
+            
             document.getElementById('plan-action-buttons').style.display = 'none';
             document.getElementById('btn-cancel-plan').classList.add('show');
             document.getElementById('btn-generate').disabled = true;
             document.getElementById('btn-generate').innerText = 'LỘ TRÌNH ĐANG CHẠY';
             document.getElementById('btn-generate').style.opacity = '0.5';
+            
             switchToNutritionSidebar(planData);
+            
+            // Render lại plan để giao diện cập nhật trạng thái khóa/mở khóa các ngày
+            renderPlan(planData, document.getElementById('plan-container'));
         } else {
             showToast('❌ Lỗi lưu: ' + result.error, 'error');
         }
@@ -726,12 +767,49 @@ function updateNutritionUI() {
         if (calBarEl)  { calBarEl.style.width  = calPct  + '%'; calBarEl.style.background  = calPct  >= 100 ? '#4ecdc4' : ''; }
         if (protBarEl) { protBarEl.style.width = protPct + '%'; protBarEl.style.background = protPct >= 100 ? '#4ecdc4' : ''; }
     }, 50);
+
+    // --- LOGIC KHÓA UI DINH DƯỠNG ---
+    const nutrTabsBox = document.querySelector('.nutr-tabs');
+    const nutrPanes = document.querySelectorAll('.nutr-tab-pane');
+    
+    // Xóa nút chốt cũ nếu có
+    const oldLockBtn = document.getElementById('btnLockNutrition');
+    if(oldLockBtn) oldLockBtn.remove();
+
+    if (todayNutrition.is_locked) {
+        if(nutrTabsBox) nutrTabsBox.style.display = 'none';
+        nutrPanes.forEach(p => p.style.display = 'none');
+        
+        // Thêm thông báo đã khóa
+        const lockedMsg = document.createElement('div');
+        lockedMsg.id = 'btnLockNutrition';
+        lockedMsg.className = 'locked-success-msg';
+        lockedMsg.innerHTML = '✅ Đã chốt sổ dinh dưỡng hôm nay. Hẹn gặp bạn vào ngày mai!';
+        document.querySelector('.nutr-sidebar').appendChild(lockedMsg);
+    } else {
+        // Nếu đạt >= 95% mục tiêu, hiện nút chốt sổ
+        if (calPct >= 95 && protPct >= 95) {
+            const lockBtn = document.createElement('button');
+            lockBtn.id = 'btnLockNutrition';
+            lockBtn.className = 'btn-lock-target';
+            lockBtn.innerHTML = '🔒 HOÀN THÀNH MỤC TIÊU HÔM NAY';
+            lockBtn.onclick = lockNutritionDay;
+            document.querySelector('.nutr-sidebar').appendChild(lockBtn);
+        }
+    }
 }
 
 // ════════════════════════════════════════
 // CHECK-IN BÀI TẬP
 // ════════════════════════════════════════
 async function checkinExercise(planId, dayNumber, exName, completed, exEl, dayCard, isRest = false) {
+    // ─── ĐOẠN MỚI THÊM: CHẶN CHECK-IN NẾU NGÀY ĐÃ BỊ KHÓA (CHỐT SỔ) ───
+    if (dayCard.classList.contains('day-locked')) {
+        showToast('⚠️ Ngày này đã chốt sổ, không thể thay đổi!', 'error');
+        return;
+    }
+    // ──────────────────────────────────────────────────────────────────
+
     if (isRest) {
         localStorage.setItem(`rest_${planId}_day_${dayNumber}`, completed);
         if (completed) {
@@ -844,19 +922,29 @@ async function checkActivePlanOnLoad() {
     try {
         const res  = await fetch(`${AI_SERVER_URL}/api/get-active-plan?userId=${USER_ID}`);
         const data = await res.json();
+        
         if (data.plan) {
             currentPlanId   = data.plan._id || data.plan.id;
             currentPlanData = data.plan.plan_data;
+            
+            // ─── THÊM DÒNG NÀY: Lấy ngày bắt đầu từ Database để khóa ngày tương lai ───
+            planStartDateStr = data.plan.created_at; 
+            // ─────────────────────────────────────────────────────────────────────────
+
             document.getElementById('plan-title').innerText = "LỘ TRÌNH ĐANG THỰC HIỆN";
             const container = document.getElementById('plan-container');
+            
             renderPlan(currentPlanData, container, data.plan.daily_progress);
             appendPlanActions(container, currentPlanData);
+            
             document.getElementById('plan-action-buttons').style.display = 'none';
             document.getElementById('btn-cancel-plan').classList.add('show');
+            
             const btnGen = document.getElementById('btn-generate');
             btnGen.disabled = true;
             btnGen.innerText = 'LỘ TRÌNH ĐANG CHẠY';
             btnGen.style.opacity = '0.5';
+            
             switchToNutritionSidebar(currentPlanData);
         }
     } catch (e) {
@@ -1084,3 +1172,65 @@ function closeExerciseModal() {
     `;
     document.head.appendChild(s);
 })();
+
+
+
+// GỌI API KHÓA NGÀY TẬP
+async function lockPlanDay(planId, dayNumber) {
+    if(!confirm(`⚠️ Bạn có chắc chắn muốn CHỐT SỔ Ngày ${dayNumber}? Hành động này không thể hoàn tác!`)) return;
+    try {
+        const res = await fetch(`${AI_SERVER_URL}/api/lock-plan-day`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ planId, dayNumber })
+        });
+        const data = await res.json();
+        if(data.success) {
+            showToast(data.message, 'success');
+            setTimeout(() => location.reload(), 1000); // Reload để render lại UI bị khóa
+        }
+    } catch(e) { showToast("Lỗi kết nối", "error"); }
+}
+
+// GỌI API KHÓA DINH DƯỠNG
+async function lockNutritionDay() {
+    if(!confirm(`⚠️ Xác nhận CHỐT SỔ dinh dưỡng hôm nay? Bạn sẽ không thể nhập thêm cho đến ngày mai.`)) return;
+    try {
+        const res = await fetch(`${AI_SERVER_URL}/api/lock-nutrition`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: USER_ID, date: TODAY })
+        });
+        const data = await res.json();
+        if(data.success) {
+            showToast(data.message, 'success');
+            todayNutrition.is_locked = true;
+            updateNutritionUI(); // Render lại UI ẩn đi nút nhập
+        }
+    } catch(e) { showToast("Lỗi kết nối", "error"); }
+}
+// ════════════════════════════════════════
+// HÀM KIỂM TRA NGÀY ĐÃ ĐƯỢC MỞ KHÓA CHƯA
+// ════════════════════════════════════════
+function isDayUnlocked(dayNumber) {
+    if (!planStartDateStr) return true; // Fallback nếu lỗi
+
+    // Cắt chuỗi "DD/MM/YYYY" từ backend gửi về
+    const parts = planStartDateStr.split('/');
+    if (parts.length !== 3) return true;
+
+    // Tạo object Date cho ngày bắt đầu (Đưa về 00:00:00)
+    const startDate = new Date(parts[2], parts[1] - 1, parts[0]);
+    startDate.setHours(0, 0, 0, 0);
+
+    // Tạo object Date cho ngày hiện tại (Đưa về 00:00:00)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Tính số ngày chênh lệch
+    const diffTime = today.getTime() - startDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    // Ngày 1: diff = 0. Ngày 2: diff = 1...
+    return (dayNumber - 1) <= diffDays;
+}

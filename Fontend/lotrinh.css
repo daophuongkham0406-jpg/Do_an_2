@@ -604,3 +604,69 @@
     border-color: #4ecdc4; 
     color: #0a0a0a; 
 }
+/* ── NÚT HOÀN THÀNH MỤC TIÊU ── */
+.btn-lock-target {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #e8ff47 0%, #4ecdc4 100%);
+    color: #0a0a0a;
+    border: none;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+}
+.btn-lock-target:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.5);
+}
+
+.locked-success-msg {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    background: rgba(78, 205, 196, 0.1);
+    color: #4ecdc4;
+    border: 1px solid rgba(78, 205, 196, 0.3);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* Giao diện ngày bị khóa (không cho click) */
+.day-locked .ex-checkbox-wrap,
+.day-locked .rest-check-box {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+.day-locked .day-header {
+    background: rgba(78, 205, 196, 0.05);
+}
+/* ── KHÓA NGÀY TƯƠNG LAI (CHƯA ĐẾN THỜI GIAN) ── */
+.future-locked .ex-checkbox-wrap,
+.future-locked .rest-check-box,
+.future-locked .routine-item-info {
+    opacity: 0.4;
+}
+.future-locked .routine-item {
+    background: rgba(255, 255, 255, 0.01);
+    border-style: dashed;
+}
+.locked-future-msg {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-muted);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: center;
+}
