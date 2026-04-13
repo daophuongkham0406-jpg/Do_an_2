@@ -118,7 +118,6 @@
               <span class="meta-chip accent-chip" id="metaBMI">BMI --</span>
             </div>
             <div class="join-line">
-              Thành viên từ tháng 1/2024 ·
               <strong id="metaWorkouts">0</strong> buổi tập hoàn thành
             </div>
           </div>
@@ -296,8 +295,7 @@
                 <div class="card-label">Lịch sử</div>
                 <div class="card-title">Buổi tập gần đây</div>
               </div>
-              <a
-                href="#"
+              <a href="javascript:void(0)" onclick="openHistoryModal()"
                 style="
                   font-size: 11px;
                   color: var(--text-muted);
@@ -319,11 +317,6 @@
               <div>
                 <div class="card-label">Theo dõi</div>
                 <div class="card-title">Biến động cân nặng</div>
-              </div>
-              <div class="chart-tabs" id="wtTabs">
-                <button class="ctab active" data-p="3m">3T</button>
-                <button class="ctab" data-p="6m">6T</button>
-                <button class="ctab" data-p="all">Tất cả</button>
               </div>
             </div>
             <div class="chart-wrap">
@@ -359,10 +352,6 @@
                 <div class="card-label">Tần suất</div>
                 <div class="card-title">Buổi tập theo tuần</div>
               </div>
-              <div class="chart-tabs" id="freqTabs">
-                <button class="ctab active" data-p="8">8 tuần</button>
-                <button class="ctab" data-p="12">12 tuần</button>
-              </div>
             </div>
             <div class="chart-wrap">
               <canvas id="freqChart" height="200"></canvas>
@@ -386,7 +375,7 @@
             <div class="card-hd">
               <div>
                 <div class="card-label">Phân tích</div>
-                <div class="card-title">Phân bổ nhóm cơ</div>
+                <div class="card-title">Sự Phát Triển Nhóm Cơ</div>
               </div>
             </div>
             <div style="display: flex; justify-content: center">
@@ -394,14 +383,34 @@
             </div>
           </div>
 
-          <div class="card reveal rd3">
+          <div class="card reveal" style="grid-column: 1 / -1; margin-top: 20px;">
             <div class="card-hd">
               <div>
-                <div class="card-label">Mục tiêu</div>
-                <div class="card-title">Tiến độ</div>
+                <div class="card-label">SỨC MẠNH</div>
+                <div class="card-title">Mức Tạ Của Bạn</div>
+              </div>
+              <span style="font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">
+                LƯU Ý: MỨC TẠ CHỈ CÓ TÍNH THAM KHẢO
+              </span>
+            </div>
+            
+            <div class="weights-container" style="overflow-x: auto;">
+              <style>
+                .w-row { display: grid; grid-template-columns: 80px 120px 1fr; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+                .w-row:last-child { border-bottom: none; }
+                .w-name { font-weight: 600; color: var(--text-main); font-size: 14px; }
+                .w-ctrl { display: flex; align-items: center; gap: 10px; }
+                .w-btn { background: var(--bg3); border: none; color: var(--text-main); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+                .w-btn:hover { background: var(--accent); color: #000; }
+                .w-val { font-size: 14px; font-weight: 700; width: 45px; text-align: center; color: var(--accent); }
+                .w-cmt { font-size: 12px; color: var(--text-muted); line-height: 1.4; padding-left: 15px; border-left: 2px solid var(--border); }
+                .w-cmt.upgrade { color: #4dff91; border-color: #4dff91; font-weight: 500; }
+              </style>
+              
+              <div id="weightsList">
+                <div style="padding: 20px; text-align: center; color: var(--text-muted);">Đang phân tích thể trạng...</div>
               </div>
             </div>
-            <div class="goals-list" id="goalsList"></div>
           </div>
         </div>
       </div>
@@ -571,6 +580,27 @@
         <div class="modal-ft">
           <button class="btn-ghost" onclick="closeLog()">Hủy</button>
           <button class="btn-primary" onclick="saveLog()">📊 Lưu chỉ số</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" id="historyModalOverlay">
+      <div class="modal" style="max-width: 600px; max-height: 85vh; display: flex; flex-direction: column;">
+        <div class="modal-hd">
+          <div>
+            <div class="card-label" style="margin-bottom: 4px">Lịch sử</div>
+            <div class="modal-title">TẤT CẢ BUỔI TẬP</div>
+          </div>
+          <button class="modal-close" onclick="closeHistoryModal()">✕</button>
+        </div>
+        <div class="modal-body" style="overflow-y: auto; padding-right: 5px;">
+          <div class="table-wrap">
+            <style>
+              .hist-grid { grid-template-columns: 1fr 100px 100px; }
+            </style>
+            <div class="table-body" id="historyTableBody">
+              </div>
+          </div>
         </div>
       </div>
     </div>

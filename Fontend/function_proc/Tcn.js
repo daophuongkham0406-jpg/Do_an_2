@@ -1,97 +1,78 @@
-// ════════════════════════════════════════════════════════════════
-// Đây là File Tcn.js
-// ════════════════════════════════════════════════════════════════
+// ============================================================================
+// KHAI BÁO BIẾN TOÀN CỤC
+// ============================================================================
+const API_SERVER = 'http://127.0.0.1:5000'; // Đổi chung về cổng 5000
 let userProfile = {};
 let userHistory = [];
+let allWorkoutsHistory = []; // Lưu lại để dùng cho Modal
 
+// Lấy ID người dùng từ LocalStorage
+const userStr = localStorage.getItem('loggedInUser');
+const localUser = userStr ? JSON.parse(userStr) : {};
+const CURRENT_UID = localUser.id || localUser._id || "guest";
+
+// ============================================================================
+// KHỞI CHẠY KHI TẢI TRANG
+// ============================================================================
 document.addEventListener("DOMContentLoaded", async () => {
-    const userStr = localStorage.getItem('loggedInUser');
-    if (!userStr) return; 
-
-    const localUser = JSON.parse(userStr);
-    
-    // Cực kỳ quan trọng: Bắt lỗi ID khác nhau giữa các phiên bản
-    const userId = localUser.id || localUser._id; 
-    
-    if (!userId) {
-        toast("❌ Lỗi: Không tìm thấy ID tài khoản!", "err");
+    if (!userStr || CURRENT_UID === "guest") {
+        toast("❌ Lỗi: Không tìm thấy tài khoản! Vui lòng đăng nhập lại.", "err");
         return;
     }
 
-    // GỌI API LẤY LỘ TRÌNH ĐANG THỰC HIỆN CỦA USER
-    fetchActivePlan(userId);
+    // 1. Tải thông tin cá nhân cũ (Dùng cho Modal Chỉnh sửa / Nhật ký)
+    await fetchOldProfile();
 
-    // GỌI API LẤY THÔNG TIN CÁ NHÂN VÀ LỊCH SỬ
+    // 2. Tải Lộ trình đang tập
+    fetchActivePlan(CURRENT_UID);
+
+    // 3. Tải Dữ liệu phân tích mới (Tổng quan, Radar, Cân nặng)
+    fetchTcnOverview();
+    fetchRadarChart();
+    fetchWeightChart();
+    fetchWeightsData(); 
+});
+
+// Lấy Profile cho Modal Edit
+async function fetchOldProfile() {
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/profile/get/${userId}`);
-        const data = await response.json();
-
-        if (response.ok) {
-            userProfile = data.profile;
-            userHistory = data.history;
+        const res = await fetch(`${API_SERVER}/api/profile/get/${CURRENT_UID}`);
+        const data = await res.json();
+        if (res.ok) {
+            userProfile = data.profile || {};
+            userHistory = data.history || [];
             
             // Nếu là người mới, tạo mốc lịch sử đầu tiên
             if(userHistory.length === 0 && userProfile.weight) {
                 userHistory.push({ date: new Date().toISOString().split('T')[0], weight: userProfile.weight });
             }
-
-            renderProfile();
-            
-            // Xóa dữ liệu ảo của Lịch tập (Vì chưa có API bài tập)
-            document.getElementById('metaWorkouts').textContent = "0";
-            document.getElementById('pWorkouts').textContent = "0";
-            document.getElementById('pStreak').textContent = "0";
-            document.getElementById('pRoutines').textContent = "0";
-
-            document.getElementById('routineCount').textContent = "0";
-            document.getElementById('routineList').innerHTML = "<p style='color:#888; font-size:13px; padding: 10px 0;'>Bạn chưa hoàn thành lộ trình nào.</p>";
-            document.getElementById('wlogList').innerHTML = "<p style='color:#888; font-size:13px; padding: 10px 0;'>Hãy bắt đầu buổi tập đầu tiên!</p>";
-            
-            setTimeout(() => drawWeight('3m'), 100);
-        } else {
-            toast("❌ Lỗi từ server: " + data.message, "err");
         }
-    } catch (error) {
-        console.error("Lỗi kết nối:", error);
-        toast("🔌 Mất kết nối! Hãy kiểm tra xem file app.py đã chạy chưa.", "err");
-        document.getElementById('profileName').textContent = "LỖI KẾT NỐI SERVER";
-    }
-});
+    } catch (e) { console.error("Lỗi lấy Profile:", e); }
+}
 
 // ============================================================================
-// 1. QUẢN LÝ LỘ TRÌNH LUYỆN TẬP (AI PLAN) - MỚI THÊM
+// 1. QUẢN LÝ LỘ TRÌNH LUYỆN TẬP (AI PLAN)
 // ============================================================================
-
-// Hàm gọi API lấy Plan đang active
 async function fetchActivePlan(userId) {
     const wrap = document.getElementById('activePlanWrap');
-    
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/plans/active/${userId}`);
-        
+        const response = await fetch(`${API_SERVER}/api/plans/active/${userId}`);
         if (!response.ok) {
             wrap.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;background:var(--bg3);border-radius:12px;">Bạn chưa có lộ trình nào.<br>Hãy sang trang Lộ Trình để tạo ngay!</div>`;
             return;
         }
-
         const plan = await response.json();
         renderPlanUI(plan);
-
     } catch (error) {
-        console.error("Lỗi tải lộ trình:", error);
         wrap.innerHTML = `<div style="padding:20px;text-align:center;color:#ff4d4d;font-size:13px;">Lỗi kết nối máy chủ khi tải lộ trình.</div>`;
     }
 }
 
-// Vẽ giao diện Check-list ngày tập
 function renderPlanUI(plan) {
     const wrap = document.getElementById('activePlanWrap');
-    
-    // Đổi tên lộ trình trên tiêu đề Card HTML (Tìm ngược lên thẻ cha)
     const cardTitle = wrap.parentElement.querySelector('.card-title');
     if(cardTitle) cardTitle.textContent = plan.plan_name || "Lộ trình AI";
 
-    // Tạo danh sách các ngày tập
     let daysHtml = '';
     const progress = plan.daily_progress || [];
 
@@ -108,18 +89,16 @@ function renderPlanUI(plan) {
                            onchange="updatePlanDay('${plan.id}', ${index}, this.checked)">
                     <div style="font-size: 14px; font-weight: 600; color: var(--text-main); ${textStyle}">${dayLabel}</div>
                 </div>
-                <button style="background:transparent; border:1px solid var(--border); color:var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor:pointer; transition: 0.2s;" onmouseover="this.style.color='#e8ff47'; this.style.borderColor='#e8ff47'" onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border)'">Xem bài</button>
+                <button style="background:transparent; border:1px solid var(--border); color:var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor:pointer;" onmouseover="this.style.color='#e8ff47'; this.style.borderColor='#e8ff47'" onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border)'">Xem bài</button>
             </div>
         `;
     });
-
     wrap.innerHTML = daysHtml;
 }
 
-// Cập nhật lên CSDL khi người dùng Tick/Bỏ Tick
 async function updatePlanDay(planId, dayIndex, isCompleted) {
     try {
-        const response = await fetch(`http://127.0.0.1:5000/api/plans/update_progress/${planId}`, {
+        const response = await fetch(`${API_SERVER}/api/plans/update_progress/${planId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ day_index: dayIndex, is_completed: isCompleted })
@@ -127,66 +106,208 @@ async function updatePlanDay(planId, dayIndex, isCompleted) {
 
         if (response.ok) {
             toast(isCompleted ? "✅ Đã hoàn thành ngày tập!" : "⏳ Đã hủy hoàn thành", "ok");
-            // Render lại để giao diện áp dụng dòng kẻ ngang (line-through)
-            const userStr = localStorage.getItem('loggedInUser');
-            if (userStr) {
-                const localUser = JSON.parse(userStr);
-                fetchActivePlan(localUser.id || localUser._id);
-            }
+            fetchActivePlan(CURRENT_UID); // Tải lại lộ trình
+            fetchTcnOverview();           // Tải lại điểm thành tích
+            fetchRadarChart();            // Tải lại biểu đồ
         } else {
             toast("❌ Lỗi khi lưu tiến độ!", "err");
         }
-    } catch (error) {
-        console.error("Lỗi cập nhật tiến độ:", error);
-        toast("🔌 Lỗi mạng khi cập nhật tiến độ!", "err");
+    } catch (error) { toast("🔌 Lỗi mạng!", "err"); }
+}
+
+// ============================================================================
+// 2. KÉO DỮ LIỆU TỪ API THỐNG KÊ (OVERVIEW, RADAR, WEIGHT)
+// ============================================================================
+async function fetchTcnOverview() {
+    try {
+        const res = await fetch(`${API_SERVER}/api/tcn/overview?userId=${CURRENT_UID}`).then(r => r.json());
+        if (res.success) {
+            const d = res.data;
+            document.getElementById("profileName").textContent = d.fullName.toUpperCase();
+            document.getElementById("avatarEl").textContent = d.fullName.charAt(0).toUpperCase();
+            
+            document.getElementById("metaAge").textContent = d.age;
+            document.getElementById("metaWeight").textContent = d.weight;
+            document.getElementById("metaHeight").textContent = d.height;
+            document.getElementById("metaBMI").textContent = `BMI ${d.bmi}`;
+            
+            document.getElementById("pWorkouts").textContent = d.workoutsCompleted;
+            document.getElementById("pRoutines").textContent = d.routinesCompleted;
+            document.getElementById("pWeightChange").textContent = d.weightChange;
+            document.getElementById("metaWorkouts").textContent = d.workoutsCompleted;
+
+            document.getElementById("sv-w").textContent = `${d.weight} kg`;
+            document.getElementById("sv-h").textContent = `${d.height} cm`;
+            document.getElementById("sv-bmi").textContent = d.bmi;
+            
+            // Render số lượng lộ trình xong
+            document.getElementById('routineCount').textContent = d.routinesCompleted;
+            if(d.routinesCompleted > 0) {
+                document.getElementById('routineList').innerHTML = `<p style='color:var(--accent); font-size:14px; padding: 10px 0;'>🏆 Đã hoàn thành ${d.routinesCompleted} lộ trình!</p>`;
+            } else {
+                document.getElementById('routineList').innerHTML = `<p style='color:#888; font-size:13px; padding: 10px 0;'>Bạn chưa hoàn thành lộ trình nào.</p>`;
+            }
+            
+            document.getElementById("sv-w").textContent = `${d.weight} kg`;
+            document.getElementById("sv-h").textContent = `${d.height} cm`;
+            document.getElementById("sv-bmi").textContent = d.bmi;
+            
+            // DÒNG MỚI THÊM: Đổ dữ liệu Tỷ lệ cơ ra ô giao diện
+            const muscleEl = document.getElementById("sv-m");
+            if(muscleEl) {
+                muscleEl.textContent = d.musclePct > 0 ? `${d.musclePct}%` : "--";
+            }
+
+            renderRecentWorkouts(d.recentWorkouts);
+            // Lưu lại tất cả buổi tập để mở Modal
+            allWorkoutsHistory = d.allWorkouts;
+            // Vẽ biểu đồ cột Tần suất
+            drawFreqChart(d.freqData);
+            updateBMIScale(d.bmi);
+        }
+    } catch (e) { console.error("Lỗi tải Overview:", e); }
+}
+
+async function fetchRadarChart() {
+    try {
+        const res = await fetch(`${API_SERVER}/api/tcn/radar?userId=${CURRENT_UID}`).then(r => r.json());
+        if (res.success) drawRadarChart(res.data);
+    } catch (e) { console.error("Lỗi vẽ Radar:", e); }
+}
+
+async function fetchWeightChart() {
+    try {
+        const res = await fetch(`${API_SERVER}/api/tcn/weight-chart?userId=${CURRENT_UID}`).then(r => r.json());
+        if (res.success && res.data.labels.length > 0) {
+            drawRealWeightChart(res.data.labels, res.data.weights, res.data.goal_weight);
+        }
+    } catch (e) { console.error("Lỗi tải biểu đồ cân nặng:", e); }
+}
+
+// ============================================================================
+// 3. CÁC HÀM VẼ BIỂU ĐỒ & GIAO DIỆN
+// ============================================================================
+function renderRecentWorkouts(workoutsData) {
+    const list = document.getElementById("wlogList");
+    if (!list) return;
+    if (!workoutsData || workoutsData.length === 0) {
+        list.innerHTML = `<div style="padding:16px 0;color:var(--text-muted);font-size:13px;">Chưa có lịch sử tập luyện.</div>`;
+        return;
+    }
+    let html = "";
+    workoutsData.forEach(log => {
+        html += `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 0; border-bottom: 1px solid var(--border);">
+                <div>
+                    <div style="font-size:14px; font-weight:600; color:var(--text-main); margin-bottom:4px;">${log.name}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">🕒 ${log.time} · 🏋️ ${log.vol}</div>
+                </div>
+                <div style="font-size:12px; color:var(--accent); font-weight:500;">${log.date}</div>
+            </div>`;
+    });
+    list.innerHTML = html;
+}
+
+let wChartInstance = null;
+function drawRealWeightChart(labels, data, goalWeight) {
+    const cv = document.getElementById("weightChart");
+    if(!cv) return;
+    const ctx = cv.getContext("2d");
+    const goalData = Array(labels.length).fill(goalWeight);
+
+    if (wChartInstance) wChartInstance.destroy();
+    wChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Cân nặng (kg)', data: data, borderColor: '#e8ff47', backgroundColor: 'rgba(232, 255, 71, 0.1)', borderWidth: 2, pointBackgroundColor: '#161616', pointBorderColor: '#e8ff47', pointBorderWidth: 2, pointRadius: 4, fill: true, tension: 0.4 },
+                { label: 'Mục tiêu', data: goalData, borderColor: 'rgba(77, 168, 255, 0.5)', borderWidth: 1.5, borderDash: [5, 5], pointRadius: 0, fill: false }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+            scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }, x: { grid: { display: false }, ticks: { color: '#888', maxTicksLimit: 5 } } }
+        }
+    });
+}
+
+function drawRadarChart(muscleData) {
+    const cv = document.getElementById("radarChart");
+    if (!cv) return;
+    const ctx = cv.getContext("2d");
+    const W = cv.width, H = cv.height;
+    const cx = W / 2, cy = H / 2, R = 80;
+    ctx.clearRect(0, 0, W, H);
+
+    const labels = ["Ngực", "Lưng", "Chân", "Vai", "Tay", "Bụng"];
+    const sides = labels.length;
+
+    // --- TỰ ĐỘNG CÂN CHỈNH TỶ LỆ (SCALE) ---
+    // Mốc 10đ là thay đổi rõ rệt. Đặt giới hạn lưới gốc là 20 để 10đ nằm ở Vòng số 2.
+    // Nếu người dùng cày quá kinh khủng (>20), biểu đồ sẽ tự nới rộng ra.
+    const currentMax = Math.max(...muscleData);
+    const MAX_SCORE = Math.max(20, currentMax); 
+
+    // Lưới nền (Có 4 vòng. Vòng 1=5đ, Vòng 2=10đ (Rõ rệt), Vòng 3=15đ, Vòng 4=20đ)
+    ctx.strokeStyle = "rgba(255,255,255,0.1)"; ctx.lineWidth = 1;
+    for (let level = 1; level <= 4; level++) {
+        ctx.beginPath();
+        for (let i = 0; i < sides; i++) {
+            const angle = ((Math.PI * 2) / sides) * i - Math.PI / 2;
+            const r = R * (level / 4);
+            const x = cx + Math.cos(angle) * r, y = cy + Math.sin(angle) * r;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.closePath(); ctx.stroke();
+    }
+
+    // Gắn Nhãn + Điểm số (Màu trắng mờ)
+    ctx.fillStyle = "#aaa"; ctx.font = "bold 11px Inter"; ctx.textAlign = "center";
+    for (let i = 0; i < sides; i++) {
+        const angle = ((Math.PI * 2) / sides) * i - Math.PI / 2;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(angle) * R, cy + Math.sin(angle) * R); ctx.stroke();
+        let offsetX = Math.cos(angle) * (R + 25), offsetY = Math.sin(angle) * (R + 20) + 4;
+        
+        let labelText = `${labels[i]} ${muscleData[i]}`;
+        ctx.fillText(labelText, cx + offsetX, cy + offsetY);
+    }
+
+    // Vẽ Vùng dữ liệu vàng chanh
+    ctx.beginPath();
+    for (let i = 0; i < sides; i++) {
+        const angle = ((Math.PI * 2) / sides) * i - Math.PI / 2;
+        const r = R * (muscleData[i] / MAX_SCORE); // Tính độ dài theo Max_Score
+        const x = cx + Math.cos(angle) * r, y = cy + Math.sin(angle) * r;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "rgba(232, 255, 71, 0.35)"; ctx.fill();
+    ctx.strokeStyle = "#e8ff47"; ctx.lineWidth = 2; ctx.stroke();
+
+    // Vẽ Chấm vàng ở đỉnh
+    for (let i = 0; i < sides; i++) {
+        const angle = ((Math.PI * 2) / sides) * i - Math.PI / 2;
+        const r = R * (muscleData[i] / MAX_SCORE);
+        const x = cx + Math.cos(angle) * r, y = cy + Math.sin(angle) * r;
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fillStyle = "#e8ff47"; ctx.fill();
     }
 }
-
-// ============================================================================
-// 2. CÁC HÀM XỬ LÝ HỒ SƠ & BIỂU ĐỒ (CŨ GIỮ NGUYÊN)
-// ============================================================================
-
-function calcBMI(w, h) {
-    if (!w || !h) return 0;
-    return +(w / ((h / 100) ** 2)).toFixed(1);
+function updateBMIScale(bmi) {
+    const needle = document.getElementById("bmiNeedle");
+    const chip = document.getElementById("bmiCatChip");
+    if(!needle || !chip) return;
+    let pct = 0;
+    if(bmi < 18.5) { pct = (bmi/18.5)*25; chip.textContent="Thiếu cân"; chip.style.color="#4da8ff"; }
+    else if(bmi < 25) { pct = 25 + ((bmi-18.5)/6.5)*38; chip.textContent="Bình thường"; chip.style.color="#4dff91"; }
+    else if(bmi < 30) { pct = 63 + ((bmi-25)/5)*25; chip.textContent="Thừa cân"; chip.style.color="#e8ff47"; }
+    else { pct = 88 + ((bmi-30)/10)*12; pct = pct>100?100:pct; chip.textContent="Béo phì"; chip.style.color="#ff6060"; }
+    needle.style.left = `${pct}%`;
 }
 
-function renderProfile() {
-    const p = userProfile;
-    const BMI = calcBMI(p.weight, p.height);
-
-    document.getElementById('profileName').textContent = (p.fullName || "Khách").toUpperCase();
-    document.getElementById('avatarEl').textContent = (p.fullName || "K").charAt(0).toUpperCase();
-    
-    // Trình độ
-    let levelName = "Chưa rõ";
-    if(p.level === 'B') levelName = "Người mới";
-    if(p.level === 'I') levelName = "Trung bình";
-    if(p.level === 'A') levelName = "Nâng cao";
-    document.getElementById('levelLbl').textContent = levelName;
-
-    // Chỉ số
-    document.getElementById('metaAge').textContent = p.age || "--";
-    document.getElementById('metaWeight').textContent = p.weight || "--";
-    document.getElementById('metaHeight').textContent = p.height || "--";
-    document.getElementById('metaBMI').textContent = `BMI ${BMI}`;
-    
-    document.getElementById('sv-w').textContent = `${p.weight || 0} kg`;
-    document.getElementById('sv-h').textContent = `${p.height || 0} cm`;
-    document.getElementById('sv-bmi').textContent = BMI;
-
-    let bmiLabel = "Chưa rõ", bmiCls = "bmi-normal", pct = 50;
-    if (BMI > 0 && BMI < 18.5) { bmiLabel = 'Thiếu cân'; bmiCls = 'bmi-under'; pct = (BMI / 30) * 100; }
-    else if (BMI >= 18.5 && BMI < 25) { bmiLabel = 'Bình thường'; bmiCls = 'bmi-normal'; pct = ((BMI - 15) / 20) * 100; }
-    else if (BMI >= 25 && BMI < 30) { bmiLabel = 'Thừa cân'; bmiCls = 'bmi-over'; pct = ((BMI - 15) / 20) * 100; }
-    else if (BMI >= 30) { bmiLabel = 'Béo phì'; bmiCls = 'bmi-obese'; pct = 90; }
-    
-    const chip = document.getElementById('bmiCatChip');
-    chip.textContent = bmiLabel;
-    chip.className = `bmi-cat ${bmiCls}`;
-    document.getElementById('bmiNeedle').style.left = `${Math.min(95, Math.max(3, pct))}%`;
-}
-
+// ============================================================================
+// 4. CHỈNH SỬA HỒ SƠ & CẬP NHẬT NHẬT KÝ (GIỮ NGUYÊN CỦA BẠN)
+// ============================================================================
 async function saveProfile() {
     const name = document.getElementById('f_name').value.trim();
     const age = parseInt(document.getElementById('f_age').value);
@@ -194,38 +315,17 @@ async function saveProfile() {
     const h = parseFloat(document.getElementById('f_height').value);
     const gw = parseFloat(document.getElementById('f_gw').value);
 
-    if (!name) return toast("Tên không được để trống", "err");
-    if (age < 10 || age > 100) return toast("Tuổi không hợp lý (10-100)", "err");
-    if (w < 20 || w > 300) return toast("Cân nặng không hợp lý (20-300kg)", "err");
-    if (h < 80 || h > 250) return toast("Chiều cao không hợp lý (80-250cm)", "err");
+    if (!name || age < 10 || w < 20 || h < 80) return toast("Vui lòng điền thông tin hợp lệ", "err");
 
-    const updateData = {
-        fullName: name, age: age, weight: w, height: h, goalWeight: gw,
-        gender: document.getElementById('f_gender').value,
-        level: document.getElementById('f_level').value,
-        goalType: document.getElementById('f_gtype').value
-    };
+    const updateData = { fullName: name, age: age, weight: w, height: h, goalWeight: gw, gender: document.getElementById('f_gender').value, level: document.getElementById('f_level').value, goalType: document.getElementById('f_gtype').value };
 
     try {
-        const res = await fetch(`http://127.0.0.1:5000/api/profile/update/${userProfile._id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updateData)
+        const res = await fetch(`${API_SERVER}/api/profile/update/${userProfile._id}`, {
+            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updateData)
         });
-
         if (res.ok) {
-            Object.assign(userProfile, updateData);
-            
-            // Cập nhật lại tên trên thanh Navbar
-            const localUser = JSON.parse(localStorage.getItem('loggedInUser'));
-            localUser.fullName = name;
-            localStorage.setItem('loggedInUser', JSON.stringify(localUser));
-            const profileLink = document.getElementById('profile-link');
-            if(profileLink) profileLink.innerHTML = `<span style="color:#e6ff00">${name}</span>`;
-
-            renderProfile();
-            closeEdit();
-            toast("✅ Cập nhật hồ sơ thành công", "ok");
+            localUser.fullName = name; localStorage.setItem('loggedInUser', JSON.stringify(localUser));
+            fetchTcnOverview(); closeEdit(); toast("✅ Cập nhật hồ sơ thành công", "ok");
         }
     } catch (e) { toast("Lỗi hệ thống", "err"); }
 }
@@ -236,28 +336,15 @@ async function saveLog() {
     const waist = parseFloat(document.getElementById('l_waist').value);
     const note = document.getElementById('l_note').value;
 
-    if (!w) return toast('Vui lòng nhập cân nặng', 'err');
-    if (w < 20 || w > 300) return toast("Cân nặng không hợp lý", "err");
-
+    if (!w || w < 20 || w > 300) return toast("Cân nặng không hợp lý", "err");
     const logData = { weight: w, fat: fat, waist: waist, note: note };
 
     try {
-        const res = await fetch(`http://127.0.0.1:5000/api/profile/log/${userProfile._id}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(logData)
+        const res = await fetch(`${API_SERVER}/api/profile/log/${userProfile._id}`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(logData)
         });
-
         if (res.ok) {
-            userProfile.weight = w;
-            const today = new Date().toISOString().split('T')[0];
-            userHistory = userHistory.filter(h => h.date !== today);
-            userHistory.push({ date: today, weight: w });
-            
-            renderProfile();
-            drawWeight('3m'); 
-            closeLog();
-            toast('📊 Đã lưu nhật ký!', 'ok');
+            fetchTcnOverview(); fetchWeightChart(); closeLog(); toast('📊 Đã lưu nhật ký!', 'ok');
         }
     } catch (e) { toast("Lỗi hệ thống", "err"); }
 }
@@ -271,70 +358,122 @@ function openEdit() {
     document.getElementById('editOverlay').classList.add('open');
 }
 function closeEdit() { document.getElementById('editOverlay').classList.remove('open'); }
-function openLog() {
-    document.getElementById('logDateChip').textContent = `📅 Hôm nay`;
-    document.getElementById('logOverlay').classList.add('open');
-}
+function openLog() { document.getElementById('logDateChip').textContent = `📅 Hôm nay`; document.getElementById('logOverlay').classList.add('open'); }
 function closeLog() { document.getElementById('logOverlay').classList.remove('open'); }
-
 function toast(msg, type='inf'){
-    const el=document.createElement('div');
-    el.className=`toast ${type}`;el.textContent=msg;
+    const el=document.createElement('div'); el.className=`toast ${type}`;el.textContent=msg;
     document.getElementById('toastWrap').appendChild(el);
     setTimeout(()=>{el.classList.add('show');}, 10);
     setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),400);},3000);
 }
+// =====================================
+// XỬ LÝ MODAL "XEM TẤT CẢ LỊCH SỬ"
+// =====================================
+function openHistoryModal() {
+    const tbody = document.getElementById('historyTableBody');
+    if(allWorkoutsHistory.length === 0) {
+        tbody.innerHTML = '<div class="empty-row">Chưa có lịch sử tập luyện nào.</div>';
+    } else {
+        tbody.innerHTML = allWorkoutsHistory.map(log => `
+            <div class="tr hist-grid">
+                <div class="td" style="font-weight:600; color:var(--text-main);">${log.name}</div>
+                <div class="td" style="color:var(--accent); font-size:12px;">🏋️ ${log.vol}</div>
+                <div class="td" style="color:var(--text-muted); font-size:12px;">${log.date}</div>
+            </div>
+        `).join('');
+    }
+    document.getElementById('historyModalOverlay').classList.add('open');
+}
 
-function drawWeight(period='3m'){
-    const cv=document.getElementById('weightChart');
+function closeHistoryModal() {
+    document.getElementById('historyModalOverlay').classList.remove('open');
+}
+
+//=====================================
+// cột tần suất luyện tập (buổi/tuần)
+// =====================================
+let fChartInstance = null;
+function drawFreqChart(data) {
+    const cv = document.getElementById("freqChart");
     if(!cv) return;
-    const W=cv.offsetWidth||580, H=230;
-    cv.width=W; cv.height=H;
-    const ctx=cv.getContext('2d');
-    ctx.clearRect(0,0,W,H);
+    const ctx = cv.getContext("2d");
 
-    if(userHistory.length < 1) return;
-
-    let data=[...userHistory];
-    const PAD={t:24,r:24,b:40,l:52};
-    const cW=W-PAD.l-PAD.r,cH=H-PAD.t-PAD.b;
-    const vals=data.map(d=>d.weight);
-    const gw=userProfile.goalWeight;
-    const minV=Math.min(...vals,gw||999)-1.5;
-    const maxV=Math.max(...vals)+1.5;
-    const rng=maxV-minV || 10;
-    const xOf=i=> data.length > 1 ? PAD.l+(i/(data.length-1))*cW : PAD.l + cW/2;
-    const yOf=v=>PAD.t+cH-((v-minV)/rng)*cH;
-
-    for(let i=0;i<=5;i++){
-        const y=PAD.t+(cH/5)*i;
-        ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
-        ctx.beginPath();ctx.moveTo(PAD.l,y);ctx.lineTo(PAD.l+cW,y);ctx.stroke();
-    }
-
-    if(gw&&gw>=minV&&gw<=maxV){
-        const gy=yOf(gw);
-        ctx.strokeStyle='rgba(232,255,71,.28)';ctx.lineWidth=1.5;ctx.setLineDash([7,5]);
-        ctx.beginPath();ctx.moveTo(PAD.l,gy);ctx.lineTo(PAD.l+cW,gy);ctx.stroke();
-        ctx.setLineDash([]);
-    }
-
-    ctx.strokeStyle='#e8ff47';ctx.lineWidth=2.5;ctx.lineJoin='round';
-    ctx.beginPath();
-    data.forEach((d,i)=>{
-        const x=xOf(i), y=yOf(d.weight);
-        if(i===0){ctx.moveTo(x,y);return;}
-        const px=xOf(i-1), py=yOf(data[i-1].weight), mx=(px+x)/2;
-        ctx.bezierCurveTo(mx,py,mx,y,x,y);
+    if (fChartInstance) fChartInstance.destroy();
+    fChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['7 tuần trước', '6 tuần trước', '5 tuần trước', '4 tuần trước', '3 tuần trước', '2 tuần trước', '1 tuần trước', 'Tuần hiện tại'],
+            datasets: [{
+                label: 'Số buổi tập',
+                data: data,
+                backgroundColor: '#4da8ff',
+                borderRadius: 4,
+                barPercentage: 0.5
+            }]
+        },
+        options: {
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, max: 7, ticks: { stepSize: 1, color: '#888' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                x: { ticks: { color: '#888' }, grid: { display: false } }
+            }
+        }
     });
-    ctx.stroke();
+}
+// ============================================================================
+// XỬ LÝ GIAO DIỆN "MỨC TẠ CỦA BẠN"
+// ============================================================================
+async function fetchWeightsData() {
+    try {
+        const res = await fetch(`${API_SERVER}/api/tcn/weights?userId=${CURRENT_UID}`).then(r => r.json());
+        if (res.success) {
+            renderWeightsList(res.data);
+        }
+    } catch (e) {
+        console.error("Lỗi tải mức tạ:", e);
+    }
+}
 
-    data.forEach((d,i)=>{
-        const x=xOf(i), y=yOf(d.weight);
-        ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle='#e8ff47';ctx.fill();
-        ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fillStyle='#1a1a1f';ctx.fill();
-        
-        ctx.fillStyle='#e8ff47';ctx.font='bold 11px Barlow,sans-serif';ctx.textAlign='center';
-        ctx.fillText(`${d.weight}`,x,y-11);
-    });
+function renderWeightsList(weightsData) {
+    const list = document.getElementById('weightsList');
+    if (!list) return;
+
+    list.innerHTML = weightsData.map(w => `
+        <div class="w-row">
+            <div class="w-name">${w.muscle}</div>
+            <div class="w-ctrl">
+                <button class="w-btn" onclick="adjustWeight('${w.muscle}', -1, this)">-</button>
+                <div class="w-val"><span>${w.weight}</span>kg</div>
+                <button class="w-btn" onclick="adjustWeight('${w.muscle}', 1, this)">+</button>
+            </div>
+            <div class="w-cmt ${w.is_upgrade ? 'upgrade' : ''}">${w.comment}</div>
+        </div>
+    `).join('');
+}
+
+// Hàm tăng giảm tạ cục bộ và gọi API lưu ngầm
+let weightTimer;
+function adjustWeight(muscle, amount, btnEl) {
+    // 1. Cập nhật số trên giao diện ngay lập tức
+    const valContainer = btnEl.parentElement.querySelector('.w-val span');
+    let currentWeight = parseFloat(valContainer.textContent);
+    let newWeight = Math.max(1, currentWeight + amount); // Không cho giảm dưới 1kg
+    valContainer.textContent = newWeight;
+
+    // 2. Chờ người dùng bấm xong (Debounce 800ms) rồi mới gọi API lưu vào Database
+    clearTimeout(weightTimer);
+    weightTimer = setTimeout(async () => {
+        try {
+            await fetch(`${API_SERVER}/api/tcn/weights/update`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: CURRENT_UID, muscle: muscle, weight: newWeight })
+            });
+            toast(`Đã lưu mức tạ ${muscle}: ${newWeight}kg`, 'ok');
+        } catch (e) {
+            toast('Lỗi lưu mức tạ', 'err');
+        }
+    }, 800);
 }

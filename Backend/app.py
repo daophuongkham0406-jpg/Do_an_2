@@ -12,6 +12,8 @@ from qluser import user_bp
 from quanly_plan import plan_bp
 from quanly_trangchu import trangchu_bp
 from quanly_cauhoi import cauhoi_bp
+from quanly_tcn import tcn_bp
+from flask_cors import CORS
 
 # 1. Tải cấu hình từ file .env
 load_dotenv()
@@ -23,6 +25,7 @@ app = Flask(__name__)
 
 # Cấu hình đầy đủ để trình duyệt không chặn nữa
 CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app)
 
 # Tất cả đường dẫn trong auth_bp sẽ bắt đầu bằng /api/auth
 app.register_blueprint(auth_bp, url_prefix='/api/auth') 
@@ -39,6 +42,8 @@ app.register_blueprint(plan_bp, url_prefix='/api/plans')
 app.register_blueprint(trangchu_bp)
 # Thêm dòng này ở chỗ đăng ký Blueprint:
 app.register_blueprint(cauhoi_bp)
+# Thêm dòng này ở chỗ đăng ký Blueprint:
+app.register_blueprint(tcn_bp)
 
 # 3. Kết nối MongoDB
 try:
