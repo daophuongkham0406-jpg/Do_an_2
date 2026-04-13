@@ -181,7 +181,27 @@
         </div>
       </div>
     </main>
-
+    <div class="overlay" id="cancelPlanOverlay">
+      <div class="modal confirm-modal">
+        <div class="modal-body" style="padding: 28px; text-align: center">
+          <div class="confirm-icon" style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+          <div class="confirm-msg" style="margin-bottom: 25px; color: var(--text-main); font-size: 16px;">
+            Bạn có chắc chắn muốn hủy bỏ lộ trình đang tập không?<br />
+            <span style="font-size: 13px; color: var(--text-muted); display: block; margin-top: 8px;">
+              Hành động này không thể hoàn tác và mọi tiến trình sẽ bị xóa.
+            </span>
+          </div>
+          <div style="display: flex; gap: 12px; justify-content: center">
+            <button class="btn" style="background-color: #6072ff; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;" onclick="closeCancelModal()">
+              Đóng
+            </button>
+            <button class="btn" style="background-color: #ff6060; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;" onclick="executeCancelPlan()">
+              Xác nhận Hủy
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="function_proc/lotrinh.js"></script>
     <script src="function_proc/check_login.js"></script>
     <script src="Chat.js"></script>

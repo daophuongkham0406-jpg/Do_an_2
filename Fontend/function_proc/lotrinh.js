@@ -436,12 +436,20 @@ function appendPlanActions(container, planData) {
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'btn-danger';
     cancelBtn.id = 'btn-cancel-plan';
+    // Nếu có lộ trình rồi thì hiện nút Hủy, chưa có thì ẩn
+    cancelBtn.style.display = currentPlanId ? 'block' : 'none'; 
     cancelBtn.innerHTML = '🗑️ HỦY LỘ TRÌNH ĐANG TẬP';
+    
+    // CHỈ DÙNG DÒNG NÀY ĐỂ MỞ MODAL
+    cancelBtn.onclick = askCancelPlan; 
+    
     container.appendChild(cancelBtn);
 
+    // Gán sự kiện cho 2 nút còn lại
     document.getElementById('btn-apply').addEventListener('click', () => savePlan(planData));
     document.getElementById('btn-retry').addEventListener('click', () => document.getElementById('btn-generate').click());
-    document.getElementById('btn-cancel-plan').addEventListener('click', cancelPlan);
+    
+    // XÓA BỎ DÒNG gán sự kiện cho btn-cancel-plan ở đây để không bị chồng chéo
 }
 
 /// ════════════════════════════════════════
@@ -887,30 +895,35 @@ function showToast(msg, type = 'success') {
 // ════════════════════════════════════════
 // HỦY LỘ TRÌNH
 // ════════════════════════════════════════
-async function cancelPlan() {
-    if (!confirm("⚠️ Bạn có chắc chắn muốn hủy bỏ lộ trình đang tập không?")) return;
+function askCancelPlan() {
+    const modal = document.getElementById('cancelPlanOverlay');
+    if (modal) modal.classList.add('open');
+}
 
-    const cancelUserId = USER_ID;
-    console.log(`🗑️ Đang hủy lộ trình của userId: ${cancelUserId}`);
+// Bước 2: Đóng Modal
+function closeCancelModal() {
+    const modal = document.getElementById('cancelPlanOverlay');
+    if (modal) modal.classList.remove('open');
+}
 
+// Bước 3: Thực hiện xóa lộ trình (Chuyển logic cũ vào đây)
+async function executeCancelPlan() {
+    closeCancelModal(); // Đóng modal trước
+    
     try {
-        const res = await fetch(`${AI_SERVER_URL}/api/cancel-plan/${cancelUserId}`, {
+        const res = await fetch(`${AI_SERVER_URL}/api/cancel-plan/${USER_ID}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' }
         });
-
-        console.log(`Response status: ${res.status}`);
         const result = await res.json();
-        console.log('Cancel result:', result);
-
+        
         if (result.success) {
-            showToast('Đã hủy lộ trình.', 'success');
+            showToast('Đã hủy lộ trình thành công.', 'success');
             setTimeout(() => location.reload(), 1000);
         } else {
             showToast('Lỗi: ' + (result.message || result.error), 'error');
         }
     } catch (e) {
-        console.error('cancelPlan error:', e);
         showToast('Lỗi kết nối máy chủ.', 'error');
     }
 }
