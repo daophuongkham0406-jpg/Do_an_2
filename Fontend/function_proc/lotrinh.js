@@ -2,9 +2,29 @@
 // lotrinh.js — Bản hoàn chỉnh
 // ════════════════════════════════════════════════════════════════
 const AI_SERVER_URL = 'http://localhost:5001';
-const USER_ID = localStorage.getItem('userId') || 'guest';
-
 const TODAY = new Date().toISOString().split('T')[0];
+
+
+// Thay thế đoạn cũ bằng đoạn này
+let USER_ID = 'guest';
+try {
+    const userStr = localStorage.getItem('loggedInUser');
+    console.log("👉 1. Chuỗi trong localStorage:", userStr); // Xem có lấy được gì không
+
+    if (userStr) {
+        const userObj = JSON.parse(userStr);
+        console.log("👉 2. Object User giải mã được:", userObj); // Xem bên trong có những biến gì
+
+        // Thử lấy id theo nhiều tên gọi khác nhau
+        USER_ID = userObj._id || userObj.id || userObj.user_id || userObj.userid || 'guest';
+        
+        console.log("👉 3. ID chốt lại gửi đi là:", USER_ID); // Xem kết quả cuối cùng
+    } else {
+        console.log("👉 Dữ liệu loggedInUser bị TRỐNG (null). Bạn chưa đăng nhập trên tab này!");
+    }
+} catch (e) {
+    console.error("Lỗi đọc user:", e);
+}
 
 let currentDisplayDayIndex = 0;
 let selectedDays    = 7;
@@ -202,33 +222,121 @@ async function doGeneratePlan(goal, level, equipment, userInfo, height, weight, 
     currentPlanData = null;
     currentPlanId   = null;
 
-    try {
-        const response = await fetch(`${AI_SERVER_URL}/api/generate-plan`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ goal, level, equipment, userInfo, height, weight, age, duration: selectedDays })
-        });
-        const data = await response.json();
+    // try {
+    // //     const response = await fetch(`${AI_SERVER_URL}/api/generate-plan`, {
+    // //         method: 'POST',
+    // //         headers: { 'Content-Type': 'application/json' },
+    // //         body: JSON.stringify({ goal, level, equipment, userInfo, height, weight, age, duration: selectedDays })
+    // //     });
+    // //     const data = await response.json();
 
-        if (data.plan_data) {
-            currentPlanData = data.plan_data;
-            renderPlan(data.plan_data, container);
-            appendPlanActions(container, data.plan_data);
-        } else if (data.error) {
-            const is429 = data.error.includes('429') || data.error.includes('Quota');
-            container.innerHTML = `<div class="empty-state" style="color:${is429 ? 'var(--accent)' : '#e74c3c'}">
-                ${is429 ? '⏳ AI đang bận, vui lòng chờ 15 giây rồi thử lại.' : '❌ Lỗi AI: ' + data.error}
-            </div>`;
-        }
-    } catch (err) {
-        container.innerHTML = `<div class="empty-state" style="color:#e74c3c">
-            <p>❌ Không thể kết nối máy chủ AI.</p>
-            <p style="font-size:12px;margin-top:8px;opacity:0.6">Hãy chạy: <code>python ai_server.py</code> tại cổng 5001</p>
-        </div>`;
-    } finally {
-        btn.disabled = false;
-        btn.innerText = '⚡ Tạo Lộ Trình Bằng AI';
+    // //     if (data.plan_data) {
+    // //         currentPlanData = data.plan_data;
+    // //         renderPlan(data.plan_data, container);
+    // //         appendPlanActions(container, data.plan_data);
+    // //     } else if (data.error) {
+    // //         const is429 = data.error.includes('429') || data.error.includes('Quota');
+    // //         container.innerHTML = `<div class="empty-state" style="color:${is429 ? 'var(--accent)' : '#e74c3c'}">
+    // //             ${is429 ? '⏳ AI đang bận, vui lòng chờ 15 giây rồi thử lại.' : '❌ Lỗi AI: ' + data.error}
+    // //         </div>`;
+    // //     }
+    // // } 
+    
+    // catch (err) {
+    //     container.innerHTML = `<div class="empty-state" style="color:#e74c3c">
+    //         <p>❌ Không thể kết nối máy chủ AI.</p>
+    //         <p style="font-size:12px;margin-top:8px;opacity:0.6">Hãy chạy: <code>python ai_server.py</code> tại cổng 5001</p>
+    //     </div>`;
+    // } finally {
+    //     btn.disabled = false;
+    //     
+    // try {
+    // console.log("🚀 Đang gửi yêu cầu lên AI Server...");
+    
+    // const response = await fetch(`${AI_SERVER_URL}/api/generate-plan`, {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ goal, level, equipment, userInfo, height, weight, age, duration: selectedDays })
+    // });
+
+    // console.log("📥 Đã nhận phản hồi từ Server. Trạng thái:", response.status);
+
+    // // Kiểm tra nếu server trả về lỗi 500 (Lỗi code Python hoặc AI sập)
+    // // Kiểm tra nếu server trả về lỗi 500
+    // if (!response.ok) {
+    //     // Cố gắng đọc xem server Python gửi về nguyên nhân gì
+    //     const errorData = await response.json(); 
+    //     throw new Error(`${errorData.error || response.status}`);
+    // }
+
+    // const data = await response.json();
+    // console.log("📦 Dữ liệu AI trả về:", data);
+
+    // if (data.plan_data) {
+    //     currentPlanData = data.plan_data;
+    //     renderPlan(data.plan_data, container);
+    //     appendPlanActions(container, data.plan_data);
+    // } else if (data.error) {
+    //     const is429 = data.error.includes('429') || data.error.includes('Quota');
+    //     container.innerHTML = `<div class="empty-state" style="color:${is429 ? 'var(--accent)' : '#ff6060'}">
+    //         ${is429 ? '⏳ AI đang bận quá tải, vui lòng chờ 15 giây rồi thử lại.' : '❌ Lỗi AI: ' + data.error}
+    //     </div>`;
+    // }
+    // } catch (error) {
+    // console.error("🔥 BẮT ĐƯỢC LỖI TẠI FRONTEND:", error);
+    // // TẮT VÒNG XOAY VÀ HIỆN LỖI RA MÀN HÌNH
+    // container.innerHTML = `<div class="empty-state" style="color:#ff6060;">
+    //     ❌ Bị mất kết nối hoặc AI phản hồi quá lâu.<br>
+    //     <span style="font-size:12px; color:#888;">Chi tiết lỗi: ${error.message}</span><br>
+    //     <button class="btn" style="margin-top:15px;" onclick="location.reload()">Tải lại trang</button>
+    // </div>`;
+    // }
+    try {
+    console.log("🚀 Đang gửi yêu cầu lên AI Server...");
+    
+    // Đặt đồng hồ đếm ngược 60 giây. Quá 60s mà AI không xong là ngắt luôn!
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 900000); 
+
+    const response = await fetch(`${AI_SERVER_URL}/api/generate-plan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ goal, level, equipment, userInfo, height, weight, age, duration: selectedDays }),
+        signal: controller.signal // Gắn công tắc ngắt vào
+    });
+
+    clearTimeout(timeoutId); // Nếu AI trả lời sớm thì tắt đồng hồ đếm ngược
+    console.log("📥 Đã nhận phản hồi từ Server. Trạng thái:", response.status);
+
+    if (!response.ok) {
+        const errorData = await response.json(); 
+        throw new Error(errorData.error || `Mã lỗi server: ${response.status}`);
     }
+
+    const data = await response.json();
+    console.log("📦 Dữ liệu AI trả về:", data);
+
+    if (data.plan_data) {
+        currentPlanData = data.plan_data;
+        renderPlan(data.plan_data, container);
+        appendPlanActions(container, data.plan_data);
+    } else if (data.error) {
+        throw new Error(data.error);
+    }
+} catch (error) {
+    console.error("🔥 LỖI FRONTEND:", error);
+    
+    // Bắt riêng cái lỗi quá thời gian chờ (AbortError)
+    let errorMsg = error.message;
+    if (error.name === 'AbortError') {
+        errorMsg = "⏳ AI đang suy nghĩ quá lâu (vượt quá 60 giây). Vui lòng thử lại!";
+    }
+
+    container.innerHTML = `<div class="empty-state" style="color:#ff6060;">
+        ❌ Lỗi: ${errorMsg}<br>
+        <button class="btn" style="margin-top:15px;" onclick="location.reload()">Tải lại trang</button>
+    </div>`;
+}
 }
 
 // ════════════════════════════════════════
@@ -450,7 +558,6 @@ function appendPlanActions(container, planData) {
     document.getElementById('btn-apply').addEventListener('click', () => savePlan(planData));
     document.getElementById('btn-retry').addEventListener('click', () => document.getElementById('btn-generate').click());
     
-    // XÓA BỎ DÒNG gán sự kiện cho btn-cancel-plan ở đây để không bị chồng chéo
 }
 
 /// ════════════════════════════════════════
@@ -467,7 +574,12 @@ async function savePlan(planData) {
         const res = await fetch(`${AI_SERVER_URL}/api/save-plan`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ plan_data: planData, userId: USER_ID, height, weight, age })
+            body: JSON.stringify({ 
+                plan_data: planData, 
+                userId: USER_ID, 
+                height, 
+                weight, 
+                age })
         });
         const result = await res.json();
 
@@ -1218,31 +1330,47 @@ function closeLockDayModal() {
 
 // 3. Thực thi Chốt sổ (Gọi API)
 async function executeLockPlanDay() {
-    if (!pendingLockPlanId || !pendingLockDayNumber) return;
-    
-    closeLockDayModal(); // Đóng modal trước cho mượt
+    // 1. Nếu biến tạm bị rỗng, thử lấy lại từ giao diện hoặc biến toàn cục
+    const pId = pendingLockPlanId || currentPlanId;
+    const dNum = pendingLockDayNumber || (currentDisplayDayIndex + 1);
+
+    if (!pId) {
+        showToast("❌ Không tìm thấy ID lộ trình!", "error");
+        return;
+    }
+
+    closeLockDayModal();
     
     try {
+        console.log(`🔒 Đang chốt sổ: Plan ${pId}, Ngày ${dNum}`);
+        
         const res = await fetch(`${AI_SERVER_URL}/api/lock-plan-day`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ planId: pendingLockPlanId, dayNumber: pendingLockDayNumber })
+            body: JSON.stringify({ 
+                planId: pId, 
+                plan_id: pId, 
+                dayNumber: dNum,
+                day_number: dNum 
+            })
         });
+
         const data = await res.json();
         if(data.success) {
-            showToast(data.message || 'Đã chốt sổ thành công!', 'success');
-            setTimeout(() => location.reload(), 1000); // Tải lại trang để cập nhật UI
+            showToast(data.message || '✅ Đã chốt sổ thành công!', 'success');
+            // Đợi 1 giây để người dùng kịp thấy thông báo rồi mới load lại
+            setTimeout(() => location.reload(), 1200); 
         } else {
-            showToast(data.error || 'Có lỗi xảy ra', 'error');
+            showToast('❌ Lỗi: ' + (data.error || 'Không rõ nguyên nhân'), 'error');
         }
     } catch(e) { 
-        showToast("Lỗi kết nối", "error"); 
+        console.error("Lỗi fetch:", e);
+        showToast("❌ Lỗi kết nối máy chủ", "error"); 
     }
 }
 
 // GỌI API KHÓA DINH DƯỠNG
 async function lockNutritionDay() {
-    if(!confirm(`⚠️ Xác nhận CHỐT SỔ dinh dưỡng hôm nay? Bạn sẽ không thể nhập thêm cho đến ngày mai.`)) return;
     try {
         const res = await fetch(`${AI_SERVER_URL}/api/lock-nutrition`, {
             method: 'POST',

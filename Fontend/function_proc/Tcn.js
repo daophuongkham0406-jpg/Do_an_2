@@ -6,6 +6,18 @@ let userProfile = {};
 let userHistory = [];
 let allWorkoutsHistory = []; // Lưu lại để dùng cho Modal
 
+// ĐỂ ĐOẠN NÀY Ở TRÊN CÙNG CỦA FILE Tcn.js
+let USER_ID = 'guest';
+try {
+    const userStr = localStorage.getItem('loggedInUser');
+    if (userStr) {
+        const userObj = JSON.parse(userStr);
+        USER_ID = userObj._id || userObj.id || userObj.user_id || 'guest';
+    }
+} catch (e) {
+    console.error("Lỗi đọc user:", e);
+}
+
 // Lấy ID người dùng từ LocalStorage
 const userStr = localStorage.getItem('loggedInUser');
 const localUser = userStr ? JSON.parse(userStr) : {};
@@ -540,3 +552,55 @@ function adjustWeight(muscle, amount, btnEl) {
         }
     }, 800);
 }
+// ════════════════════════════════════════════════════════════════
+// TẢI LỘ TRÌNH ĐANG TẬP VÀO TRANG CÁ NHÂN
+// ════════════════════════════════════════════════════════════════
+async function loadProfileActivePlan() {
+    const titleEl = document.getElementById('profile-plan-title');
+    const listEl = document.getElementById('profile-plan-list');
+    
+    if (!titleEl || !listEl) return; // Nếu không tìm thấy khung thì bỏ qua
+
+    try {
+        // AI_SERVER_URL nếu chưa khai báo thì sửa thành 'http://localhost:5001'
+        const serverUrl = typeof AI_SERVER_URL !== 'undefined' ? AI_SERVER_URL : 'http://localhost:5001';
+        
+        // Gọi API lấy lộ trình của User hiện tại
+        const res = await fetch(`${serverUrl}/api/get-active-plan?userId=${USER_ID}`);
+        const data = await res.json();
+
+        if (data.plan && data.plan.plan_data) {
+            const planData = data.plan.plan_data;
+            const daysDone = data.plan.days_done || 0;
+            const totalDays = planData.duration_days || planData.days.length;
+
+            // 1. Đổi chữ "Đang tải..." thành tên lộ trình
+            titleEl.textContent = planData.plan_name || `Lộ trình ${totalDays} ngày`;
+
+            // 2. Vẽ một thanh tiến độ xịn xò đè lên chữ "Đang kết nối..."
+            const pct = Math.round((daysDone / totalDays) * 100) || 0;
+            listEl.innerHTML = `
+                <div style="margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                        <span>Tiến độ hoàn thành</span>
+                        <span><strong style="color:var(--accent, #e8ff47)">${daysDone}</strong> / ${totalDays} ngày</span>
+                    </div>
+                    <div style="width: 100%; background: var(--border, #2a2a2a); height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div style="width: ${pct}%; background: var(--accent, #e8ff47); height: 100%; border-radius: 4px; transition: width 0.5s ease;"></div>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Nếu không có lộ trình nào
+            titleEl.textContent = "Chưa có lộ trình";
+            listEl.innerHTML = "Bạn chưa bắt đầu lộ trình nào. Hãy sang trang Lộ Trình để AI thiết kế cho bạn nhé!";
+        }
+    } catch (error) {
+        console.error("Lỗi khi tải lộ trình trang cá nhân:", error);
+        titleEl.textContent = "Lỗi kết nối";
+        listEl.innerHTML = "Không thể lấy dữ liệu từ máy chủ.";
+    }
+}
+
+// Gọi hàm ngay lập tức khi load file JS
+loadProfileActivePlan();
