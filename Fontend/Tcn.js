@@ -11,6 +11,8 @@ const CURRENT_UID = localStorage.getItem("userId") || "guest";
 document.addEventListener("DOMContentLoaded", () => {
   loadActivePlan();
   loadAllPlansHistory();
+  loadActivePlanForProfile();
+  fetchTcnOverview();
 });
 
 // ════════════════════════════════════════
@@ -421,3 +423,103 @@ _style.textContent = `
 }
 `;
 document.head.appendChild(_style);
+// ==============================================================
+// ĐỒNG BỘ LỘ TRÌNH ĐANG TẬP TỪ MÁY CHỦ AI SANG TRANG CÁ NHÂN
+// ==============================================================
+async function loadActivePlanForProfile() {
+    const listEl = document.getElementById('profile-plan-list');
+    const titleEl = document.getElementById('profile-plan-title');
+    if (!listEl || !titleEl) return;
+
+    try {
+        const userId = localStorage.getItem('userId') || 'guest';
+        // Gọi thẳng vào cổng 5001 của AI Server để lấy lộ trình đang chạy
+        const res = await fetch(`http://localhost:5001/api/get-active-plan?userId=${userId}`);
+        const data = await res.json();
+
+        if (data.plan && data.plan.plan_data) {
+            const planData = data.plan.plan_data;
+            const progress = data.plan.daily_progress || [];
+            
+            // 1. Cập nhật Tiêu đề lộ trình
+            titleEl.innerHTML = `Lộ trình ${planData.goal} <br><span style="font-size:16px; opacity:0.8; color: var(--text-muted);">Cấp độ ${planData.level}</span>`;
+
+            // 2. Cập nhật danh sách ngày (Tự động tick nếu đã chốt sổ)
+            let html = '';
+            const dayNames = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
+
+            planData.days.forEach((day, index) => {
+                // Kiểm tra xem ngày này đã khóa/chốt sổ chưa
+                const pd = progress.find(p => p.day_number === day.day_number);
+                const isDone = pd && (pd.is_locked || pd.day_done);
+                const dayName = day.day_name || dayNames[index % 7] || `Ngày ${day.day_number}`;
+
+                // Gói danh sách bài tập thành chuỗi để truyền vào nút "Xem bài"
+                const exData = encodeURIComponent(JSON.stringify(day.exercises || []));
+                const isRest = day.is_rest ? 'true' : 'false';
+
+                html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 12px; font-weight: 500; color: ${isDone ? '#fff' : 'var(--text-main)'};">
+                        <div style="width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: 2px solid ${isDone ? '#4ecdc4' : 'var(--border)'}; background: ${isDone ? '#4ecdc4' : 'transparent'}; color: ${isDone ? '#111' : 'transparent'}; transition: all 0.3s;">
+                            ${isDone ? '✓' : ''}
+                        </div>
+                        <span style="opacity: ${isDone ? '0.6' : '1'}; text-decoration: ${isDone ? 'line-through' : 'none'};">${dayName}</span>
+                    </div>
+                    <span style="font-size: 12px; color: var(--text-muted); cursor: pointer; transition: color 0.2s; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px;" 
+                          onmouseover="this.style.color='var(--accent)'; this.style.background='rgba(232, 255, 71, 0.1)';" 
+                          onmouseout="this.style.color='var(--text-muted)'; this.style.background='rgba(255,255,255,0.05)';" 
+                          onclick="openDayDetailModal('${dayName}', '${isRest}', '${exData}')">
+                          Xem bài
+                    </span>
+                </div>
+                `;
+            });
+            listEl.innerHTML = html;
+        } else {
+            // Nếu người dùng chưa tạo lộ trình nào
+            titleEl.textContent = "Chưa có lộ trình";
+            listEl.innerHTML = `<div style="color: var(--text-muted); font-size: 14px;">Bạn chưa kích hoạt lộ trình nào. <br><br><a href="lotrinh.html" style="color: var(--accent); text-decoration: none; font-weight: bold;">Tạo lộ trình ngay →</a></div>`;
+        }
+    } catch (e) {
+        listEl.innerHTML = `<div style="color: #ff6060; font-size: 14px;">Lỗi tải dữ liệu. Vui lòng mở AI Server (Cổng 5001).</div>`;
+    }
+}
+
+// Hàm mở Modal Xem bài tập
+function openDayDetailModal(dayName, isRest, exDataStr) {
+    document.getElementById('dayDetailTitle').textContent = `Chi tiết ${dayName}`;
+    const contentEl = document.getElementById('dayDetailContent');
+    
+    if (isRest === 'true') {
+        contentEl.innerHTML = `<div style="text-align:center; padding: 30px 20px; color: var(--text-muted); background: var(--bg-secondary); border-radius: 12px;">🛌<br><br>Hôm nay là ngày nghỉ ngơi phục hồi. Không có bài tập nào!</div>`;
+    } else {
+        try {
+            const exercises = JSON.parse(decodeURIComponent(exDataStr));
+            if (exercises.length === 0) {
+                contentEl.innerHTML = `<div style="color: var(--text-muted);">Không có bài tập nào.</div>`;
+            } else {
+                contentEl.innerHTML = exercises.map((ex, i) => `
+                    <div style="background: var(--bg-secondary); padding: 14px; border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; gap: 12px;">
+                        <div style="font-family: 'Bebas Neue'; font-size: 24px; color: var(--border2); width: 30px;">0${i+1}</div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px; font-size: 15px;">${ex.name}</div>
+                            <div style="font-size: 12px; color: var(--accent); font-weight: 600;">
+                                ${ex.sets} Sets × ${ex.reps} Reps <span style="color: var(--text-muted); font-weight: 400; margin-left: 8px;">⏱ Nghỉ: ${ex.rest}s</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        } catch(e) {
+            contentEl.innerHTML = `<div style="color: #ff6060;">Lỗi hiển thị bài tập.</div>`;
+        }
+    }
+    
+    document.getElementById('dayDetailModalOverlay').classList.add('open');
+}
+
+// Hàm đóng Modal
+function closeDayDetailModal() {
+    document.getElementById('dayDetailModalOverlay').classList.remove('open');
+}

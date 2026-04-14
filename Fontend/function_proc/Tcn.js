@@ -77,23 +77,70 @@ function renderPlanUI(plan) {
     const progress = plan.daily_progress || [];
 
     progress.forEach((dayData, index) => {
-        const isDone = dayData.completed ? 'checked' : '';
-        const textStyle = dayData.completed ? 'text-decoration: line-through; opacity: 0.5;' : '';
-        const dayLabel = dayData.day_name || `Ngày ${index + 1}`;
+        // ĐỌC TRẠNG THÁI "CHỐT SỔ" TỪ TRANG LỘ TRÌNH (is_locked hoặc day_done)
+        const isDone = dayData.is_locked || dayData.day_done;
+        const textStyle = isDone ? 'text-decoration: line-through; opacity: 0.5;' : '';
+        const dayLabel = dayData.day_name || `Ngày ${dayData.day_number || index + 1}`;
+
+        // Mã hóa dữ liệu bài tập để truyền vào hàm Xem bài
+        const exDataStr = encodeURIComponent(JSON.stringify(dayData.exercises || []));
+        const isRestStr = dayData.is_rest ? 'true' : 'false';
 
         daysHtml += `
             <div style="display:flex; align-items:center; justify-content:space-between; padding: 12px 15px; border-bottom: 1px solid var(--border); background: var(--bg-input); border-radius: 8px; margin-bottom: 8px; transition: 0.3s;">
                 <div style="display:flex; align-items:center; gap: 12px;">
-                    <input type="checkbox" style="width: 18px; height: 18px; accent-color: #e8ff47; cursor:pointer;" 
-                           ${isDone} 
-                           onchange="updatePlanDay('${plan.id}', ${index}, this.checked)">
+                    <div style="width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: 2px solid ${isDone ? '#4ecdc4' : 'var(--border)'}; background: ${isDone ? '#4ecdc4' : 'transparent'}; color: ${isDone ? '#111' : 'transparent'}; transition: all 0.3s;">
+                        ${isDone ? '✓' : ''}
+                    </div>
                     <div style="font-size: 14px; font-weight: 600; color: var(--text-main); ${textStyle}">${dayLabel}</div>
                 </div>
-                <button style="background:transparent; border:1px solid var(--border); color:var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor:pointer;" onmouseover="this.style.color='#e8ff47'; this.style.borderColor='#e8ff47'" onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border)'">Xem bài</button>
+                <button onclick="openDayDetailModal('${dayLabel}', '${isRestStr}', '${exDataStr}')" style="background:transparent; border:1px solid var(--border); color:var(--text-muted); padding: 4px 10px; border-radius: 4px; font-size: 11px; cursor:pointer;" onmouseover="this.style.color='#e8ff47'; this.style.borderColor='#e8ff47'" onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border)'">Xem bài</button>
             </div>
         `;
     });
     wrap.innerHTML = daysHtml;
+}
+
+// ==============================================================
+// MODAL XEM CHI TIẾT BÀI TẬP (DÁN XUỐNG CUỐI FILE Tcn.js)
+// ==============================================================
+function openDayDetailModal(dayName, isRest, exDataStr) {
+    const titleEl = document.getElementById('dayDetailTitle');
+    const contentEl = document.getElementById('dayDetailContent');
+    if(!titleEl || !contentEl) return;
+
+    titleEl.textContent = `Chi tiết ${dayName}`;
+    
+    if (isRest === 'true') {
+        contentEl.innerHTML = `<div style="text-align:center; padding: 30px 20px; color: var(--text-muted); background: var(--bg-secondary); border-radius: 12px;">🛌<br><br>Hôm nay là ngày nghỉ ngơi phục hồi. Không có bài tập nào!</div>`;
+    } else {
+        try {
+            const exercises = JSON.parse(decodeURIComponent(exDataStr));
+            if (exercises.length === 0) {
+                contentEl.innerHTML = `<div style="color: var(--text-muted);">Không có bài tập nào.</div>`;
+            } else {
+                contentEl.innerHTML = exercises.map((ex, i) => `
+                    <div style="background: var(--bg-secondary); padding: 14px; border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                        <div style="font-family: 'Bebas Neue'; font-size: 24px; color: var(--border2); width: 30px;">0${i+1}</div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-main); margin-bottom: 4px; font-size: 15px;">${ex.name}</div>
+                            <div style="font-size: 12px; color: var(--accent); font-weight: 600;">
+                                ${ex.sets} Sets × ${ex.reps} Reps <span style="color: var(--text-muted); font-weight: 400; margin-left: 8px;">⏱ Nghỉ: ${ex.rest}s</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        } catch(e) {
+            contentEl.innerHTML = `<div style="color: #ff6060;">Lỗi hiển thị bài tập.</div>`;
+        }
+    }
+    document.getElementById('dayDetailModalOverlay').classList.add('open');
+}
+
+function closeDayDetailModal() {
+    const modal = document.getElementById('dayDetailModalOverlay');
+    if(modal) modal.classList.remove('open');
 }
 
 async function updatePlanDay(planId, dayIndex, isCompleted) {

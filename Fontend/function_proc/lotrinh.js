@@ -3,6 +3,7 @@
 // ════════════════════════════════════════════════════════════════
 const AI_SERVER_URL = 'http://localhost:5001';
 const USER_ID = localStorage.getItem('userId') || 'guest';
+
 const TODAY = new Date().toISOString().split('T')[0];
 
 let currentDisplayDayIndex = 0;
@@ -390,7 +391,7 @@ function renderPlan(planData, container, progress = null) {
                 lockDayWrap.innerHTML = `<div class="locked-future-msg">⏳ Bài tập sẽ mở khóa vào ngày thứ ${day.day_number} của lộ trình</div>`;
             } else {
                 // HÔM NAY -> Hiện nút chốt sổ
-                lockDayWrap.innerHTML = `<button class="btn-lock-target" onclick="lockPlanDay('${currentPlanId}', ${day.day_number})">🔒 HOÀN THÀNH & CHỐT SỔ NGÀY ${day.day_number}</button>`;
+                lockDayWrap.innerHTML = `<button class="btn-lock-target" onclick="askLockPlanDay('${currentPlanId}', ${day.day_number})">🔒 HOÀN THÀNH & CHỐT SỔ NGÀY ${day.day_number}</button>`;
             }
             body.appendChild(lockDayWrap);
         }
@@ -1188,21 +1189,55 @@ function closeExerciseModal() {
 
 
 
-// GỌI API KHÓA NGÀY TẬP
-async function lockPlanDay(planId, dayNumber) {
-    if(!confirm(`⚠️ Bạn có chắc chắn muốn CHỐT SỔ Ngày ${dayNumber}? Hành động này không thể hoàn tác!`)) return;
+// ════════════════════════════════════════
+// MODAL CHỐT SỔ NGÀY TẬP
+// ════════════════════════════════════════
+let pendingLockPlanId = null;
+let pendingLockDayNumber = null;
+
+// 1. Mở Modal hỏi xác nhận
+function askLockPlanDay(planId, dayNumber) {
+    pendingLockPlanId = planId;
+    pendingLockDayNumber = dayNumber;
+    
+    // Cập nhật số ngày hiển thị trên Modal
+    const displaySpan = document.getElementById('lockDayNumDisplay');
+    if(displaySpan) displaySpan.textContent = `Ngày ${dayNumber}`;
+    
+    const modal = document.getElementById('lockDayModalOverlay');
+    if(modal) modal.classList.add('open');
+}
+
+// 2. Đóng Modal
+function closeLockDayModal() {
+    const modal = document.getElementById('lockDayModalOverlay');
+    if(modal) modal.classList.remove('open');
+    pendingLockPlanId = null;
+    pendingLockDayNumber = null;
+}
+
+// 3. Thực thi Chốt sổ (Gọi API)
+async function executeLockPlanDay() {
+    if (!pendingLockPlanId || !pendingLockDayNumber) return;
+    
+    closeLockDayModal(); // Đóng modal trước cho mượt
+    
     try {
         const res = await fetch(`${AI_SERVER_URL}/api/lock-plan-day`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ planId, dayNumber })
+            body: JSON.stringify({ planId: pendingLockPlanId, dayNumber: pendingLockDayNumber })
         });
         const data = await res.json();
         if(data.success) {
-            showToast(data.message, 'success');
-            setTimeout(() => location.reload(), 1000); // Reload để render lại UI bị khóa
+            showToast(data.message || 'Đã chốt sổ thành công!', 'success');
+            setTimeout(() => location.reload(), 1000); // Tải lại trang để cập nhật UI
+        } else {
+            showToast(data.error || 'Có lỗi xảy ra', 'error');
         }
-    } catch(e) { showToast("Lỗi kết nối", "error"); }
+    } catch(e) { 
+        showToast("Lỗi kết nối", "error"); 
+    }
 }
 
 // GỌI API KHÓA DINH DƯỠNG
