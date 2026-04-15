@@ -1,10 +1,12 @@
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_mail import Mail  # Thư viện dùng để gửi thư
 import google.generativeai as genai
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime
+
 from dangnhap import auth_bp
 from canhan import profile_bp
 from baitap import baitap_bp
@@ -13,43 +15,46 @@ from quanly_plan import plan_bp
 from quanly_trangchu import trangchu_bp
 from quanly_cauhoi import cauhoi_bp
 from quanly_tcn import tcn_bp
-from flask_cors import CORS
 
 # 1. Tải cấu hình từ file .env
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 MONGO_URI = os.getenv("MONGO_URI")
 
-# Đăng ký Blueprint cho phần đăng nhập
 app = Flask(__name__)
 
 # Cấu hình đầy đủ để trình duyệt không chặn nữa
 CORS(app, resources={r"/*": {"origins": "*"}})
-CORS(app)
 
-# Tất cả đường dẫn trong auth_bp sẽ bắt đầu bằng /api/auth
+# ============================================================================
+# 2. CẤU HÌNH GỬI EMAIL (FLASK-MAIL) 
+# ============================================================================
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587                     # Dùng cổng 587 (TLS) để tránh bị nhà mạng chặn
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+
+# Khởi tạo đối tượng mail
+mail = Mail(app)
+
+# Tất cả đường dẫn Blueprint
 app.register_blueprint(auth_bp, url_prefix='/api/auth') 
-
-# Tất cả đường dẫn trong profile_bp sẽ bắt đầu bằng /api/profile
 app.register_blueprint(profile_bp, url_prefix='/api/profile')
-# Tất cả đường dẫn trong baitap_bp sẽ bắt đầu bằng /api/exercises
 app.register_blueprint(baitap_bp, url_prefix='/api/exercises')
-# Tất cả đường dẫn trong user_bp sẽ bắt đầu bằng /api/users
 app.register_blueprint(user_bp, url_prefix='/api/users')
-# Thêm dòng này ở chỗ đăng ký Blueprint:
 app.register_blueprint(plan_bp, url_prefix='/api/plans')
-# Thêm dòng này ở chỗ đăng ký Blueprint:
 app.register_blueprint(trangchu_bp)
-# Thêm dòng này ở chỗ đăng ký Blueprint:
 app.register_blueprint(cauhoi_bp)
-# Thêm dòng này ở chỗ đăng ký Blueprint:
 app.register_blueprint(tcn_bp)
 
 # 3. Kết nối MongoDB
 try:
     client = MongoClient(MONGO_URI)
     db = client["do_an_2"]
-    workout_collection = db["workout_plans"]
+    workout_collection = db["workout_plan"]
     print("✅ Kết nối MongoDB thành công!")
 except Exception as e:
     print(f"❌ Lỗi kết nối MongoDB: {e}")

@@ -14,7 +14,6 @@
 * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
 body {
-    /* Nền trang giống hệt trang bài tập */
     background-color: var(--bg-main);
     background-image: 
         linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
@@ -41,11 +40,9 @@ body {
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Form mặc định */
 .sign-in { left: 0; width: 50%; z-index: 2; }
 .sign-up { left: 0; width: 50%; opacity: 0; z-index: 1; }
 
-/* Khi nhấn nút chuyển form */
 .container.active .sign-in { transform: translateX(100%); opacity: 0; }
 .container.active .sign-up { transform: translateX(100%); opacity: 1; z-index: 5; }
 
@@ -54,21 +51,15 @@ body {
     position: absolute; top: 0; left: 50%; width: 50%; height: 100%;
     overflow: hidden; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000;
 }
-
-.container.active .toggle-container {
-    transform: translateX(-100%);
-}
+.container.active .toggle-container { transform: translateX(-100%); }
 
 .toggle {
-    /* Nền Panel chứa nút Đăng nhập/Đăng ký */
     background: radial-gradient(circle at center, #232530 0%, var(--bg-main) 100%);
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
+    border-left: 1px solid var(--border); border-right: 1px solid var(--border);
     color: var(--text-main); position: relative; left: -100%;
     height: 100%; width: 200%;
     transform: translateX(0); transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .container.active .toggle { transform: translateX(50%); }
 
 .toggle-panel {
@@ -77,7 +68,6 @@ body {
     flex-direction: column; padding: 0 40px; text-align: center;
     top: 0; transition: all 0.6s ease-in-out;
 }
-
 .toggle-panel h1 { font-size: 28px; font-weight: 800; color: var(--accent-yellow); margin-bottom: 10px;}
 .toggle-panel p { color: var(--text-muted); font-size: 14px; line-height: 1.5;}
 
@@ -116,12 +106,30 @@ input:focus {
 /* --- PASSWORD TOGGLE --- */
 .password-wrap { position: relative; width: 100%; margin: 6px 0; }
 .password-wrap input { margin: 0; padding-right: 40px; }
-.eye-btn {
-    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-    background: none; border: none; cursor: pointer; color: var(--text-muted); 
-    padding: 0; display: flex; align-items: center;
+
+button.eye-btn {
+    position: absolute; 
+    right: 12px; 
+    top: 50%; 
+    transform: translateY(-50%);
+    background-color: transparent !important; 
+    width: auto !important; 
+    margin: 0 !important; 
+    padding: 0 !important; 
+    box-shadow: none !important;
+    border: none; 
+    cursor: pointer; 
+    color: var(--text-muted); 
+    display: flex; 
+    align-items: center;
+    justify-content: center;
 }
-.eye-btn:hover { color: var(--accent-yellow); }
+button.eye-btn:hover { 
+    color: var(--accent-yellow) !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    transform: translateY(-50%) scale(1.1) !important; 
+}
 
 /* --- FORM ROW (2 cột) --- */
 .form-row { display: flex; gap: 10px; width: 100%; }
@@ -133,40 +141,31 @@ input:focus {
 .gender-option input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
 .gender-option label {
     display: flex; align-items: center; justify-content: center;
-    padding: 10px 4px;
-    background-color: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 13px; font-weight: 600;
-    color: var(--text-muted); cursor: pointer;
+    padding: 10px 4px; background-color: var(--bg-input);
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;
     transition: all 0.2s; white-space: nowrap;
 }
 .gender-option input[type="radio"]:checked + label {
     background-color: var(--accent-yellow-glow);
-    border-color: var(--accent-yellow);
-    color: var(--accent-yellow);
+    border-color: var(--accent-yellow); color: var(--accent-yellow);
 }
 .gender-option label:hover { border-color: #555866; color: var(--text-main); }
 
 /* --- BUTTONS --- */
 button {
     background-color: var(--accent-purple); color: #fff; font-size: 14px;
-    padding: 12px 45px; border: none;
-    border-radius: 8px; font-weight: 700;
-    margin-top: 15px; cursor: pointer; width: 100%;
-    transition: all 0.2s;
+    padding: 12px 45px; border: none; border-radius: 8px; font-weight: 700;
+    margin-top: 15px; cursor: pointer; width: 100%; transition: all 0.2s;
 }
 button:hover { background-color: #8c62ff; transform: translateY(-1px); box-shadow: 0 4px 15px rgba(114, 65, 255, 0.4); }
 
 button.hidden {
-    background-color: transparent;
-    border: 1px solid var(--accent-yellow);
-    color: var(--accent-yellow);
-    width: auto; margin-top: 20px;
+    background-color: transparent; border: 1px solid var(--accent-yellow);
+    color: var(--accent-yellow); width: auto; margin-top: 20px;
 }
 button.hidden:hover { 
-    background-color: var(--accent-yellow); 
-    color: #000; 
+    background-color: var(--accent-yellow); color: #000; 
     box-shadow: 0 4px 15px var(--accent-yellow-glow); 
 }
 
@@ -174,16 +173,6 @@ button.hidden:hover {
 .forgot { width: 100%; text-align: right; margin-top: 5px; }
 .forgot a { font-size: 12px; color: var(--accent-yellow); text-decoration: none; font-weight: 500;}
 .forgot a:hover { text-decoration: underline; }
-
-.magic-link {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; color: var(--text-muted); margin-top: 15px;
-    background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px;
-    width: 100%; text-align: left;
-}
-.magic-link svg { stroke: var(--accent-purple); }
-.magic-link a { color: var(--accent-purple); font-weight: 700; text-decoration: none; }
-.magic-link a:hover { text-decoration: underline; color: #8c62ff;}
 
 /* --- NÚT QUAY LẠI --- */
 .back-btn-inner {
@@ -193,38 +182,61 @@ button.hidden:hover {
     font-size: 13px; font-weight: 600; transition: 0.2s; z-index: 10;
 }
 .back-btn-inner:hover { transform: translateX(-3px); color: var(--accent-yellow); }
+
 /* --- HIỆU ỨNG THÔNG BÁO (TOAST) --- */
 .toast-wrap {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    position: fixed; bottom: 30px; right: 30px; z-index: 9999;
+    display: flex; flex-direction: column; gap: 12px;
 }
-
 .toast {
-    background-color: var(--bg-card, #1d1e25);
-    color: var(--text-main, #ffffff);
-    border-left: 4px solid var(--accent-purple, #7241ff);
-    padding: 16px 24px;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    font-size: 14px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transform: translateX(120%);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Hiệu ứng nảy nhẹ */
+    background-color: var(--bg-card, #1d1e25); color: var(--text-main, #ffffff);
+    border-left: 4px solid var(--accent-purple, #7241ff); padding: 16px 24px;
+    border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); font-size: 14px;
+    font-weight: 600; display: flex; align-items: center; gap: 12px;
+    transform: translateX(120%); opacity: 0; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
-
-.toast.show {
-    transform: translateX(0);
-    opacity: 1;
-}
-
+.toast.show { transform: translateX(0); opacity: 1; }
 .toast.success { border-left-color: var(--accent-yellow, #e6ff00); }
 .toast.error { border-left-color: #ff4d4d; }
+
+/* --- MODAL (XÁC THỰC & QUÊN MẬT KHẨU) --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10000; opacity: 0; visibility: hidden; transition: 0.3s ease-in-out;
+}
+.modal-overlay.show { opacity: 1; visibility: visible; }
+
+.modal-content {
+    background-color: var(--bg-card); padding: 30px;
+    border-radius: 15px; border: 1px solid var(--border);
+    width: 400px; max-width: 90%; text-align: center;
+    position: relative; transform: translateY(-30px); transition: 0.3s ease-in-out;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.modal-overlay.show .modal-content { transform: translateY(0); }
+
+.modal-content h2 { margin-top: 0; color: var(--text-main); font-size: 22px; margin-bottom: 10px;}
+.modal-content p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; line-height: 1.5;}
+
+.close-modal {
+    position: absolute; top: 15px; right: 20px; font-size: 28px;
+    color: var(--text-muted); cursor: pointer; transition: 0.2s; line-height: 1;
+}
+.close-modal:hover { color: var(--accent-yellow); }
+
+/* --- STYLE RIÊNG CHO Ô NHẬP OTP & NÚT ĐẾM NGƯỢC --- */
+.otp-input {
+    text-align: center; letter-spacing: 10px; font-size: 20px;
+    font-weight: 800; color: var(--accent-yellow);
+}
+.otp-input::placeholder { letter-spacing: normal; font-size: 14px; font-weight: 500; }
+
+.resend-text { margin-top: 15px; font-size: 13px; color: var(--text-muted); }
+.resend-text a {
+    color: var(--accent-yellow); text-decoration: none; font-weight: 600;
+    pointer-events: none; opacity: 0.5;
+}
+.resend-text a.active { pointer-events: auto; opacity: 1; }
+.resend-text a.active:hover { text-decoration: underline; }

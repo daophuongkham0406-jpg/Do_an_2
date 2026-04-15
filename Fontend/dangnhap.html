@@ -4,10 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Đăng nhập & Đăng ký</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="dangnhap.css" />
   </head>
   <body>
@@ -15,14 +12,7 @@
       <div class="form-container sign-up">
         <form id="register-form">
           <a href="dangnhap.html" class="back-btn-inner">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="3"
-            >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             <span>Quay lại</span>
@@ -33,15 +23,7 @@
 
           <div class="form-row">
             <input type="text" id="reg-name" placeholder="Họ và tên" required />
-            <input
-              type="number"
-              id="reg-age"
-              placeholder="Tuổi"
-              min="1"
-              max="120"
-              style="width: 80px"
-              required
-            />
+            <input type="number" id="reg-age" placeholder="Tuổi" min="1" max="120" style="width: 80px" required />
           </div>
 
           <div class="gender-group">
@@ -59,34 +41,21 @@
             </div>
           </div>
 
-          <input
-            type="text"
-            id="reg-username"
-            placeholder="Tên đăng nhập"
-            required
-          />
-          <input
-            type="email"
-            id="reg-email"
-            placeholder="Địa chỉ Email (@gmail.com)"
-            required
-          />
+          <input type="text" id="reg-username" placeholder="Tên đăng nhập" required />
+          <input type="email" id="reg-email" placeholder="Địa chỉ Email (@gmail.com)" required />
+          
           <div class="password-wrap">
-            <input
-              type="password"
-              id="reg-pass"
-              placeholder="Mật khẩu (tối thiểu 8 ký tự)"
-              required
-            />
+            <input type="password" id="reg-pass" placeholder="Mật khẩu (Từ 8 ký tự, có chữ hoa, thường & số)" required />
+            <button type="button" class="eye-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
           </div>
 
           <div class="password-wrap">
-            <input
-              type="password"
-              id="reg-confirm"
-              placeholder="Xác nhận mật khẩu"
-              required
-            />
+            <input type="password" id="reg-confirm" placeholder="Xác nhận mật khẩu" required />
+            <button type="button" class="eye-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
           </div>
 
           <button type="submit">Đăng ký</button>
@@ -96,14 +65,7 @@
       <div class="form-container sign-in">
         <form id="login-form">
           <a href="index.html" class="back-btn-inner">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="3"
-            >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
             <span>Quay lại</span>
@@ -112,23 +74,16 @@
           <h1>Đăng nhập</h1>
           <p class="subtitle">Chào mừng trở lại!</p>
 
-          <input
-            type="email"
-            id="login-email"
-            placeholder="Địa chỉ Email"
-            required
-          />
+          <input type="email" id="login-email" placeholder="Địa chỉ Email" required />
 
           <div class="password-wrap">
-            <input
-              type="password"
-              id="login-pass"
-              placeholder="Mật khẩu"
-              required
-            />
+            <input type="password" id="login-pass" placeholder="Mật khẩu" required />
+            <button type="button" class="eye-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
           </div>
 
-          <div class="forgot"><a href="#">Quên mật khẩu?</a></div>
+          <div class="forgot"><a href="#" id="forgot-link">Quên mật khẩu?</a></div>
 
           <button type="submit">Đăng nhập</button>
         </form>
@@ -149,6 +104,54 @@
         </div>
       </div>
     </div>
+    
+    <div id="otp-modal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="close-modal" id="close-otp">&times;</span>
+        <h2>Xác thực Email</h2>
+        <p>Mã OTP 6 số đã được gửi đến <strong id="verify-email-display" style="color: var(--accent-yellow);"></strong>. Vui lòng kiểm tra hộp thư (cả thư rác).</p>
+        
+        <input type="text" id="reg-otp-input" class="otp-input" placeholder="Nhập mã OTP" maxlength="6">
+        <button id="btn-verify-reg" style="margin-top: 15px;">Xác nhận tài khoản</button>
+        <p class="resend-text">Chưa nhận được mã? <a href="#" id="resend-reg-otp">Gửi lại (<span id="reg-countdown">60</span>s)</a></p>
+      </div>
+    </div>
+
+    <div id="forgot-modal" class="modal-overlay">
+      <div class="modal-content">
+        <span class="close-modal" id="close-forgot">&times;</span>
+        
+        <div id="forgot-step-1">
+            <h2>Khôi phục mật khẩu</h2>
+            <p>Nhập email của bạn để nhận mã OTP đặt lại mật khẩu.</p>
+            <input type="email" id="forgot-email" placeholder="Nhập địa chỉ email của bạn" required>
+            <button id="btn-send-reset" style="margin-top: 15px;">Gửi mã OTP</button>
+        </div>
+
+        <div id="forgot-step-2" style="display: none;">
+            <h2>Đặt lại mật khẩu</h2>
+            <p>Nhập mã OTP vừa gửi tới email và mật khẩu mới của bạn.</p>
+            <input type="text" id="reset-otp" class="otp-input" placeholder="Nhập mã OTP" maxlength="6">
+            
+            <div class="password-wrap">
+                <input type="password" id="reset-new-pass" placeholder="Mật khẩu mới (Từ 8 ký tự, có chữ hoa, thường & số)" required>
+                <button type="button" class="eye-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+            </div>
+            
+            <div class="password-wrap">
+                <input type="password" id="reset-confirm-pass" placeholder="Xác nhận mật khẩu mới" required>
+                <button type="button" class="eye-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+            </div>
+            
+            <button id="btn-confirm-reset" style="margin-top: 15px;">Cập nhật mật khẩu</button>
+        </div>
+      </div>
+    </div>
+
     <div class="toast-wrap" id="toastWrap"></div>
     <script src="function_proc/dangnhap.js"></script>
     <script src="main.js?v=1"></script>
