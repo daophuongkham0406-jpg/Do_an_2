@@ -618,3 +618,32 @@ textarea {
     font-size: 36px;
   }
 }
+/* ====== CSS CHO NÚT NÂNG CẤP VIP ====== */
+.btn-vip {
+  background: linear-gradient(90deg, #ffd700, #ffa500);
+  color: #000;
+  font-weight: bold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 15px;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: block;
+  font-size: 16px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Hiệu ứng phóng to nhẹ khi di chuột vào nút */
+.btn-vip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(255, 165, 0, 0.3);
+}
+
+/* Hiệu ứng khi bấm vào nút */
+.btn-vip:active {
+  transform: translateY(0);
+}
