@@ -1606,11 +1606,14 @@ body {
   opacity: 1;
   pointer-events: all;
 }
-
+.modal-overlay.open .modal,
+.overlay.open .modal {
+  transform: translateY(0) scale(1);
+}
 .modal {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 5px;
   width: 100%;
   max-width: 560px;
   max-height: 88vh;
@@ -1627,10 +1630,7 @@ body {
   background: var(--border);
   border-radius: 2px;
 }
-.modal-overlay.open .modal,
-.overlay.open .modal {
-  transform: translateY(0) scale(1);
-}
+
 
 .modal-hero {
   position: relative;
@@ -2528,4 +2528,9 @@ h1.hero-heading {
 }
 .faq-list::-webkit-scrollbar-thumb:hover {
     background: #4da8ff; /* Chuyển màu xanh dương khi di chuột */
+}
+.card-label {
+    margin-top: 5px;
+    font-size: 15px;
+    margin-left: 10px;
 }
