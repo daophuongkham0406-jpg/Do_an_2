@@ -27,9 +27,9 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 MONGO_URI = os.getenv("MONGO_URI")
 
 MOMO_CONFIG = {
-    "partnerCode": "MOMOBKUN20220314",
-    "accessKey": "klm05ndA7YtS6p82",
-    "secretKey": "at67qH6v0vnB5oaA78w9H6nS7v7uA7uY",
+    "partnerCode": "MOMO",
+    "accessKey": "M8brj9K6E22vXoDB",
+    "secretKey": "nqQiVSgDMy809JoPF6OzP5OdPdBPcqeV",
     "endpoint": "https://test-payment.momo.vn/v2/gateway/api/create"
 }
 
@@ -79,56 +79,64 @@ except Exception as e:
 @app.route('/api/payment/create', methods=['POST'])
 def create_payment_url():
     try:
-        data = request.json
-        user_id = data.get('userId')  # Lấy ID user từ Frontend
-        amount = str(data.get('amount'))   # Số tiền cần thanh toán
+        MOMO_CONFIG = {
+            "partnerCode": "MOMOBKUN20180529",
+            "accessKey": "klm05TvNBzhg7h7j",
+            "secretKey": "at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa",
+            "endpoint": "https://test-payment.momo.vn/v2/gateway/api/create"
+        }
 
-        order_info = "Nang cap tai khoan FIT ME Premium"
-        order_id = f"FITME_{user_id}_{int(time.time())}" # Tạo mã đơn hàng duy nhất chứa userId
+        data = request.json
+        user_id = str(data.get('userId'))
+        
+        # 2. XỬ LÝ SỐ TIỀN CHUẨN (Chuỗi cho chữ ký, Số nguyên cho Body)
+        amount_str = "50000"
+        amount_int = 50000
+
+        order_info = "Nang cap VIP FIT ME"
+        order_id = f"FITME_{user_id}_{int(time.time())}"
         request_id = order_id
         
-        return_url = "http://localhost:3000/payment-success" # Nơi chuyển về sau khi quét QR xong
-        notify_url = "https://your-ngrok-domain.com/api/payment/callback" # Link để MoMo báo kết quả ngầm (cần dùng Ngrok)
+        return_url = "http://localhost:5173/Tcn.html" 
+        notify_url = "http://localhost:5173/Tcn.html"
 
-        # 1. Tạo chuỗi dữ liệu chuẩn MoMo
-        raw_signature = f"accessKey={MOMO_CONFIG['accessKey']}&amount={amount}&extraData=&ipnUrl={notify_url}&orderId={order_id}&orderInfo={order_info}&partnerCode={MOMO_CONFIG['partnerCode']}&redirectUrl={return_url}&requestId={request_id}&requestType=captureWallet"
+        # 3. TẠO CHỮ KÝ BẰNG CHUỖI (amount_str)
+        raw_signature = f"accessKey={MOMO_CONFIG['accessKey']}&amount={amount_str}&extraData=&ipnUrl={notify_url}&orderId={order_id}&orderInfo={order_info}&partnerCode={MOMO_CONFIG['partnerCode']}&redirectUrl={return_url}&requestId={request_id}&requestType=captureWallet"
         
-        # 2. Mã hóa chữ ký bảo mật SHA256
         signature = hmac.new(
             MOMO_CONFIG['secretKey'].encode('utf-8'),
             raw_signature.encode('utf-8'),
             hashlib.sha256
         ).hexdigest()
 
-        # 3. Đóng gói dữ liệu gửi đi
+        # 4. ĐÓNG GÓI DỮ LIỆU BẰNG SỐ NGUYÊN (amount_int)
         request_body = {
-            "partnerCode": str(MOMO_CONFIG['partnerCode']),
+            "partnerCode": MOMO_CONFIG['partnerCode'],
             "partnerName": "FIT ME",
-            "storeId": "FitMeStore",
-            "requestId": str(request_id),
-            "amount": str(amount),
-            "orderId": str(order_id),
-            "orderInfo": str(order_info),
-            "redirectUrl": str(return_url),
-            "ipnUrl": str(notify_url),
+            "storeId": "MomoTestStore",
+            "requestId": request_id,
+            "amount": amount_int,  # BẮT BUỘC PHẢI LÀ SỐ NGUYÊN
+            "orderId": order_id,
+            "orderInfo": order_info,
+            "redirectUrl": return_url,
+            "ipnUrl": notify_url,
+            "lang": "vi",
             "extraData": "",
             "requestType": "captureWallet",
-            "signature": str(signature),
-            "lang": "vi"
+            "signature": signature
         }
 
-        # 4. Gửi request lấy link thanh toán
+        # 5. GỌI API
         response = requests.post(MOMO_CONFIG['endpoint'], json=request_body)
         result = response.json()
 
-        # 5. Trả link mã QR về cho Frontend
         if "payUrl" in result:
             return jsonify({"payUrl": result["payUrl"]}), 200
         else:
-            return jsonify({"message": "Lỗi từ MoMo", "error": result}), 400
+            return jsonify({"message": "Loi tu MoMo", "error": result}), 400
 
     except Exception as e:
-        return jsonify({"message": "Lỗi tạo thanh toán", "error": str(e)}), 500
+        return jsonify({"message": "Loi tao thanh toan", "error": str(e)}), 500
 
 @app.route('/api/payment/callback', methods=['POST'])
 def momo_callback():
