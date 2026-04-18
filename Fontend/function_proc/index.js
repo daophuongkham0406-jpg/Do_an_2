@@ -27,30 +27,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 // 2. Trang trí CSS cho nút
                 Object.assign(adminBtn.style, {
                     padding: "6px 14px", 
-                    backgroundColor: "#ff6060", 
-                    color: "#ffffff",
-                    border: "1px solid #ff6060",
+                    background: "transparent",          // đổi từ đỏ -> trong suốt
+                    color: "var(--accent)",             // màu chữ theo accent
+                    border: "1px solid var(--accent)",  // viền theo accent
                     borderRadius: "6px", 
                     fontFamily: "inherit",
                     fontSize: "13px",
                     fontWeight: "600",
                     cursor: "pointer",
-                    marginLeft: "12px", // Đẩy nút cách xa Mặt trăng ra một chút
-                    transition: "all 0.2s ease",
+                    marginLeft: "12px",
+                    transition: "0.3s",                 // dùng luôn của dưới
                     display: "flex",
                     alignItems: "center",
                     gap: "6px"
                 });
-
                 // Hiệu ứng di chuột
                 adminBtn.onmouseover = () => { 
-                    adminBtn.style.backgroundColor = "transparent"; 
-                    adminBtn.style.color = "#ff6060"; 
+                    adminBtn.style.backgroundColor = "#5a79e7"; 
+                    adminBtn.style.color = "#324792"; 
                 };
-                adminBtn.onmouseout = () => { 
-                    adminBtn.style.backgroundColor = "#ff6060"; 
-                    adminBtn.style.color = "#ffffff"; 
-                };
+                
 
                 // 3. Tìm nút Sáng/Tối và chèn vào BÊN PHẢI
                 const themeBtn = document.getElementById("themeToggle");
