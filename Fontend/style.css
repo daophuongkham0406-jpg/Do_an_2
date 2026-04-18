@@ -22,8 +22,8 @@
    2. BẢNG MÀU GIAO DIỆN SÁNG (LIGHT MODE)
 ========================================= */
 body.light-mode {
-  --bg-primary: #f8fafc;
-  --bg-secondary: #f1f5f9;
+  --bg-primary: #ced6dd;
+  --bg-secondary: #d2dae0;
   --bg-card: #ffffff;
   --bg-card-hover: #f1f5f9;
   --accent: #0284c7;
