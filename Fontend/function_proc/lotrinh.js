@@ -966,43 +966,124 @@ async function confirmAddFoodNutrition(cal, prot, carbs, fat) {
 // ════════════════════════════════════════
 // LƯU DINH DƯỠNG
 // ════════════════════════════════════════
+// async function saveNutritionToServer(cal, prot, carbs, fat, note) {
+//   try {
+//     const res = await fetch(`${AI_SERVER_URL}/api/save-nutrition`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({
+//         userId: USER_ID,
+//         date: TODAY,
+//         calories: cal,
+//         protein: prot,
+//         carbs,
+//         fat,
+//         note,
+//       }),
+//     });
+//     const data = await res.json();
+//     if (data.success && data.today) {
+//       todayNutrition = data.today;
+//       updateNutritionUI();
+//     }
+//   } catch (e) {
+//     todayNutrition.calories = (todayNutrition.calories || 0) + cal;
+//     todayNutrition.protein = (todayNutrition.protein || 0) + prot;
+//     updateNutritionUI();
+//   }
+// }
+// ════════════════════════════════════════
+// LƯU DINH DƯỠNG (Đã nâng cấp chống lỗi 400)
+// ════════════════════════════════════════
 async function saveNutritionToServer(cal, prot, carbs, fat, note) {
   try {
+    // 1. Chuẩn bị gói hàng (Gửi cả 2 kiểu tên biến phòng hờ Python bắt bẻ)
+    const payload = {
+      userId: USER_ID,
+      user_id: USER_ID, // Thêm dòng này để fix lỗi 400 cực hiệu quả!
+      date: getCurrentDateStr(), 
+      calories: cal,
+      protein: prot,
+      carbs: carbs,
+      fat: fat,
+      note: note,
+    };
+    
+    console.log("📤 Đang gửi dữ liệu ăn uống lên:", payload);
+
     const res = await fetch(`${AI_SERVER_URL}/api/save-nutrition`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: USER_ID,
-        date: TODAY,
-        calories: cal,
-        protein: prot,
-        carbs,
-        fat,
-        note,
-      }),
+      body: JSON.stringify(payload),
     });
+
     const data = await res.json();
+
+    // 2. Nếu Python báo lỗi (400) thì sẽ hiện thông báo đỏ lên màn hình
+    if (!res.ok || !data.success) {
+      console.error("❌ Bị Python từ chối (400):", data);
+      showToast("❌ Lỗi lưu DB: " + (data.error || data.message || "Sai định dạng dữ liệu"), "error");
+      return; // Dừng lại, không cập nhật giao diện
+    }
+
+    // 3. Nếu thành công thì mới cập nhật thanh UI
     if (data.success && data.today) {
       todayNutrition = data.today;
       updateNutritionUI();
+      showToast("✅ Đã cộng thêm dinh dưỡng!", "success");
     }
   } catch (e) {
-    todayNutrition.calories = (todayNutrition.calories || 0) + cal;
-    todayNutrition.protein = (todayNutrition.protein || 0) + prot;
-    updateNutritionUI();
+    console.error("❌ Lỗi mất mạng hoặc sập server:", e);
+    showToast("❌ Lỗi mạng: Không thể lưu dinh dưỡng!", "error");
   }
 }
 
+// async function loadTodayNutrition() {
+//   try {
+//     const res = await fetch(
+//       `${AI_SERVER_URL}/api/get-nutrition?userId=${USER_ID}&date=${TODAY}`,
+//     );
+//     const data = await res.json();
+//     todayNutrition = data;
+//     updateNutritionUI();
+//   } catch (e) {
+//     console.warn("Không tải được dinh dưỡng hôm nay");
+//   }
+// }
 async function loadTodayNutrition() {
   try {
+    // 1. Dùng getCurrentDateStr() thay vì TODAY để ép lấy ngày thực tế
     const res = await fetch(
-      `${AI_SERVER_URL}/api/get-nutrition?userId=${USER_ID}&date=${TODAY}`,
+      `${AI_SERVER_URL}/api/get-nutrition?userId=${USER_ID}&date=${getCurrentDateStr()}`
     );
+    
+    // Nếu server báo lỗi (ví dụ 404 do ngày mới chưa có ai nhập), tự động nhảy xuống catch
+    if (!res.ok) throw new Error("Chưa có dữ liệu ngày mới");
+
     const data = await res.json();
-    todayNutrition = data;
+    
+    // 2. Chặn trường hợp server trả về success: false
+    if (data.success === false || data.calories === undefined) {
+      todayNutrition = { calories: 0, protein: 0, carbs: 0, fat: 0, is_locked: false };
+    } else {
+      todayNutrition = data; // Nhận dữ liệu thực tế nếu có
+    }
+    
     updateNutritionUI();
   } catch (e) {
-    console.warn("Không tải được dinh dưỡng hôm nay");
+    console.warn("✨ Đã qua ngày mới hoặc chưa có dữ liệu. Reset bảng dinh dưỡng về 0.");
+    
+    // 3. ĐOẠN QUAN TRỌNG NHẤT: Ép biến lưu trữ về 0
+    todayNutrition = { 
+        calories: 0, 
+        protein: 0, 
+        carbs: 0, 
+        fat: 0, 
+        is_locked: false 
+    };
+    
+    // 4. Vẽ lại giao diện với các con số 0 vừa được gán
+    updateNutritionUI();
   }
 }
 
@@ -1609,3 +1690,33 @@ function isDayUnlocked(dayNumber) {
   // Ngày 1: diff = 0. Ngày 2: diff = 1...
   return dayNumber - 1 <= diffDays;
 }
+// ════════════════════════════════════════
+// HÀM LẤY NGÀY HIỆN TẠI & TỰ ĐỘNG RESET GIAO DIỆN KHI QUA ĐÊM
+// ════════════════════════════════════════
+
+// 1. Cung cấp hàm lấy giờ thực tế (Bắt buộc phải có)
+function getCurrentDateStr() {
+    // Ép múi giờ về giờ Việt Nam (hoặc múi giờ local của máy)
+    const tzOffset = new Date().getTimezoneOffset() * 60000;
+    const localISOTime = new Date(Date.now() - tzOffset).toISOString().slice(0, -1);
+    return localISOTime.split("T")[0];
+}
+
+// 2. Logic lén kiểm tra đồng hồ mỗi 1 phút
+let lastLoadedDate = getCurrentDateStr();
+console.log("⏰ Đồng hồ hệ thống hiện tại:", lastLoadedDate);
+
+setInterval(() => {
+    const liveDate = getCurrentDateStr();
+    
+    // Nếu phát hiện đồng hồ hệ thống đã nhảy sang ngày mới
+    if (liveDate !== lastLoadedDate) {
+        console.log("🕛 Đã qua ngày mới! Tự động reset bảng dinh dưỡng...");
+        lastLoadedDate = liveDate; // Cập nhật lại ngày chốt
+        
+        // Gọi lại hàm tải dinh dưỡng để reset thanh Bar về 0
+        if (typeof loadTodayNutrition === "function") {
+            loadTodayNutrition(); 
+        }
+    }
+}, 60000);
