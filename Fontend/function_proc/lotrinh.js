@@ -468,30 +468,56 @@ function renderPlan(planData, container, progress = null) {
         checkinExercise(currentPlanId, day.day_number, "RestDay", !restBtn.classList.contains("completed"), restBtn, dayCard, true);
       });
     } else {
-      day.exercises.forEach(ex => {
-        const done  = exProgress[ex.name] || false;
-        const exEl  = document.createElement("div");
-        exEl.className = `routine-item${done ? " completed" : ""}`;
-        exEl.innerHTML = `
-          <div class="ex-checkbox-wrap">
-            <div class="ex-checkbox">${done ? "✓" : ""}</div>
-          </div>
-          <div class="routine-item-info">
-            <h4>${ex.name}</h4>
-            <div class="tags">
-              <span class="tag tag-muscle">${ex.muscle || "Toàn thân"}</span>
-              <span class="tag tag-sets">${ex.sets} sets × ${ex.reps} reps</span>
-              <span class="tag tag-rest">⏱ ${ex.rest}s</span>
-            </div>
-          </div>
-          <button class="btn-ex-detail" title="Xem chi tiết">›</button>`;
-        exEl.querySelector(".ex-checkbox-wrap").addEventListener("click", e => {
-          e.stopPropagation();
-          checkinExercise(currentPlanId, day.day_number, ex.name, !exEl.classList.contains("completed"), exEl, dayCard, false);
-        });
-        exEl.querySelector(".routine-item-info").addEventListener("click", e => { e.stopPropagation(); openExerciseModal(ex); });
-        exEl.querySelector(".btn-ex-detail").addEventListener("click", e => { e.stopPropagation(); openExerciseModal(ex); });
-        body.appendChild(exEl);
+            // ... trong hàm renderPlan, phần xử lý ngày tập (else của day.is_rest)
+      day.exercises.forEach((ex) => {
+          const done = exProgress[ex.name] || false;
+          const exEl = document.createElement("div");
+          
+          // Nếu chưa áp dụng lộ trình (currentPlanId là null), thêm class 'preview-only'
+          const isPreview = !currentPlanId;
+          exEl.className = `routine-item${done ? " completed" : ""}${isPreview ? " preview-only" : ""}`;
+          
+          exEl.innerHTML = `
+              <div class="ex-checkbox-wrap">
+                  <div class="ex-checkbox">${done ? "✓" : ""}</div>
+              </div>
+              <div class="routine-item-info">
+                  <h4>${ex.name}</h4>
+                  <div class="tags">
+                      <span class="tag tag-muscle">${ex.muscle || "Toàn thân"}</span>
+                      <span class="tag tag-sets">${ex.sets} sets × ${ex.reps} reps</span>
+                      <span class="tag tag-rest">⏱ ${ex.rest}s</span>
+                  </div>
+              </div>
+              <button class="btn-ex-detail" title="Xem chi tiết">›</button>`;
+
+          // XỬ LÝ SỰ KIỆN CLICK CHECKBOX
+          exEl.querySelector(".ex-checkbox-wrap").addEventListener("click", (e) => {
+              e.stopPropagation();
+              
+              // NẾU LÀ BẢN XEM TRƯỚC -> HIỆN THÔNG BÁO, KHÔNG CHO CLICK
+              if (isPreview) {
+                  showToast("📍 Nhấn 'Áp dụng lộ trình này' để bắt đầu tập và tích hoàn thành!", "error");
+                  return;
+              }
+
+              // Nếu đã áp dụng rồi thì chạy bình thường
+              checkinExercise(
+                  currentPlanId,
+                  day.day_number,
+                  ex.name,
+                  !exEl.classList.contains("completed"),
+                  exEl,
+                  dayCard,
+                  false
+              );
+          });
+
+          // Xem chi tiết thì vẫn cho xem bình thường ở cả 2 chế độ
+          exEl.querySelector(".routine-item-info").onclick = (e) => { e.stopPropagation(); openExerciseModal(ex); };
+          exEl.querySelector(".btn-ex-detail").onclick = (e) => { e.stopPropagation(); openExerciseModal(ex); };
+
+          body.appendChild(exEl);
       });
     }
 

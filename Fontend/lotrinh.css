@@ -58,58 +58,77 @@
   border-color: var(--accent);
 }
 
-/* ── THÔNG SỐ CƠ THỂ ── */
+/* Container chính chứa 3 ô */
 .body-stats-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px; /* Khoảng cách giữa các ô */
+    margin-top: 10px;
+    align-items: flex-start;
 }
+
+/* Từng cột (Chiều cao, Cân nặng, Tuổi) */
 .stat-input-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+    flex: 1; /* Quan trọng: Giúp 3 ô luôn bằng nhau */
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
-.stat-input-wrap .stat-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  text-align: center;
-}
+
+/* Ô chứa Input và Đơn vị */
 .stat-field {
-  display: flex;
-  align-items: center;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: border-color 0.2s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--bg-secondary, #111);
+    border: 1px solid var(--border, #2a2a2a);
+    border-radius: 10px;
+    padding: 2px 8px; /* Padding gọn lại */
+    transition: all 0.2s ease;
 }
+
 .stat-field:focus-within {
-  border-color: var(--accent);
+    border-color: var(--accent, #e8ff47);
+    box-shadow: 0 0 0 2px rgba(232, 255, 71, 0.1);
 }
+
+/* Thẻ Input số */
 .stat-field input {
-  flex: 1;
-  min-width: 0;
-  padding: 11px 8px 11px 12px;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text-primary);
-  font-size: 13px;
-  font-family: "Inter", sans-serif;
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px 2px;
+    text-align: center; /* Căn giữa con số */
 }
-.stat-field input::-webkit-inner-spin-button,
-.stat-field input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-}
+
+/* Đơn vị (cm, kg, tuổi) */
 .stat-unit {
-  padding: 0 10px 0 2px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  white-space: nowrap;
+    font-size: 11px;
+    color: #666;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-left: 4px;
+}
+
+/* Nhãn chữ bên dưới (Chiều cao, Cân nặng...) */
+.stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--text-muted, #888);
+    text-align: center;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+/* Xóa mũi tên tăng giảm mặc định của input number để nhìn sạch hơn */
+.stat-field input::-webkit-outer-spin-button,
+.stat-field input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* ── CHỌN ĐỘ DÀI LỘ TRÌNH ── */
@@ -669,4 +688,21 @@
     font-weight: 600;
     font-size: 13px;
     text-align: center;
+}
+/* Làm mờ nhẹ checkbox khi ở chế độ xem trước */
+.routine-item.preview-only .ex-checkbox {
+    border-color: #333;
+    cursor: not-allowed; /* Hiện icon cấm click */
+    opacity: 0.6;
+}
+
+/* Hiệu ứng khi hover vào bài tập ở chế độ xem trước */
+.routine-item.preview-only:hover {
+    background: rgba(255, 255, 255, 0.02); /* Vẫn cho hover nhẹ nhưng không hiện active */
+}
+
+/* Ẩn dấu tích nếu lỡ có dữ liệu rác */
+.routine-item.preview-only .ex-checkbox {
+    color: transparent !important;
+    background: transparent !important;
 }
