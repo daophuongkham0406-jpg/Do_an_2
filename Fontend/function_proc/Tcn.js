@@ -590,8 +590,23 @@ async function fetchTcnOverview() {
     const res = await fetch(`${API_SERVER}/api/tcn/overview?userId=${CURRENT_UID}`).then(r => r.json());
     if (res.success) {
       const d = res.data;
+      
       safeSetText("profileName", d.fullName.toUpperCase());
-      safeSetText("avatarEl", d.fullName.charAt(0).toUpperCase());
+      
+      // ---- ĐOẠN XỬ LÝ AVATAR MỚI THÊM VÀO ĐÂY ----
+      const avatarEl = document.getElementById("avatarEl");
+      if (d.avatar) {
+          // Nếu có ảnh trong DB thì set làm background
+          avatarEl.style.backgroundImage = `url(${d.avatar})`;
+          avatarEl.textContent = ""; 
+      } else {
+          // Nếu chưa có thì lấy chữ cái đầu của Tên
+          avatarEl.textContent = d.fullName.charAt(0).toUpperCase();
+          avatarEl.style.backgroundImage = "none";
+      }
+      setupAvatarUpload(); // Gọi hàm bật tính năng upload
+      // ---------------------------------------------
+
       safeSetText("metaAge", d.age);
       safeSetText("metaWeight", d.weight);
       safeSetText("metaHeight", d.height);
@@ -1002,3 +1017,93 @@ async function loadProfileActivePlan() {
   }
 }
 loadProfileActivePlan();
+
+// ════════════════════════════════════════════════════════
+// TÍNH NĂNG CẬP NHẬT ẢNH ĐẠI DIỆN (AVATAR UPLOAD)
+// ════════════════════════════════════════════════════════
+function setupAvatarUpload() {
+    const avatarEl = document.getElementById("avatarEl");
+    const avatarWrap = document.querySelector(".avatar-wrap");
+
+    // Tránh việc tạo nút bị trùng lặp khi load lại hàm
+    if (!avatarEl || !avatarWrap || document.getElementById('avatarInput')) return;
+
+    // 1. Style lại khung avatar để nó có thể chứa ảnh
+    avatarEl.style.position = "relative";
+    avatarEl.style.overflow = "hidden";
+    avatarEl.style.backgroundSize = "cover";
+    avatarEl.style.backgroundPosition = "center";
+    avatarEl.style.cursor = "pointer";
+
+    // 2. Tạo màng đen (Overlay) hiện chữ "📷 Đổi ảnh" khi hover
+    const overlay = document.createElement("div");
+    overlay.innerHTML = "📷 Đổi ảnh";
+    overlay.style.cssText = `
+        position: absolute; inset: 0; background: rgba(0,0,0,0.6); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px; font-weight: bold; opacity: 0; transition: 0.3s; pointer-events: none;
+    `;
+    avatarEl.appendChild(overlay);
+
+    avatarEl.onmouseover = () => overlay.style.opacity = "1";
+    avatarEl.onmouseout = () => overlay.style.opacity = "0";
+
+    // 3. Tạo thẻ <input type="file"> bị ẩn
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.id = "avatarInput";
+    fileInput.accept = "image/png, image/jpeg, image/webp"; // Chỉ nhận ảnh
+    fileInput.style.display = "none";
+    avatarWrap.appendChild(fileInput);
+
+    // 4. Click vào avatar thì tự động mở cửa sổ chọn ảnh
+    avatarEl.onclick = () => fileInput.click();
+
+    // 5. Xử lý khi người dùng chọn ảnh xong
+    fileInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Giới hạn dung lượng (2MB) để không làm nặng Database
+        if (file.size > 2 * 1024 * 1024) {
+            toast("❌ Ảnh quá lớn! Vui lòng chọn ảnh dưới 2MB", "err");
+            return;
+        }
+
+        // Đọc ảnh và chuyển thành chuỗi Base64
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            const base64String = event.target.result;
+
+            // Preview: Hiện ảnh lên màn hình ngay lập tức
+            avatarEl.style.backgroundImage = `url(${base64String})`;
+            // Ẩn chữ cái mặc định đi (Ví dụ chữ 'N')
+            Array.from(avatarEl.childNodes).forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) node.textContent = "";
+            });
+
+            // Gửi chuỗi ảnh lên Server
+            try {
+                toast("⏳ Đang lưu ảnh đại diện...", "inf");
+                const res = await fetch(`${API_SERVER}/api/profile/update-avatar`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId: CURRENT_UID, avatar: base64String })
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    toast("✅ Đã cập nhật ảnh đại diện!", "ok");
+                    // Lưu luôn vào localStorage để qua trang khác vẫn hiện
+                    localUser.avatar = base64String;
+                    localStorage.setItem("loggedInUser", JSON.stringify(localUser));
+                } else {
+                    toast("❌ Lỗi: " + data.error, "err");
+                }
+            } catch (err) {
+                toast("❌ Lỗi mạng, không thể lưu ảnh!", "err");
+            }
+        };
+        reader.readAsDataURL(file);
+    };
+}

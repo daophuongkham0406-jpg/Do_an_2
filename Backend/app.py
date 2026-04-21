@@ -11,6 +11,7 @@ import google.generativeai as genai
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime
+from avatar import avatar_bp
 
 # --- Import các Blueprint hiện có ---
 from dangnhap import auth_bp
@@ -56,6 +57,7 @@ app.register_blueprint(profile_bp, url_prefix='/api/profile')
 app.register_blueprint(baitap_bp,  url_prefix='/api/exercises')
 app.register_blueprint(user_bp,    url_prefix='/api/users')
 app.register_blueprint(plan_bp,    url_prefix='/api/plans')
+app.register_blueprint(avatar_bp, url_prefix='/api/profile')
 app.register_blueprint(trangchu_bp)
 app.register_blueprint(cauhoi_bp)
 app.register_blueprint(tcn_bp)
