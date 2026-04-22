@@ -1403,6 +1403,8 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+
+  z-index: 10 !important; /* Ma thuật ở đây: Đẩy nó nổi lên trên mặt nước */
 }
 .card-glow {
   position: absolute;
@@ -1469,6 +1471,7 @@ body {
     color 0.2s,
     transform 0.2s;
   line-height: 1;
+  z-index: 10 !important; /* Đảm bảo nó luôn nổi trên mặt nước */
 }
 .card-fav:hover,
 .card-fav.on {

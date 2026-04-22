@@ -562,6 +562,18 @@
                 placeholder="VD: Barbell Bench Press"
               />
             </div>
+            <div class="form-row span2">
+              <label>Ảnh minh họa bài tập (Tùy chọn)</label>
+              <div class="image-upload-wrapper" onclick="document.getElementById('f_image_upload').click()">
+                  <img id="f_image_preview" src="" style="display:none;" />
+                  <div class="upload-placeholder" id="f_image_placeholder">
+                      <span style="font-size: 24px; margin-bottom: 8px;">📸</span>
+                      <span>Click để tải ảnh lên</span>
+                      <small>Định dạng: JPG, PNG, WEBP (Dưới 2MB)</small>
+                  </div>
+              </div>
+              <input type="file" id="f_image_upload" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleExerciseImageUpload(event)">
+            </div>
             <div class="form-row">
               <label>Nhóm cơ chính <span class="req">*</span></label>
               <select id="f_muscle">

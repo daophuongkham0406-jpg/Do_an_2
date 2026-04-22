@@ -50,9 +50,12 @@ function showErrorToast(error, actionName) {
 async function apiGet() {
     try {
         const r = await fetch(API_URL, { headers: getHeaders() });
-        return await checkResponse(r);
+        const res = await checkResponse(r);
+        
+        // MA THUẬT Ở ĐÂY: Nếu API trả về mảng thì lấy luôn, nếu trả về Object thì bóc lấy lõi 'data'
+        return Array.isArray(res) ? res : (res.data || []);
     } catch (e) {
-        showErrorToast(e, 'Tai danh sach bai tap');
+        showErrorToast(e, 'Tải danh sách bài tập');
         return [];
     }
 }
@@ -273,6 +276,27 @@ function renderUserTable() {
 // 6. XỬ LÝ FORM THÊM/SỬA BÀI TẬP VÀ XÓA CHUNG
 // ════════════════════════════════════════════════════════════════
 // (Giữ nguyên toàn bộ logic mở form, xóa bài tập, xóa user của bạn)
+let currentExImage = ''; // Biến toàn cục lưu chuỗi ảnh Base64
+
+function handleExerciseImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+        showToast("❌ Ảnh quá lớn! Vui lòng chọn ảnh dưới 2MB", "error");
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        currentExImage = e.target.result;
+        const preview = document.getElementById('f_image_preview');
+        const placeholder = document.getElementById('f_image_placeholder');
+        preview.src = currentExImage;
+        preview.style.display = 'block';
+        placeholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
 function openAdd() {
     editingId = null;
     document.getElementById('formTitle').textContent = 'THEM BAI TAP MOI';
@@ -301,6 +325,13 @@ function openEdit(id) {
     (ex.tips || []).forEach(t => addTip(t));
     document.getElementById('formOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
+    // Dán ngay dưới dòng document.getElementById('f_rest').value = ex.rest || '';
+    currentExImage = ex.image || '';
+    if (currentExImage) {
+        document.getElementById('f_image_preview').src = currentExImage;
+        document.getElementById('f_image_preview').style.display = 'block';
+        document.getElementById('f_image_placeholder').style.display = 'none';
+    }
 }
 
 function clearForm() {
@@ -309,6 +340,14 @@ function clearForm() {
         if (el) el.value = '';
     });
     ['secList', 'stepList', 'tipList'].forEach(id => document.getElementById(id).innerHTML = '');
+    currentExImage = '';
+    const preview = document.getElementById('f_image_preview');
+    if (preview) {
+        preview.style.display = 'none';
+        preview.src = '';
+        document.getElementById('f_image_placeholder').style.display = 'flex';
+        document.getElementById('f_image_upload').value = '';
+    }
 }
 
 function closeForm() {
@@ -372,7 +411,8 @@ async function submitForm() {
             sets: document.getElementById('f_sets') ? document.getElementById('f_sets').value.trim() : '',
             reps: document.getElementById('f_reps') ? document.getElementById('f_reps').value.trim() : '',
             rest: document.getElementById('f_rest') ? document.getElementById('f_rest').value.trim() : '',
-            sec, steps, tips
+            sec, steps, tips,
+            image: currentExImage
         };
 
         if (editingId) {

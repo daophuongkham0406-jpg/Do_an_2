@@ -177,11 +177,21 @@ function render() {
         return;
     }
     
-    g.innerHTML = data.map((e, i) => `
+    g.innerHTML = data.map((e, i) => {
+    // 1. Phủ gradient đen 100%, còn ảnh thì 'contain' (thu nhỏ hiển thị toàn bộ) không lặp lại
+    const bgStyle = e.image 
+        ? `background-image: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(17,17,20,0.9) 100%), url(${e.image}); background-size: 100% 100%, contain; background-repeat: no-repeat, no-repeat; background-position: center, center;` 
+        : '';
+
+    // 2. Nếu đã có ảnh thì ẩn cái icon to đùng đi
+    const bigIconHtml = e.image ? '' : `<span class="big-icon">${e.icon || '🏋️'}</span>`;
+
+    // 3. Trả về khối HTML (Lưu ý: Đã thêm style="${bgStyle}" vào card-img)
+    return `
         <div class="ex-card" style="animation-delay:${i * 35}ms" onclick="openModal('${e.id}')">
-            <div class="card-img">
+            <div class="card-img" style="${bgStyle}">
                 <div class="card-glow"></div>
-                <span class="big-icon">${e.icon || '🏋️'}</span>
+                ${bigIconHtml}
                 <span class="card-badge ${diffCls[e.diff] || 'badge-i'}">${diffLabel[e.diff] || e.diff}</span>
                 <span class="card-fav ${favs.has(e.id) ? 'on' : ''}" onclick="toggleFav(event,'${e.id}')">♡</span>
             </div>
@@ -196,7 +206,8 @@ function render() {
             </div>
             <div class="card-action-list"><span class="list-arr">›</span></div>
         </div>
-    `).join("");
+    `;
+}).join("");
     
     renderActiveTags();
 }
@@ -278,7 +289,29 @@ function openModal(id) {
     if (!ex) return;
     currentEx = ex;
 
-    document.getElementById("mIcon").textContent = ex.icon || '🏋️';
+    // ════════════════════════════════════════════════
+    // 1. XỬ LÝ ẢNH MINH HỌA (BACKGROUND MODAL)
+    // ════════════════════════════════════════════════
+    const heroEl = document.querySelector('.modal-hero');
+    const iconEl = document.getElementById("mIcon");
+    
+    if (ex.image) {
+        heroEl.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(22,22,26,1)), url(${ex.image})`;
+        
+        // MA THUẬT Ở ĐÂY: Gradient thì cover (phủ kín), còn ảnh thì contain (hiển thị toàn bộ)
+        heroEl.style.backgroundSize = '100% 100%, contain';
+        heroEl.style.backgroundRepeat = 'no-repeat, no-repeat';
+        heroEl.style.backgroundPosition = 'center, center';
+        iconEl.innerHTML = ''; 
+    } else {
+        // Không có ảnh -> Xóa nền, trả lại icon chữ
+        heroEl.style.backgroundImage = ''; 
+        iconEl.textContent = ex.icon || '🏋️';
+    }
+
+    // ════════════════════════════════════════════════
+    // 2. GẮN THÔNG SỐ CƠ BẢN
+    // ════════════════════════════════════════════════
     document.getElementById("mMuscle").textContent = (ex.muscle || "").toUpperCase();
     document.getElementById("mName").textContent = ex.name;
     document.getElementById("mBadges").innerHTML = `
@@ -291,12 +324,32 @@ function openModal(id) {
         <div class="m-stat"><div class="m-stat-num">${ex.rest}</div><div class="m-stat-lbl">Nghỉ</div></div>
     `;
 
-    // Xóa đoạn gọi s.t và s.d đi, chỉ gọi thẳng chữ s ra thôi!
-    const stepsHtml = (ex.steps && ex.steps.length > 0) 
-        ? ex.steps.map((s, i) => `<li class="step"><span class="step-num">0${i + 1}</span><div class="step-text">${s}</div></li>`).join("")
-        : `<p style="color:var(--text3); font-size:14px;">Chưa có hướng dẫn.</p>`;
+    // ════════════════════════════════════════════════
+    // 3. FIX LỖI [object Object] HIỂN THỊ TRONG HƯỚNG DẪN
+    // ════════════════════════════════════════════════
+    let stepsHtml = `<p style="color:var(--text3); font-size:14px;">Chưa có hướng dẫn.</p>`;
+    if (ex.steps && ex.steps.length > 0) {
+        stepsHtml = ex.steps.map((s, i) => {
+            let title = '', desc = '';
+            // Kiểm tra xem s là một chuỗi bình thường hay là 1 Object {t: tiêu đề, d: mô tả}
+            if (typeof s === 'object') {
+                title = s.t ? `<div style="font-weight: 600; color: var(--accent); margin-bottom: 4px;">${s.t}</div>` : '';
+                desc = s.d || '';
+            } else {
+                desc = s; // Chống cháy nếu dữ liệu cũ là string
+            }
+            return `
+            <li class="step">
+                <span class="step-num">0${i + 1}</span>
+                <div class="step-text">${title}${desc}</div>
+            </li>`;
+        }).join("");
+    }
     document.getElementById("pane-steps").innerHTML = `<ol class="steps">${stepsHtml}</ol>`;
 
+    // ════════════════════════════════════════════════
+    // 4. CƠ PHỤ, LƯU Ý & TRẠNG THÁI MODAL
+    // ════════════════════════════════════════════════
     const allM = [{ role: "Cơ chính", name: ex.muscle }];
     if(ex.sec) ex.sec.forEach(s => allM.push({ role: "Cơ phụ", name: s }));
     document.getElementById("pane-muscles").innerHTML = `<div class="muscle-groups">${
@@ -310,6 +363,7 @@ function openModal(id) {
 
     document.getElementById("mFavBtn").innerHTML = favs.has(ex.id) ? "❤️  Đã yêu thích" : "♡  Yêu thích";
 
+    // Xử lý chuyển tab & Mở bảng
     document.querySelectorAll(".m-tab").forEach(t => t.classList.remove("on"));
     document.querySelectorAll(".tab-pane").forEach(t => t.classList.remove("on"));
     document.querySelector(".m-tab[data-t='steps']").classList.add("on");

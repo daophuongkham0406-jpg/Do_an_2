@@ -221,7 +221,7 @@
           <div class="tab-pane" id="pane-tips"></div>
           <div class="modal-footer">
             <button class="btn-acc">＋ Thêm vào lộ trình</button>
-            <button class="btn-ghost" id="mFavBtn">♡ Yêu thích</button>
+            <button class="btn-acc" id="mFavBtn">♡ Yêu thích</button>
           </div>
         </div>
       </div>
@@ -269,52 +269,6 @@
     <script src="function_proc/bt.js"></script>
     <script src="function_proc/check_login.js"></script>
     <script src="Chat.js"></script>
-    <script>
-      AI_SERVER_URL = "http://localhost:5001";
-      document.addEventListener("DOMContentLoaded", () => {
-        loadExercises();
-      });
-
-      async function loadExercises() {
-        const container = document.getElementById("exercise-list");
-        if (!container) return;
-
-        container.innerHTML = "<p>Đang tải thư viện bài tập...</p>";
-
-        try {
-          const response = await fetch(`${AI_SERVER_URL}/api/get-exercises`);
-          const result = await response.json();
-
-          if (result.success && result.data.length > 0) {
-            container.innerHTML = ""; // Xóa dòng chữ đang tải
-
-            result.data.forEach((ex) => {
-              const card = document.createElement("div");
-              card.className = "exercise-card"; // Bạn hãy thêm CSS cho class này
-              card.innerHTML = `
-                    <div class="ex-info">
-                        <h3>${ex.name}</h3>
-                        <span class="badge">${ex.muscle_group}</span>
-                        <p>${ex.description || "Không có mô tả."}</p>
-                        <div class="ex-meta">
-                            <span>Sets: ${ex.default_sets}</span> | 
-                            <span>Reps: ${ex.default_reps}</span>
-                        </div>
-                    </div>
-                `;
-              container.appendChild(card);
-            });
-          } else {
-            container.innerHTML =
-              "<p>Thư viện bài tập trống. Hãy tạo lộ trình AI để cập nhật bài tập mới!</p>";
-          }
-        } catch (error) {
-          console.error("Lỗi:", error);
-          container.innerHTML =
-            "<p>Không thể kết nối máy chủ để lấy bài tập.</p>";
-        }
-      }
-    </script>
     <script src="function_proc/index.js"></script>
     <script src="main.js?v=1"></script>
   </body>

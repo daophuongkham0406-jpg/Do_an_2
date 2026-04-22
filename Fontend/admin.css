@@ -270,3 +270,40 @@ textarea{resize:vertical;min-height:80px;line-height:1.6;}
     background: rgba(255, 255, 255, 0.2);
     color: #fff;
 }
+/* ── KHUNG UPLOAD ẢNH BÀI TẬP ── */
+.image-upload-wrapper {
+  width: 100%;
+  height: 180px;
+  background: var(--bg3);
+  border: 2px dashed var(--border2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+  margin-bottom: 10px;
+}
+.image-upload-wrapper:hover {
+  border-color: var(--accent);
+}
+#f_image_preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Giúp ảnh phủ kín khung mà không bị méo */
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1; /* Ảnh nằm ở lớp dưới */
+}
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text3);
+  z-index: 2; /* Chữ hướng dẫn nằm trên ảnh (khi chưa có ảnh) */
+}
+.upload-placeholder span { font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+.upload-placeholder small { font-size: 11px; }
