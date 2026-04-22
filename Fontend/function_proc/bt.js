@@ -21,14 +21,29 @@ async function fetchExercises() {
     const grid = document.getElementById("exerciseGrid");
     grid.innerHTML = `<div class="no-results"><p>Đang tải dữ liệu từ máy chủ...</p></div>`;
     
+    // ── Lấy userId từ localStorage ──
+    const userId = localStorage.getItem("userId") || "";
+    const url = `http://127.0.0.1:5000/api/exercises/?userId=${userId}`;
+
     try {
-        const response = await fetch('http://127.0.0.1:5000/api/exercises/');
+        const response = await fetch(url); 
         if (response.ok) {
-            EX = await response.json();
+            const result = await response.json(); 
             
-            // SAU KHI CÓ DỮ LIỆU, TỰ ĐỘNG TẠO BỘ LỌC
+            // ── ĐOẠN SỬA LỖI: Phân biệt tài khoản VIP và Thường ──
+            if (Array.isArray(result)) {
+                // TÀI KHOẢN VIP / ADMIN: Backend trả thẳng mảng bài tập
+                EX = result; 
+                showPremiumBanner(false, 0); // Ẩn banner đi
+            } else {
+                // TÀI KHOẢN THƯỜNG: Backend trả về Object { data: [...], isLimited: true }
+                EX = result.data || []; 
+                showPremiumBanner(result.isLimited, result.limitPerMuscle); // Hiện banner
+            }
+            // ── KẾT THÚC ĐOẠN SỬA LỖI ──
+
             buildDynamicFilters();
-            render(); 
+            render();
         } else {
             grid.innerHTML = `<div class="no-results"><span class="nr-icon">⚠️</span><p>Lỗi máy chủ: Không thể tải bài tập.</p></div>`;
         }
@@ -37,6 +52,48 @@ async function fetchExercises() {
         grid.innerHTML = `<div class="no-results"><span class="nr-icon">🔌</span><p>Mất kết nối tới Backend. Hãy kiểm tra python app.py!</p></div>`;
     }
 }
+
+// ── HÀM: Hiển thị banner Premium ──
+function showPremiumBanner(isLimited, limitPerMuscle) {
+    const old = document.getElementById("premiumBanner");
+    if (old) old.remove();
+    if (!isLimited) return;
+
+    const banner = document.createElement("div");
+    banner.id = "premiumBanner";
+    banner.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #f59e0b22, #f59e0b11);
+            border: 1px solid #f59e0b55;
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        ">
+            <span style="color: #f59e0b; font-size: 14px;">
+                🔒 Bạn đang xem <strong>${limitPerMuscle} bài/nhóm cơ</strong>.
+                Nâng cấp Premium để mở khóa toàn bộ thư viện!
+            </span>
+            <a href="Tcn.html" style="
+                background: #f59e0b;
+                color: #000;
+                padding: 6px 14px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 13px;
+                text-decoration: none;
+                white-space: nowrap;
+            ">⭐ Nâng cấp</a>
+        </div>
+    `;
+
+    const toolbar = document.querySelector(".toolbar");
+    if (toolbar) toolbar.insertAdjacentElement("afterend", banner);
+}
+// ── KẾT THÚC HÀM ──
 
 // ════════════════════════════════════════════════════════════════
 // 3. TẠO BỘ LỌC ĐỘNG (DYNAMIC FILTERS) TỪ DỮ LIỆU THỰC TẾ
