@@ -76,9 +76,12 @@ try:
 except Exception as e:
     print(f"❌ Lỗi kết nối MongoDB: {e}")
 
+print("\n=== ROUTES ===")
+print(app.url_map)
+print("=================")
 # ============================================================================
 # Chạy server ở cổng 5000
 # ============================================================================
 if __name__ == '__main__':
-    print("🚀 Máy chủ Python đang chạy tại: http://127.0.0.1:5000")
-    app.run(debug=True, port=5000)
+    print("🚀 Máy chủ Python đang chạy tại: http://0.0.0.0:5000")
+    app.run(host='0.0.0.0', debug=True, port=5000)
