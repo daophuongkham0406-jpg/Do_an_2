@@ -1,0 +1,6 @@
+Backend/.venv/
+Backend/*.log
+Fontend/dist/
+Fontend/node_modules/
+Flutter/dang_nhap_app/.dart_tool/
+Flutter/dang_nhap_app/build/
