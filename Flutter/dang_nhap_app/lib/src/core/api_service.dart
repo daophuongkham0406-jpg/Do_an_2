@@ -1,12 +1,21 @@
 import 'dart:convert';
 import 'dart:io';
 
+// class ApiConfig {
+//   // Android emulator dùng 10.0.2.2 để gọi backend Flask trên máy tính.
+//   // Chạy điện thoại thật thì đổi thành IP LAN, ví dụ: http://192.168.1.8:5000.
+//   static const baseUrl = 'http://192.168.0.101:5000';
+//   static const planAiBaseUrl = 'http://192.168.0.101:5001';
+//   static const chatAiBaseUrl = 'http://192.168.0.101:5002';
+// }
+
 class ApiConfig {
-  // Android emulator dùng 10.0.2.2 để gọi backend Flask trên máy tính.
-  // Chạy điện thoại thật thì đổi thành IP LAN, ví dụ: http://192.168.1.8:5000.
-  static const baseUrl = 'http://192.168.0.101:5000';
-  static const planAiBaseUrl = 'http://192.168.0.101:5001';
-  static const chatAiBaseUrl = 'http://192.168.0.101:5002';
+  static const host =
+      String.fromEnvironment('API_HOST', defaultValue: '10.0.2.2');
+
+  static String get baseUrl => 'http://$host:5000';
+  static String get planAiBaseUrl => 'http://$host:5001';
+  static String get chatAiBaseUrl => 'http://$host:5002';
 }
 
 class AppUser {
@@ -90,12 +99,13 @@ class ApiService {
     String method,
     String path, {
     Map<String, Object?>? body,
-    String baseUrl = ApiConfig.baseUrl,
+    String? baseUrl,
   }) async {
     final client = HttpClient()
       ..connectionTimeout = const Duration(seconds: 12);
 
-    final uri = Uri.parse('$baseUrl$path');
+    final resolvedBaseUrl = baseUrl ?? ApiConfig.baseUrl;
+    final uri = Uri.parse('$resolvedBaseUrl$path');
 
     try {
       final request = await client.openUrl(
