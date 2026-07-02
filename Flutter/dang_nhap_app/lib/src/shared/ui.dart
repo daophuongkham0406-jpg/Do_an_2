@@ -39,23 +39,41 @@ class AppCard extends StatelessWidget {
   const AppCard({
     required this.child,
     this.padding = const EdgeInsets.all(16),
+    this.color,
+    this.onTap,
     super.key,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
+  final Color? color;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final card = Container(
       width: double.infinity,
       padding: padding,
       decoration: BoxDecoration(
-        color: AppColors.bgCard,
-        borderRadius: BorderRadius.circular(16),
+        color: color ?? AppColors.bgCard,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.18),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: child,
+    );
+
+    if (onTap == null) return card;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: card,
     );
   }
 }
@@ -119,12 +137,13 @@ class AppTextField extends StatelessWidget {
               vertical: 14,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(14),
               borderSide: const BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.accentPurple),
+              borderRadius: BorderRadius.circular(14),
+              borderSide:
+                  const BorderSide(color: AppColors.accentPurple, width: 1.4),
             ),
           ),
         ),
@@ -157,7 +176,8 @@ class PrimaryButton extends StatelessWidget {
               AppColors.accentPurple.withValues(alpha: 0.45),
           foregroundColor: Colors.white,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
         ),
         child: loading
@@ -195,21 +215,29 @@ class ScreenHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'FIT ME',
-                  style: TextStyle(
-                    color: AppColors.accentYellow,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 13,
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentYellow.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: const Text(
+                    'FIT ME • MOBILE',
+                    style: TextStyle(
+                      color: AppColors.accentYellow,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Text(
                   title,
                   style: const TextStyle(
                     color: AppColors.textMain,
                     fontWeight: FontWeight.w900,
-                    fontSize: 28,
+                    fontSize: 26,
                     height: 1.08,
                   ),
                 ),
@@ -228,6 +256,53 @@ class ScreenHeader extends StatelessWidget {
           if (trailing != null) trailing!,
         ],
       ),
+    );
+  }
+}
+
+class SectionHeading extends StatelessWidget {
+  const SectionHeading({
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    super.key,
+  });
+
+  final String title;
+  final String? subtitle;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: AppColors.textMain,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 3),
+                Text(
+                  subtitle!,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        if (trailing != null) trailing!,
+      ],
     );
   }
 }

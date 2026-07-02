@@ -79,6 +79,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       const _ErrorCard()
                     else ...[
                       _HeroCard(featured: data?.featured ?? const []),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: SectionHeading(
+                          title: 'Bắt đầu ngay',
+                          subtitle: 'Những nội dung phù hợp cho hôm nay',
+                        ),
+                      ),
                       _Section(
                           title: 'Nhóm cơ',
                           items: data?.muscles ?? const [],
@@ -128,11 +136,34 @@ class _HeroCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.bolt, color: AppColors.accentYellow, size: 34),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentYellow.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(Icons.bolt,
+                      color: AppColors.accentYellow, size: 26),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Phiên bản mobile mới',
+                    style: const TextStyle(
+                      color: AppColors.accentYellow,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 12),
             Text(
               (first['title'] ?? 'Luyện tập thông minh hơn').toString(),
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 8),
             Text(
@@ -169,7 +200,7 @@ class _Section extends StatelessWidget {
         children: [
           Text(title,
               style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
           const SizedBox(height: 10),
           ...items.take(4).map((item) {
             return Padding(
@@ -227,7 +258,7 @@ class _WorkoutSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Lịch tập mẫu',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
           const SizedBox(height: 10),
           ...items.take(5).map((item) => Padding(
                 padding: const EdgeInsets.only(bottom: 10),

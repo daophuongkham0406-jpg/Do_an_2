@@ -132,6 +132,13 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                       diffCount: diffs.length,
                     ),
                     Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
+                      child: SectionHeading(
+                        title: 'Khám phá bài tập',
+                        subtitle: 'Lọc theo mục tiêu và nhóm cơ phù hợp',
+                      ),
+                    ),
+                    Padding(
                       padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
                       child: AppTextField(
                         controller: _search,
@@ -185,24 +192,34 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                   const TextStyle(color: AppColors.textMuted),
                             ),
                           ),
-                          DropdownButton<String>(
-                            value: _sort,
-                            dropdownColor: AppColors.bgCard,
-                            items: const [
-                              DropdownMenuItem(
-                                  value: 'default', child: Text('Mặc định')),
-                              DropdownMenuItem(
-                                  value: 'az', child: Text('Tên A-Z')),
-                              DropdownMenuItem(
-                                  value: 'za', child: Text('Tên Z-A')),
-                              DropdownMenuItem(
-                                  value: 'easy', child: Text('Dễ trước')),
-                              DropdownMenuItem(
-                                  value: 'hard', child: Text('Khó trước')),
-                            ],
-                            onChanged: (v) =>
-                                setState(() => _sort = v ?? 'default'),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: AppColors.bgInput,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: DropdownButton<String>(
+                              value: _sort,
+                              underline: const SizedBox.shrink(),
+                              dropdownColor: AppColors.bgCard,
+                              items: const [
+                                DropdownMenuItem(
+                                    value: 'default', child: Text('Mặc định')),
+                                DropdownMenuItem(
+                                    value: 'az', child: Text('Tên A-Z')),
+                                DropdownMenuItem(
+                                    value: 'za', child: Text('Tên Z-A')),
+                                DropdownMenuItem(
+                                    value: 'easy', child: Text('Dễ trước')),
+                                DropdownMenuItem(
+                                    value: 'hard', child: Text('Khó trước')),
+                              ],
+                              onChanged: (v) =>
+                                  setState(() => _sort = v ?? 'default'),
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           IconButton(
                             tooltip: _listMode ? 'Lưới' : 'Danh sách',
                             onPressed: () =>

@@ -169,16 +169,31 @@ class _AuthScreenState extends State<AuthScreen> {
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
                     child: Column(
                       children: [
-                        AuthSwitch(
-                          mode: _mode,
-                          onChanged: (mode) => setState(() => _mode = mode),
+                        AppCard(
+                          padding: const EdgeInsets.all(12),
+                          child: AuthSwitch(
+                            mode: _mode,
+                            onChanged: (mode) => setState(() => _mode = mode),
+                          ),
                         ),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 16),
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 220),
                           child: isLogin ? _loginForm() : _registerForm(),
                         ),
                         const Spacer(),
+                        const SizedBox(height: 8),
+                        Text(
+                          isLogin
+                              ? 'Kết nối trực tiếp với backend FIT ME để đăng nhập an toàn.'
+                              : 'Tạo tài khoản để bắt đầu hành trình tập luyện của bạn.',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 12,
+                            height: 1.45,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -195,7 +210,13 @@ class _AuthScreenState extends State<AuthScreen> {
     return AppCard(
       key: const ValueKey('login'),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const Text(
+            'Đăng nhập để tiếp tục',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 14),
           AppTextField(
             controller: _loginEmail,
             label: 'Email',
@@ -238,7 +259,13 @@ class _AuthScreenState extends State<AuthScreen> {
     return AppCard(
       key: const ValueKey('register'),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const Text(
+            'Tạo tài khoản mới',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 14),
           Row(
             children: [
               Expanded(

@@ -66,7 +66,7 @@ class _MainShellState extends State<MainShell> {
 
     return Scaffold(
       body: IndexedStack(index: _index, children: pages),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.accentYellow,
         foregroundColor: Colors.black,
         onPressed: () => showModalBottomSheet<void>(
@@ -75,7 +75,8 @@ class _MainShellState extends State<MainShell> {
           backgroundColor: Colors.transparent,
           builder: (_) => const ChatCoachSheet(),
         ),
-        child: const Icon(Icons.bolt),
+        icon: const Icon(Icons.smart_toy_outlined),
+        label: const Text('AI Coach'),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
@@ -84,6 +85,7 @@ class _MainShellState extends State<MainShell> {
         indicatorColor: AppColors.accentPurple,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         destinations: items,
+        height: 68,
       ),
     );
   }
@@ -156,10 +158,21 @@ class _ChatCoachSheetState extends State<ChatCoachSheet> {
               Row(
                 children: [
                   const Expanded(
-                    child: Text(
-                      'AI Huấn luyện viên',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'AI Huấn luyện viên',
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.w900),
+                        ),
+                        SizedBox(height: 3),
+                        Text(
+                          'Nhận gợi ý tập luyện và dinh dưỡng nhanh chóng',
+                          style: TextStyle(
+                              fontSize: 12, color: AppColors.textMuted),
+                        ),
+                      ],
                     ),
                   ),
                   IconButton(
@@ -167,6 +180,7 @@ class _ChatCoachSheetState extends State<ChatCoachSheet> {
                       icon: const Icon(Icons.close)),
                 ],
               ),
+              const SizedBox(height: 10),
               SizedBox(
                 height: 40,
                 child: ListView(
@@ -207,9 +221,15 @@ class _ChatCoachSheetState extends State<ChatCoachSheet> {
                           color: msg.mine
                               ? AppColors.accentPurple
                               : AppColors.bgInput,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Text(msg.text),
+                        child: Text(
+                          msg.text,
+                          style: TextStyle(
+                            color: msg.mine ? Colors.white : AppColors.textMain,
+                            height: 1.4,
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -225,14 +245,18 @@ class _ChatCoachSheetState extends State<ChatCoachSheet> {
                         filled: true,
                         fillColor: AppColors.bgInput,
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14)),
+                            borderRadius: BorderRadius.circular(16)),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 14,
+                        ),
                       ),
                       onSubmitted: (_) => _send(),
                     ),
                   ),
                   const SizedBox(width: 8),
                   IconButton.filled(
-                    onPressed: _send,
+                    onPressed: () => _send(),
                     icon: const Icon(Icons.send),
                   ),
                 ],
