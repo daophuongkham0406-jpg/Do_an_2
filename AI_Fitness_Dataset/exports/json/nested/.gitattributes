@@ -1,0 +1,2 @@
+AI_Fitness_Dataset/exports/mongodb/workout_history.json filter=lfs diff=lfs merge=lfs -text
+AI_Fitness_Dataset/exports/json/nested/history_by_session.json filter=lfs diff=lfs merge=lfs -text
