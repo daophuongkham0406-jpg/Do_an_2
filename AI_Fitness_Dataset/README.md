@@ -40,3 +40,9 @@ Mục tiêu là xây dựng AI có khả năng:
 - Phân tích tiến trình tập luyện
 - Cá nhân hóa bài tập
 - Đề xuất thay đổi theo phản hồi người dùng
+## Dataset lớn
+
+Do GitHub giới hạn file trên 100MB, các file export lớn được lưu trên Google Drive:
+
+- `history_by_session.json`: https://drive.google.com/file/d/1cMAa59KtyZ_o4kEVWH3M1606z75K3vFC/view?usp=sharing
+- `workout_history.json`: https://drive.google.com/file/d/1Q2DzI0rtlTbmcz9XN6YVp7TGTnMrZYHm/view?usp=sharing
