@@ -22,6 +22,7 @@ from quanly_plan import plan_bp
 from quanly_trangchu import trangchu_bp
 from quanly_cauhoi import cauhoi_bp
 from quanly_tcn import tcn_bp
+from routes.ml_routes import ml_bp
 
 # --- IMPORT SEPAY ---
 from sepay_payment import sepay_bp
@@ -61,9 +62,18 @@ app.register_blueprint(avatar_bp, url_prefix='/api/profile')
 app.register_blueprint(trangchu_bp)
 app.register_blueprint(cauhoi_bp)
 app.register_blueprint(tcn_bp)
+app.register_blueprint(ml_bp)
 
 # --- ĐĂNG KÝ SEPAY BLUEPRINT (KHÔNG có url_prefix để khớp /api/payment/...) ---
 app.register_blueprint(sepay_bp)
+
+
+@app.route("/")
+def home():
+    return jsonify({
+        "status": "OK",
+        "message": "AI Fitness Backend is running",
+    })
 
 # ============================================================================
 # 3. Kết nối MongoDB

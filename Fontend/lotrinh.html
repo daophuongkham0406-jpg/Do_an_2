@@ -167,6 +167,67 @@
               </select>
             </div>
 
+            <div class="survey-panel">
+              <div class="survey-title">Khảo sát nhanh trước khi tạo</div>
+              <div class="survey-grid">
+                <div class="form-group">
+                  <label>Giới tính</label>
+                  <select id="gender">
+                    <option value="Prefer not to say" selected>Không muốn nêu</option>
+                    <option value="Male">Nam</option>
+                    <option value="Female">Nữ</option>
+                    <option value="Other">Khác</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Số buổi / tuần</label>
+                  <select id="trainingDays">
+                    <option value="2">2 buổi</option>
+                    <option value="3" selected>3 buổi</option>
+                    <option value="4">4 buổi</option>
+                    <option value="5">5 buổi</option>
+                    <option value="6">6 buổi</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Thời lượng / buổi</label>
+                  <select id="sessionMinutes">
+                    <option value="30">30 phút</option>
+                    <option value="45">45 phút</option>
+                    <option value="60" selected>60 phút</option>
+                    <option value="75">75 phút</option>
+                    <option value="90">90 phút</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Cường độ mong muốn</label>
+                  <select id="intensityPreference">
+                    <option value="Vừa phải" selected>Vừa phải</option>
+                    <option value="Nhẹ, ưu tiên an toàn">Nhẹ, ưu tiên an toàn</option>
+                    <option value="Thử thách hơn">Thử thách hơn</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Nhóm cơ ưu tiên</label>
+                <input
+                  id="priorityMuscles"
+                  class="survey-input"
+                  type="text"
+                  placeholder="Ví dụ: ngực, lưng, mông, đùi..."
+                />
+              </div>
+              <div class="form-group">
+                <label>Bài tập / vùng đau cần tránh</label>
+                <input
+                  id="avoidNotes"
+                  class="survey-input"
+                  type="text"
+                  placeholder="Ví dụ: tránh squat nặng, đau vai, đau gối..."
+                />
+              </div>
+            </div>
+
             <div class="form-group">
             
                <label>Độ dài lộ trình</label>

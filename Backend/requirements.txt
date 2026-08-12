@@ -18,3 +18,7 @@ requests==2.34.2
 urllib3==2.7.0
 Werkzeug==3.1.8
 bcrypt==5.0.0
+pandas
+numpy
+scikit-learn==1.7.2
+joblib

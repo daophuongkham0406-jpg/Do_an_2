@@ -3,6 +3,7 @@
 // Thay đổi: 4 gói 7/14/21/30 ngày, lưu tạm draft vào localStorage
 // ════════════════════════════════════════════════════════════════
 const AI_SERVER_URL = "http://localhost:5001";
+const BACKEND_API_URL = "http://localhost:5000";
 const TODAY = new Date().toISOString().split("T")[0];
 
 let USER_ID = "guest";
@@ -117,6 +118,7 @@ document.getElementById("btn-generate").addEventListener("click", async () => {
   const height    = document.getElementById("height").value;
   const weight    = document.getElementById("weight").value;
   const age       = document.getElementById("age").value;
+  const survey    = collectSurveyPayload();
 
   if (!height || !weight || !age) {
     showToast("⚠️ Vui lòng nhập chiều cao, cân nặng và tuổi!", "error");
@@ -136,9 +138,9 @@ document.getElementById("btn-generate").addEventListener("click", async () => {
         () => {
           const finalGoal = bmiData.suggested_goal || goal;
           document.getElementById("goal").value = finalGoal;
-          doGeneratePlan(finalGoal, level, equipment, userInfo, height, weight, age);
+          doGeneratePlan(finalGoal, level, equipment, userInfo, height, weight, age, survey);
         },
-        () => doGeneratePlan(goal, level, equipment, userInfo, height, weight, age)
+        () => doGeneratePlan(goal, level, equipment, userInfo, height, weight, age, survey)
       );
       return;
     }
@@ -146,8 +148,20 @@ document.getElementById("btn-generate").addEventListener("click", async () => {
     console.warn("BMI check lỗi:", e);
   }
 
-  doGeneratePlan(goal, level, equipment, userInfo, height, weight, age);
+  doGeneratePlan(goal, level, equipment, userInfo, height, weight, age, survey);
 });
+
+function collectSurveyPayload() {
+  const valueOf = (id, fallback = "") => document.getElementById(id)?.value || fallback;
+  return {
+    gender: valueOf("gender", "Prefer not to say"),
+    training_days_per_week: Number(valueOf("trainingDays", 3)),
+    session_duration_minutes: Number(valueOf("sessionMinutes", 60)),
+    intensity_preference: valueOf("intensityPreference", "Vừa phải"),
+    priority_muscles: valueOf("priorityMuscles", ""),
+    avoid_notes: valueOf("avoidNotes", ""),
+  };
+}
 
 // ════════════════════════════════════════
 // MODAL TƯ VẤN BMI
@@ -200,7 +214,7 @@ function showBmiAdviceModal(bmiData, onAccept, onReject) {
 // ════════════════════════════════════════
 // GỌI API TẠO LỘ TRÌNH
 // ════════════════════════════════════════
-async function doGeneratePlan(goal, level, equipment, userInfo, height, weight, age) {
+async function doGeneratePlan(goal, level, equipment, userInfo, height, weight, age, survey = {}) {
   document.getElementById("plan-title").innerText = `LỘ TRÌNH ${goal.toUpperCase()} — ${selectedDays} NGÀY`;
   document.getElementById("plan-sub").innerText   = `${level} · ${height}cm · ${weight}kg · ${age} tuổi`;
 
@@ -226,30 +240,46 @@ async function doGeneratePlan(goal, level, equipment, userInfo, height, weight, 
     const controller = new AbortController();
     const timeoutId  = setTimeout(() => controller.abort(), 900000);
 
-    const response = await fetch(`${AI_SERVER_URL}/api/generate-plan`, {
+    const response = await fetch(`${BACKEND_API_URL}/api/ml/generate-plan`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ goal, level, equipment, userInfo, height, weight, age, duration: selectedDays }),
+      body: JSON.stringify({
+        goal,
+        level,
+        equipment,
+        note: [userInfo, survey.avoid_notes].filter(Boolean).join(". "),
+        userInfo,
+        height,
+        weight,
+        age,
+        duration_days: selectedDays,
+        ...survey,
+      }),
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `Mã lỗi server: ${response.status}`);
+      let errorData = {};
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = {};
+      }
+      throw new Error(errorData.message || errorData.error || `Mã lỗi server: ${response.status}`);
     }
 
     const data = await response.json();
-    if (data.plan_data) {
+    if (data.status === "OK" && data.plan_data) {
       currentPlanData = data.plan_data;
 
       // ✅ LƯU DRAFT VÀO LOCALSTORAGE
-      saveDraftPlan(currentPlanData, { goal, level, equipment, userInfo, height, weight, age });
+      saveDraftPlan(currentPlanData, { goal, level, equipment, userInfo, height, weight, age, survey });
 
       renderPlan(data.plan_data, container);
       appendPlanActions(container, data.plan_data);
-    } else if (data.error) {
-      throw new Error(data.error);
+    } else if (data.message || data.error) {
+      throw new Error(data.message || data.error);
     }
   } catch (error) {
     let errorMsg = error.message;
