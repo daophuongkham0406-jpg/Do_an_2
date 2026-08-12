@@ -1,0 +1,42 @@
+{
+  "stage_6_status": "PASS",
+  "stage_6a_revised_status": "PASS",
+  "ready_for_integration_backend_app": true,
+  "ready_for_stage_6b_ml_dataset_builder": true,
+  "tested_user_count": 500,
+  "recommendation_count": 500,
+  "recommendation_action_distribution": {
+    "Reduce Difficulty": 239,
+    "Keep": 205,
+    "Review Safety": 23,
+    "Reduce Volume": 27,
+    "Increase Difficulty": 2,
+    "Replace Exercise": 4
+  },
+  "safety_review_count": 500,
+  "safety_status_distribution": {
+    "Safe": 476,
+    "Review": 12,
+    "Monitor": 12
+  },
+  "adjustment_status_distribution": {
+    "Adjust": 338,
+    "Maintain": 139,
+    "Review": 23
+  },
+  "coach_response_count": 500,
+  "average_recommendation_confidence": 0.7758,
+  "average_safety_risk_score": 0.0198,
+  "review_or_avoid_count": 12,
+  "increase_blocked_by_safety_count": 0,
+  "empty_generated_plan_count": 0,
+  "empty_exercise_session_count": 0,
+  "duplicate_exercise_in_session_count": 0,
+  "missing_safety_note_count": 0,
+  "plans_generated_count": 500,
+  "plan_adjustments_count": 500,
+  "invalid_recommendation_count": 0,
+  "unsafe_recommendation_count": 0,
+  "missing_explanation_count": 0,
+  "schema_error_count": 0
+}

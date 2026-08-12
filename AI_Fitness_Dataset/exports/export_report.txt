@@ -1,0 +1,65 @@
+AI Fitness Dataset Export Report
+========================================================================
+Generated at: 2026-08-12T08:50:25
+
+Export Status: PASS
+Validation Status: PASS
+Stage 4 Ready: YES
+
+CSV Export:
+- exports/csv/exercises.csv: 350 rows, 641716 bytes
+- exports/csv/users.csv: 500 rows, 233165 bytes
+- exports/csv/workout_plans.csv: 1000 rows, 500856 bytes
+- exports/csv/workout_plan_items.csv: 17634 rows, 19892520 bytes
+- exports/csv/workout_history_sessions.csv: 18380 rows, 3953086 bytes
+- exports/csv/workout_history_items.csv: 80634 rows, 18481047 bytes
+- exports/csv/workout_history_summary.csv: 1000 rows, 104825 bytes
+- exports/csv/user_feedback.csv: 14500 rows, 7033589 bytes
+
+JSON Export:
+- exports/json/flat/exercises.json: 350 rows, 1193032 bytes
+- exports/json/flat/users.json: 500 rows, 694730 bytes
+- exports/json/flat/workout_plans.json: 1000 rows, 1216853 bytes
+- exports/json/flat/workout_plan_items.json: 17634 rows, 37820611 bytes
+- exports/json/flat/workout_history_sessions.json: 18380 rows, 18498270 bytes
+- exports/json/flat/workout_history_items.json: 80634 rows, 78607111 bytes
+- exports/json/flat/workout_history_summary.json: 1000 rows, 571475 bytes
+- exports/json/flat/user_feedback.json: 14500 rows, 17631646 bytes
+- exports/json/nested/plans_with_items.json: 1000 rows, 44048281 bytes
+- exports/json/nested/users_with_plans.json: 500 rows, 1132374 bytes
+- exports/json/nested/history_by_session.json: 18380 rows, 108196482 bytes
+- exports/json/nested/feedback_by_user.json: 500 rows, 19601118 bytes
+- exports/json/ai_training/workout_recommendation_samples.jsonl: 1000 rows, 40162866 bytes
+- exports/json/ai_training/plan_adjustment_samples.jsonl: 1000 rows, 12197003 bytes
+- exports/json/ai_training/safety_review_samples.jsonl: 825 rows, 310651 bytes
+- exports/json/ai_training/preference_learning_samples.jsonl: 500 rows, 21549571 bytes
+
+SQL Export:
+- exports/sql/schema.sql: None rows, 8954 bytes
+- exports/sql/indexes.sql: None rows, 1188 bytes
+- exports/sql/inserts.sql: 133998 rows, 61738523 bytes
+- exports/sql/README_sql_import.md: None rows, 218 bytes
+
+MongoDB Export:
+- exports/mongodb/users.json: 500 rows, 783942 bytes
+- exports/mongodb/exercises.json: 350 rows, 1193032 bytes
+- exports/mongodb/workout_plans.json: 1000 rows, 44181281 bytes
+- exports/mongodb/workout_history.json: 18380 rows, 111580514 bytes
+- exports/mongodb/user_feedback.json: 14500 rows, 17631646 bytes
+- exports/mongodb/mongo_import_commands.sh: None rows, 471 bytes
+
+Row Count Summary:
+- exercises: 350
+- users: 500
+- workout_plans: 1000
+- workout_plan_items: 17634
+- workout_history_sessions: 18380
+- workout_history_items: 80634
+- workout_history_summary: 1000
+- user_feedback: 14500
+
+Warnings:
+- None
+
+Next Step:
+Proceed to Stage 5 Statistics

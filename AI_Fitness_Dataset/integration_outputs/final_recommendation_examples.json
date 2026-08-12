@@ -1,0 +1,4502 @@
+[
+  {
+    "user_id": "U000001",
+    "exercise_id": "EX0003",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000002",
+    "exercise_id": "EX0003",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000003",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000004",
+    "exercise_id": "EX0242",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_recommendation",
+    "final_confidence": 0.7453,
+    "explanation": "Final action selected by ml_recommendation with safety lock applied."
+  },
+  {
+    "user_id": "U000005",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000006",
+    "exercise_id": "EX0003",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7596,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000007",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000008",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7531,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000009",
+    "exercise_id": "EX0003",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.8076,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000010",
+    "exercise_id": "EX0026",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000011",
+    "exercise_id": "EX0281",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000012",
+    "exercise_id": "EX0067",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6141,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000013",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000014",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7074,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000015",
+    "exercise_id": "EX0026",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6774,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000016",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000017",
+    "exercise_id": "EX0067",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000018",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000019",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7639,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000020",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000021",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000022",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000023",
+    "exercise_id": "EX0201",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000024",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000025",
+    "exercise_id": "EX0281",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000026",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000027",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000028",
+    "exercise_id": "EX0160",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000029",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000030",
+    "exercise_id": "EX0227",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000031",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000032",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000033",
+    "exercise_id": "EX0194",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000034",
+    "exercise_id": "EX0059",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000035",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000036",
+    "exercise_id": "EX0032",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000037",
+    "exercise_id": "EX0003",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000038",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000039",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000040",
+    "exercise_id": "EX0080",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000041",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7005,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000042",
+    "exercise_id": "EX0003",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7778,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000043",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000044",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000045",
+    "exercise_id": "EX0172",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000046",
+    "exercise_id": "EX0095",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6284,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000047",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6941,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000048",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000049",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000050",
+    "exercise_id": "EX0009",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000051",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000052",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000053",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.9552,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000054",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000055",
+    "exercise_id": "EX0037",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000056",
+    "exercise_id": "EX0037",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000057",
+    "exercise_id": "EX0059",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000058",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_recommendation",
+    "final_confidence": 0.6442,
+    "explanation": "Final action selected by ml_recommendation with safety lock applied."
+  },
+  {
+    "user_id": "U000059",
+    "exercise_id": "EX0026",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6588,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000060",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000061",
+    "exercise_id": "EX0242",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000062",
+    "exercise_id": "EX0026",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.706,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000063",
+    "exercise_id": "EX0281",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000064",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000065",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7636,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000066",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000067",
+    "exercise_id": "EX0114",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000068",
+    "exercise_id": "EX0242",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000069",
+    "exercise_id": "EX0003",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000070",
+    "exercise_id": "EX0263",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000071",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000072",
+    "exercise_id": "EX0194",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000073",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000074",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000075",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000076",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000077",
+    "exercise_id": "EX0107",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000078",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6529,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000079",
+    "exercise_id": "EX0190",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000080",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000081",
+    "exercise_id": "EX0100",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000082",
+    "exercise_id": "EX0270",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6045,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000083",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6234,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000084",
+    "exercise_id": "EX0227",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000085",
+    "exercise_id": "EX0026",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6628,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000086",
+    "exercise_id": "EX0281",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7079,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000087",
+    "exercise_id": "EX0260",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6466,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000088",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000089",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000090",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000091",
+    "exercise_id": "EX0227",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6485,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000092",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000093",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000094",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000095",
+    "exercise_id": "EX0243",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6553,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000096",
+    "exercise_id": "EX0242",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000097",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000098",
+    "exercise_id": "EX0242",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000099",
+    "exercise_id": "EX0270",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000100",
+    "exercise_id": "EX0242",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000101",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000102",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000103",
+    "exercise_id": "EX0179",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000104",
+    "exercise_id": "EX0194",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000105",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000106",
+    "exercise_id": "EX0095",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000107",
+    "exercise_id": "EX0263",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000108",
+    "exercise_id": "EX0340",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000109",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000110",
+    "exercise_id": "EX0277",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6791,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000111",
+    "exercise_id": "EX0141",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000112",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000113",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000114",
+    "exercise_id": "EX0223",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6985,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000115",
+    "exercise_id": "EX0281",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000116",
+    "exercise_id": "EX0180",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6066,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000117",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000118",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000119",
+    "exercise_id": "EX0106",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000120",
+    "exercise_id": "EX0196",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000121",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000122",
+    "exercise_id": "EX0004",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000123",
+    "exercise_id": "EX0095",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7417,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000124",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000125",
+    "exercise_id": "EX0194",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000126",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000127",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000128",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000129",
+    "exercise_id": "EX0026",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7127,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000130",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000131",
+    "exercise_id": "EX0160",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000132",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000133",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000134",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000135",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000136",
+    "exercise_id": "EX0277",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7746,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000137",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7178,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000138",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000139",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7835,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000140",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000141",
+    "exercise_id": "EX0061",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000142",
+    "exercise_id": "EX0179",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000143",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000144",
+    "exercise_id": "EX0011",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000145",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000146",
+    "exercise_id": "EX0260",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000147",
+    "exercise_id": "EX0037",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000148",
+    "exercise_id": "EX0224",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000149",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000150",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000151",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7174,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000152",
+    "exercise_id": "EX0242",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000153",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000154",
+    "exercise_id": "EX0194",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7059,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000155",
+    "exercise_id": "EX0102",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6162,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000156",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000157",
+    "exercise_id": "EX0062",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000158",
+    "exercise_id": "EX0004",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000159",
+    "exercise_id": "EX0009",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000160",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000161",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000162",
+    "exercise_id": "EX0141",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.762,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000163",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000164",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000165",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000166",
+    "exercise_id": "EX0340",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000167",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7764,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000168",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000169",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000170",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6938,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000171",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000172",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000173",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000174",
+    "exercise_id": "EX0061",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000175",
+    "exercise_id": "EX0095",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000176",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000177",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_recommendation",
+    "final_confidence": 0.9843,
+    "explanation": "Final action selected by ml_recommendation with safety lock applied."
+  },
+  {
+    "user_id": "U000178",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000179",
+    "exercise_id": "EX0046",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000180",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000181",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7054,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000182",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000183",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000184",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.89,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000185",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000186",
+    "exercise_id": "EX0277",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000187",
+    "exercise_id": "EX0102",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000188",
+    "exercise_id": "EX0141",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6552,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000189",
+    "exercise_id": "EX0227",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000190",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000191",
+    "exercise_id": "EX0004",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000192",
+    "exercise_id": "EX0004",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000193",
+    "exercise_id": "EX0242",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000194",
+    "exercise_id": "EX0277",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000195",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000196",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000197",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000198",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000199",
+    "exercise_id": "EX0270",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7999,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000200",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000201",
+    "exercise_id": "EX0224",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000202",
+    "exercise_id": "EX0003",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000203",
+    "exercise_id": "EX0270",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.91,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000204",
+    "exercise_id": "EX0155",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000205",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000206",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000207",
+    "exercise_id": "EX0009",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000208",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000209",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000210",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000211",
+    "exercise_id": "EX0219",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000212",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000213",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000214",
+    "exercise_id": "EX0197",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000215",
+    "exercise_id": "EX0052",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6461,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000216",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000217",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7584,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000218",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000219",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000220",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000221",
+    "exercise_id": "EX0215",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000222",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000223",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000224",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000225",
+    "exercise_id": "EX0035",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000226",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000227",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000228",
+    "exercise_id": "EX0172",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.706,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000229",
+    "exercise_id": "EX0180",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6102,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000230",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000231",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000232",
+    "exercise_id": "EX0179",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000233",
+    "exercise_id": "EX0215",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000234",
+    "exercise_id": "EX0004",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000235",
+    "exercise_id": "EX0316",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7018,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000236",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000237",
+    "exercise_id": "EX0046",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000238",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000239",
+    "exercise_id": "EX0003",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000240",
+    "exercise_id": "EX0243",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000241",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000242",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7414,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000243",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000244",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000245",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000246",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000247",
+    "exercise_id": "EX0176",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000248",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000249",
+    "exercise_id": "EX0004",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000250",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000251",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000252",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000253",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000254",
+    "exercise_id": "EX0003",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000255",
+    "exercise_id": "EX0151",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000256",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000257",
+    "exercise_id": "EX0052",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000258",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000259",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000260",
+    "exercise_id": "EX0054",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6681,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000261",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000262",
+    "exercise_id": "EX0154",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000263",
+    "exercise_id": "EX0242",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6802,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000264",
+    "exercise_id": "EX0215",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000265",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000266",
+    "exercise_id": "EX0179",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000267",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000268",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000269",
+    "exercise_id": "EX0274",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000270",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000271",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.7889,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000272",
+    "exercise_id": "EX0224",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000273",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000274",
+    "exercise_id": "EX0141",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000275",
+    "exercise_id": "EX0046",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000276",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000277",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000278",
+    "exercise_id": "EX0155",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000279",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000280",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000281",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000282",
+    "exercise_id": "EX0032",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6786,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000283",
+    "exercise_id": "EX0075",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000284",
+    "exercise_id": "EX0026",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6584,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000285",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000286",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000287",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000288",
+    "exercise_id": "EX0138",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6477,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000289",
+    "exercise_id": "EX0319",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000290",
+    "exercise_id": "EX0179",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000291",
+    "exercise_id": "EX0231",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6457,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000292",
+    "exercise_id": "EX0003",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000293",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000294",
+    "exercise_id": "EX0056",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000295",
+    "exercise_id": "EX0215",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.6604,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000296",
+    "exercise_id": "EX0227",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000297",
+    "exercise_id": "EX0075",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000298",
+    "exercise_id": "EX0231",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000299",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000300",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000301",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000302",
+    "exercise_id": "EX0009",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000303",
+    "exercise_id": "EX0004",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "ml_recommendation",
+    "final_confidence": 0.7669,
+    "explanation": "Final action selected by ml_recommendation with safety lock applied."
+  },
+  {
+    "user_id": "U000304",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000305",
+    "exercise_id": "EX0003",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000306",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000307",
+    "exercise_id": "EX0227",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000308",
+    "exercise_id": "EX0294",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000309",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000310",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000311",
+    "exercise_id": "EX0003",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000312",
+    "exercise_id": "EX0190",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000313",
+    "exercise_id": "EX0277",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000314",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000315",
+    "exercise_id": "EX0281",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000316",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000317",
+    "exercise_id": "EX0277",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000318",
+    "exercise_id": "EX0180",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000319",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000320",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000321",
+    "exercise_id": "EX0281",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000322",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000323",
+    "exercise_id": "EX0046",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000324",
+    "exercise_id": "EX0011",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000325",
+    "exercise_id": "EX0075",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000326",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000327",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000328",
+    "exercise_id": "EX0026",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000329",
+    "exercise_id": "EX0160",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000330",
+    "exercise_id": "EX0003",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000331",
+    "exercise_id": "EX0107",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000332",
+    "exercise_id": "EX0011",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_recommendation",
+    "final_confidence": 1.0,
+    "explanation": "Final action selected by ml_recommendation with safety lock applied."
+  },
+  {
+    "user_id": "U000333",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_recommendation",
+    "final_confidence": 0.9998,
+    "explanation": "Final action selected by ml_recommendation with safety lock applied."
+  },
+  {
+    "user_id": "U000334",
+    "exercise_id": "EX0319",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000335",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000336",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000337",
+    "exercise_id": "EX0079",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000338",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000339",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000340",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000341",
+    "exercise_id": "EX0172",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000342",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000343",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000344",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000345",
+    "exercise_id": "EX0194",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000346",
+    "exercise_id": "EX0095",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000347",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000348",
+    "exercise_id": "EX0194",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000349",
+    "exercise_id": "EX0227",
+    "candidate_action": "Increase Difficulty",
+    "final_action": "Increase Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000350",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000351",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000352",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000353",
+    "exercise_id": "EX0160",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_recommendation",
+    "final_confidence": 0.9853,
+    "explanation": "Final action selected by ml_recommendation with safety lock applied."
+  },
+  {
+    "user_id": "U000354",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000355",
+    "exercise_id": "EX0179",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000356",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000357",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000358",
+    "exercise_id": "EX0277",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000359",
+    "exercise_id": "EX0197",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000360",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000361",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000362",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000363",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000364",
+    "exercise_id": "EX0194",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000365",
+    "exercise_id": "EX0046",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000366",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000367",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000368",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000369",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000370",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000371",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000372",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000373",
+    "exercise_id": "EX0003",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000374",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000375",
+    "exercise_id": "EX0088",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000376",
+    "exercise_id": "EX0181",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000377",
+    "exercise_id": "EX0180",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.9992,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000378",
+    "exercise_id": "EX0137",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_recommendation",
+    "final_confidence": 0.9974,
+    "explanation": "Final action selected by ml_recommendation with safety lock applied."
+  },
+  {
+    "user_id": "U000379",
+    "exercise_id": "EX0274",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000380",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000381",
+    "exercise_id": "EX0143",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000382",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000383",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000384",
+    "exercise_id": "EX0242",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000385",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000386",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000387",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000388",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000389",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000390",
+    "exercise_id": "EX0277",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000391",
+    "exercise_id": "EX0052",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000392",
+    "exercise_id": "EX0095",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000393",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000394",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000395",
+    "exercise_id": "EX0125",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000396",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000397",
+    "exercise_id": "EX0003",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000398",
+    "exercise_id": "EX0224",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000399",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000400",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000401",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000402",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000403",
+    "exercise_id": "EX0179",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000404",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000405",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000406",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000407",
+    "exercise_id": "EX0279",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000408",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000409",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000410",
+    "exercise_id": "EX0287",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000411",
+    "exercise_id": "EX0319",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000412",
+    "exercise_id": "EX0281",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000413",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000414",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000415",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000416",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000417",
+    "exercise_id": "EX0179",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000418",
+    "exercise_id": "EX0095",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000419",
+    "exercise_id": "EX0003",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000420",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000421",
+    "exercise_id": "EX0009",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000422",
+    "exercise_id": "EX0105",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000423",
+    "exercise_id": "EX0269",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000424",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000425",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_recommendation",
+    "final_confidence": 0.8559,
+    "explanation": "Final action selected by ml_recommendation with safety lock applied."
+  },
+  {
+    "user_id": "U000426",
+    "exercise_id": "EX0059",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000427",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000428",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000429",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000430",
+    "exercise_id": "EX0270",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000431",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000432",
+    "exercise_id": "EX0145",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000433",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000434",
+    "exercise_id": "EX0037",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.8343,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000435",
+    "exercise_id": "EX0003",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000436",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000437",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000438",
+    "exercise_id": "EX0227",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000439",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000440",
+    "exercise_id": "EX0011",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000441",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000442",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000443",
+    "exercise_id": "EX0179",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000444",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000445",
+    "exercise_id": "EX0277",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000446",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_recommendation",
+    "final_confidence": 0.9985,
+    "explanation": "Final action selected by ml_recommendation with safety lock applied."
+  },
+  {
+    "user_id": "U000447",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000448",
+    "exercise_id": "EX0154",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000449",
+    "exercise_id": "EX0281",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000450",
+    "exercise_id": "EX0116",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000451",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000452",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000453",
+    "exercise_id": "EX0190",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000454",
+    "exercise_id": "EX0179",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000455",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "fallback_to_rule_based",
+    "final_confidence": 0.78,
+    "explanation": "ML confidence was low or prediction failed; fallback rule-based action was used."
+  },
+  {
+    "user_id": "U000456",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000457",
+    "exercise_id": "EX0107",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "fallback_to_rule_based",
+    "final_confidence": 0.72,
+    "explanation": "ML confidence was low or prediction failed; fallback rule-based action was used."
+  },
+  {
+    "user_id": "U000458",
+    "exercise_id": "EX0196",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000459",
+    "exercise_id": "EX0025",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000460",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000461",
+    "exercise_id": "EX0227",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000462",
+    "exercise_id": "EX0009",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000463",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000464",
+    "exercise_id": "EX0026",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000465",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "fallback_to_rule_based",
+    "final_confidence": 0.72,
+    "explanation": "ML confidence was low or prediction failed; fallback rule-based action was used."
+  },
+  {
+    "user_id": "U000466",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000467",
+    "exercise_id": "EX0274",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000468",
+    "exercise_id": "EX0020",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000469",
+    "exercise_id": "EX0231",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000470",
+    "exercise_id": "EX0179",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000471",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000472",
+    "exercise_id": "EX0196",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000473",
+    "exercise_id": "EX0004",
+    "candidate_action": "Replace Exercise",
+    "final_action": "Replace Exercise",
+    "decision_source": "preference_dislike_adjustment",
+    "final_confidence": 0.99,
+    "explanation": "Preference model predicted Dislike with sufficient confidence; final action was adjusted."
+  },
+  {
+    "user_id": "U000474",
+    "exercise_id": "EX0137",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000475",
+    "exercise_id": "EX0180",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.9636,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000476",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000477",
+    "exercise_id": "EX0026",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000478",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000479",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000480",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000481",
+    "exercise_id": "EX0009",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.9224,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000482",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Volume",
+    "final_action": "Reduce Volume",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000483",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000484",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000485",
+    "exercise_id": "EX0227",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000486",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000487",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.8997,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000488",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000489",
+    "exercise_id": "EX0180",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000490",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000491",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000492",
+    "exercise_id": "EX0004",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000493",
+    "exercise_id": "EX0037",
+    "candidate_action": "Keep",
+    "final_action": "Keep",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000494",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000495",
+    "exercise_id": "EX0004",
+    "candidate_action": "Review Safety",
+    "final_action": "Review Safety",
+    "decision_source": "rule_safety_priority",
+    "final_confidence": 0.95,
+    "explanation": "Rule-based safety status requires review; final action prioritizes safety."
+  },
+  {
+    "user_id": "U000496",
+    "exercise_id": "EX0224",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000497",
+    "exercise_id": "EX0179",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000498",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000499",
+    "exercise_id": "EX0004",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  },
+  {
+    "user_id": "U000500",
+    "exercise_id": "EX0026",
+    "candidate_action": "Reduce Difficulty",
+    "final_action": "Reduce Difficulty",
+    "decision_source": "ml_and_rule_agree",
+    "final_confidence": 0.99,
+    "explanation": "ML and rule-based recommendation agree; safety lock did not override."
+  }
+]

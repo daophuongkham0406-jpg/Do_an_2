@@ -1,0 +1,251 @@
+{
+  "recommendation": {
+    "accuracy": 0.8266666666666667,
+    "balanced_accuracy": 0.4150957854406131,
+    "macro_f1": 0.41219422700587083,
+    "weighted_f1": 0.7924209067188519,
+    "classification_report": {
+      "Increase Difficulty": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 1.0
+      },
+      "Keep": {
+        "precision": 0.7714285714285715,
+        "recall": 0.9310344827586207,
+        "f1-score": 0.84375,
+        "support": 29.0
+      },
+      "Reduce Difficulty": {
+        "precision": 0.918918918918919,
+        "recall": 0.9444444444444444,
+        "f1-score": 0.9315068493150684,
+        "support": 36.0
+      },
+      "Reduce Volume": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 4.0
+      },
+      "Replace Exercise": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 0.0
+      },
+      "Review Safety": {
+        "precision": 0.5,
+        "recall": 0.2,
+        "f1-score": 0.2857142857142857,
+        "support": 5.0
+      },
+      "accuracy": 0.8266666666666667,
+      "macro avg": {
+        "precision": 0.3650579150579151,
+        "recall": 0.34591315453384425,
+        "f1-score": 0.343495189171559,
+        "support": 75.0
+      },
+      "weighted avg": {
+        "precision": 0.7727001287001287,
+        "recall": 0.8266666666666667,
+        "f1-score": 0.7924209067188519,
+        "support": 75.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        27,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        34,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        4,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        2,
+        2,
+        0,
+        0,
+        1
+      ]
+    ],
+    "labels": [
+      "Increase Difficulty",
+      "Keep",
+      "Reduce Difficulty",
+      "Reduce Volume",
+      "Replace Exercise",
+      "Review Safety"
+    ],
+    "unsafe_prediction_count_before_override": 0,
+    "unsafe_prediction_count_after_override": 0,
+    "safety_override_count": 0
+  },
+  "preference": {
+    "accuracy": 1.0,
+    "balanced_accuracy": 1.0,
+    "macro_f1": 1.0,
+    "weighted_f1": 1.0,
+    "classification_report": {
+      "Dislike": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 192.0
+      },
+      "Like": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 662.0
+      },
+      "Neutral": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 516.0
+      },
+      "accuracy": 1.0,
+      "macro avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1370.0
+      },
+      "weighted avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1370.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        192,
+        0,
+        0
+      ],
+      [
+        0,
+        662,
+        0
+      ],
+      [
+        0,
+        0,
+        516
+      ]
+    ],
+    "labels": [
+      "Dislike",
+      "Like",
+      "Neutral"
+    ],
+    "dislike_recall": 1.0,
+    "like_precision": 1.0
+  },
+  "safety": {
+    "accuracy": 1.0,
+    "balanced_accuracy": 1.0,
+    "macro_f1": 1.0,
+    "weighted_f1": 1.0,
+    "classification_report": {
+      "Monitor": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1.0
+      },
+      "Review": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 2.0
+      },
+      "Safe": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 72.0
+      },
+      "accuracy": 1.0,
+      "macro avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 75.0
+      },
+      "weighted avg": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 75.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        2,
+        0
+      ],
+      [
+        0,
+        0,
+        72
+      ]
+    ],
+    "labels": [
+      "Monitor",
+      "Review",
+      "Safe"
+    ],
+    "monitor_review_avoid_recall": 1.0,
+    "monitor_recall": 1.0,
+    "review_recall": 1.0,
+    "avoid_recall": 0.0,
+    "unsafe_prediction_count_before_override": 0,
+    "unsafe_prediction_count_after_override": 0,
+    "safety_override_count": 0
+  }
+}

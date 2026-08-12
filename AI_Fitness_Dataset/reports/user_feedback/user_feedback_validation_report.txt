@@ -1,0 +1,60 @@
+========================================================================================
+USER FEEDBACK VALIDATION REPORT
+========================================================================================
+
+Rows    : 10000
+ERROR   : 0
+WARNING : 0
+INFO    : 0
+
+READINESS
+----------------------------------------------------------------------------------------
+schema_ready: PASS
+references_ready: PASS
+logic_ready: PASS
+ai_training_ready: PASS
+
+ISSUE COUNTS
+----------------------------------------------------------------------------------------
+Không phát hiện issue.
+
+DATASET STATISTICS
+----------------------------------------------------------------------------------------
+{
+  "row_count": 10000,
+  "feedback_scope": {
+    "Exercise": 6000,
+    "Session": 3000,
+    "Plan": 800,
+    "General": 200
+  },
+  "sentiment": {
+    "Negative": 1500,
+    "Neutral": 2500,
+    "Positive": 6000
+  },
+  "requested_action": {
+    "Review Safety": 98,
+    "Replace Exercise": 932,
+    "No Preference": 1800,
+    "Increase Difficulty": 2729,
+    "Keep": 2591,
+    "Reduce Volume": 380,
+    "Reduce Session Duration": 789,
+    "Increase Session Duration": 681
+  },
+  "pain_feedback": {
+    "Pain": 28,
+    "Mild Discomfort": 222,
+    "No Pain": 9550,
+    "Not Applicable": 200
+  },
+  "record_source": {
+    "Synthetic": 10000
+  },
+  "pain_signal_rate": 0.025
+}
+
+DETAILS
+----------------------------------------------------------------------------------------
+Không phát hiện lỗi/cảnh báo.

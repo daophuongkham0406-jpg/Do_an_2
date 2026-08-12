@@ -1,0 +1,52 @@
+{
+  "summary": {
+    "row_count": 14500,
+    "error_count": 0,
+    "warning_count": 0,
+    "info_count": 0
+  },
+  "readiness": {
+    "schema_ready": true,
+    "references_ready": true,
+    "logic_ready": true,
+    "ai_training_ready": true
+  },
+  "issue_counts": {},
+  "statistics": {
+    "row_count": 14500,
+    "feedback_scope": {
+      "Exercise": 9000,
+      "Session": 4100,
+      "Plan": 1000,
+      "General": 400
+    },
+    "sentiment": {
+      "Negative": 1958,
+      "Neutral": 3771,
+      "Positive": 8771
+    },
+    "requested_action": {
+      "Review Safety": 145,
+      "Replace Exercise": 1094,
+      "No Preference": 3221,
+      "Increase Difficulty": 3050,
+      "Keep": 4891,
+      "Reduce Volume": 443,
+      "Reduce Session Duration": 789,
+      "Increase Session Duration": 681,
+      "Reduce Difficulty": 146,
+      "Change Split": 40
+    },
+    "pain_feedback": {
+      "Pain": 28,
+      "Mild Discomfort": 269,
+      "No Pain": 13803,
+      "Not Applicable": 400
+    },
+    "record_source": {
+      "Synthetic": 14500
+    },
+    "pain_signal_rate": 0.020482758620689656
+  },
+  "issues": []
+}

@@ -1,0 +1,66 @@
+{
+  "inputs": {
+    "exercise": "D:\\AI_Fitness_Dataset\\master\\exercise_master.xlsx",
+    "user": "D:\\AI_Fitness_Dataset\\master\\user_master.xlsx",
+    "plan": "D:\\AI_Fitness_Dataset\\master\\workout_plan_master.xlsx",
+    "history": "D:\\AI_Fitness_Dataset\\master\\workout_history_master.xlsx",
+    "feedback": "D:\\AI_Fitness_Dataset\\master\\user_feedback_master.xlsx",
+    "stage2_design": "D:\\AI_Fitness_Dataset\\docs\\stage_2_data_relationship_design.md",
+    "relationship_matrix": "D:\\AI_Fitness_Dataset\\docs\\relationship_matrix.xlsx",
+    "relationship_rules": "D:\\AI_Fitness_Dataset\\docs\\relationship_validation_rules.md",
+    "ai_usage_map": "D:\\AI_Fitness_Dataset\\docs\\ai_data_usage_map.md"
+  },
+  "outputs": [
+    "validation_report.txt",
+    "validation_report.json",
+    "validation_issues.csv",
+    "dataset_statistics.json",
+    "readiness_report.json"
+  ],
+  "distribution_thresholds": {
+    "history_completed_pct": [
+      78,
+      87
+    ],
+    "history_partial_pct": [
+      8,
+      15
+    ],
+    "history_skipped_pct": [
+      3,
+      8
+    ],
+    "history_pain_pct": [
+      1,
+      4
+    ],
+    "feedback_scope_exercise_pct": [
+      55,
+      65
+    ],
+    "feedback_scope_session_pct": [
+      25,
+      35
+    ],
+    "feedback_scope_plan_pct": [
+      5,
+      10
+    ],
+    "feedback_scope_general_pct": [
+      1,
+      3
+    ],
+    "feedback_sentiment_positive_pct": [
+      55,
+      65
+    ],
+    "feedback_sentiment_neutral_pct": [
+      20,
+      30
+    ],
+    "feedback_sentiment_negative_pct": [
+      10,
+      18
+    ]
+  }
+}

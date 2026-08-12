@@ -1,0 +1,284 @@
+{
+  "generated_at": "2026-08-12T08:50:25",
+  "source_files": {
+    "exercise": "master/exercise_master.xlsx",
+    "user": "master/user_master.xlsx",
+    "plan": "master/workout_plan_master.xlsx",
+    "history": "master/workout_history_master.xlsx",
+    "feedback": "master/user_feedback_master.xlsx"
+  },
+  "validation_status": {
+    "overall_status": "PASS",
+    "error_count": 0,
+    "export_ready": true,
+    "stage_4_ready": true,
+    "ready_for_stage_4_export": true
+  },
+  "exported_files": [
+    {
+      "path": "exports/csv/exercises.csv",
+      "format": "csv",
+      "rows": 350,
+      "size_bytes": 641716,
+      "status": "OK"
+    },
+    {
+      "path": "exports/csv/users.csv",
+      "format": "csv",
+      "rows": 500,
+      "size_bytes": 233165,
+      "status": "OK"
+    },
+    {
+      "path": "exports/csv/workout_plans.csv",
+      "format": "csv",
+      "rows": 1000,
+      "size_bytes": 500856,
+      "status": "OK"
+    },
+    {
+      "path": "exports/csv/workout_plan_items.csv",
+      "format": "csv",
+      "rows": 17634,
+      "size_bytes": 19892520,
+      "status": "OK"
+    },
+    {
+      "path": "exports/csv/workout_history_sessions.csv",
+      "format": "csv",
+      "rows": 18380,
+      "size_bytes": 3953086,
+      "status": "OK"
+    },
+    {
+      "path": "exports/csv/workout_history_items.csv",
+      "format": "csv",
+      "rows": 80634,
+      "size_bytes": 18481047,
+      "status": "OK"
+    },
+    {
+      "path": "exports/csv/workout_history_summary.csv",
+      "format": "csv",
+      "rows": 1000,
+      "size_bytes": 104825,
+      "status": "OK"
+    },
+    {
+      "path": "exports/csv/user_feedback.csv",
+      "format": "csv",
+      "rows": 14500,
+      "size_bytes": 7033589,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/flat/exercises.json",
+      "format": "json_flat",
+      "rows": 350,
+      "size_bytes": 1193032,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/flat/users.json",
+      "format": "json_flat",
+      "rows": 500,
+      "size_bytes": 694730,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/flat/workout_plans.json",
+      "format": "json_flat",
+      "rows": 1000,
+      "size_bytes": 1216853,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/flat/workout_plan_items.json",
+      "format": "json_flat",
+      "rows": 17634,
+      "size_bytes": 37820611,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/flat/workout_history_sessions.json",
+      "format": "json_flat",
+      "rows": 18380,
+      "size_bytes": 18498270,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/flat/workout_history_items.json",
+      "format": "json_flat",
+      "rows": 80634,
+      "size_bytes": 78607111,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/flat/workout_history_summary.json",
+      "format": "json_flat",
+      "rows": 1000,
+      "size_bytes": 571475,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/flat/user_feedback.json",
+      "format": "json_flat",
+      "rows": 14500,
+      "size_bytes": 17631646,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/nested/plans_with_items.json",
+      "format": "json_nested",
+      "rows": 1000,
+      "size_bytes": 44048281,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/nested/users_with_plans.json",
+      "format": "json_nested",
+      "rows": 500,
+      "size_bytes": 1132374,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/nested/history_by_session.json",
+      "format": "json_nested",
+      "rows": 18380,
+      "size_bytes": 108196482,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/nested/feedback_by_user.json",
+      "format": "json_nested",
+      "rows": 500,
+      "size_bytes": 19601118,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/ai_training/workout_recommendation_samples.jsonl",
+      "format": "jsonl",
+      "rows": 1000,
+      "size_bytes": 40162866,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/ai_training/plan_adjustment_samples.jsonl",
+      "format": "jsonl",
+      "rows": 1000,
+      "size_bytes": 12197003,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/ai_training/safety_review_samples.jsonl",
+      "format": "jsonl",
+      "rows": 825,
+      "size_bytes": 310651,
+      "status": "OK"
+    },
+    {
+      "path": "exports/json/ai_training/preference_learning_samples.jsonl",
+      "format": "jsonl",
+      "rows": 500,
+      "size_bytes": 21549571,
+      "status": "OK"
+    },
+    {
+      "path": "exports/sql/schema.sql",
+      "format": "sql",
+      "rows": null,
+      "size_bytes": 8954,
+      "status": "OK"
+    },
+    {
+      "path": "exports/sql/indexes.sql",
+      "format": "sql",
+      "rows": null,
+      "size_bytes": 1188,
+      "status": "OK"
+    },
+    {
+      "path": "exports/sql/inserts.sql",
+      "format": "sql",
+      "rows": 133998,
+      "size_bytes": 61738523,
+      "status": "OK"
+    },
+    {
+      "path": "exports/sql/README_sql_import.md",
+      "format": "md",
+      "rows": null,
+      "size_bytes": 218,
+      "status": "OK"
+    },
+    {
+      "path": "exports/mongodb/users.json",
+      "format": "mongodb_json",
+      "rows": 500,
+      "size_bytes": 783942,
+      "status": "OK"
+    },
+    {
+      "path": "exports/mongodb/exercises.json",
+      "format": "mongodb_json",
+      "rows": 350,
+      "size_bytes": 1193032,
+      "status": "OK"
+    },
+    {
+      "path": "exports/mongodb/workout_plans.json",
+      "format": "mongodb_json",
+      "rows": 1000,
+      "size_bytes": 44181281,
+      "status": "OK"
+    },
+    {
+      "path": "exports/mongodb/workout_history.json",
+      "format": "mongodb_json",
+      "rows": 18380,
+      "size_bytes": 111580514,
+      "status": "OK"
+    },
+    {
+      "path": "exports/mongodb/user_feedback.json",
+      "format": "mongodb_json",
+      "rows": 14500,
+      "size_bytes": 17631646,
+      "status": "OK"
+    },
+    {
+      "path": "exports/mongodb/mongo_import_commands.sh",
+      "format": "sh",
+      "rows": null,
+      "size_bytes": 471,
+      "status": "OK"
+    },
+    {
+      "path": "exports/export_manifest.json",
+      "format": "json",
+      "rows": null,
+      "size_bytes": 7030,
+      "status": "OK"
+    },
+    {
+      "path": "exports/export_report.txt",
+      "format": "txt",
+      "rows": null,
+      "size_bytes": 2846,
+      "status": "OK"
+    }
+  ],
+  "row_counts": {
+    "exercises": 350,
+    "users": 500,
+    "workout_plans": 1000,
+    "workout_plan_items": 17634,
+    "workout_history_sessions": 18380,
+    "workout_history_items": 80634,
+    "workout_history_summary": 1000,
+    "user_feedback": 14500
+  },
+  "warnings": [],
+  "export_status": "PASS",
+  "ready_for_stage_5_statistics": true
+}

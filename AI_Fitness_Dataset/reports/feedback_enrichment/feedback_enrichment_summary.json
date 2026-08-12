@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-08-12T08:36:22",
+  "status": "PASS",
+  "output": "master\\user_feedback_master_enriched.xlsx",
+  "before": {
+    "feedback_count": 10000,
+    "feedback_text_unique_count": 10,
+    "feedback_text_unique_ratio": 0.001,
+    "exercises_with_feedback": 147,
+    "exercise_feedback_coverage_percent": 42.0,
+    "scope_distribution": {
+      "Exercise": 6000,
+      "Session": 3000,
+      "Plan": 800,
+      "General": 200
+    },
+    "sentiment_distribution": {
+      "Negative": 1500,
+      "Neutral": 2500,
+      "Positive": 6000
+    }
+  },
+  "after": {
+    "feedback_count": 14500,
+    "feedback_text_unique_count": 3459,
+    "feedback_text_unique_ratio": 0.2386,
+    "exercises_with_feedback": 220,
+    "exercise_feedback_coverage_percent": 62.857,
+    "scope_distribution": {
+      "Exercise": 9000,
+      "Session": 4100,
+      "Plan": 1000,
+      "General": 400
+    },
+    "sentiment_distribution": {
+      "Negative": 1958,
+      "Neutral": 3771,
+      "Positive": 8771
+    }
+  },
+  "new_feedback_rows_added": 4500,
+  "old_feedback_rows_rewritten": 10000,
+  "duplicate_feedback_id_count": 0,
+  "fk_missing_count": 0,
+  "cross_consistency_mismatch_count": 0
+}

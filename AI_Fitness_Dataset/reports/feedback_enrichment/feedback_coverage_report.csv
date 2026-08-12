@@ -1,0 +1,8 @@
+﻿metric,before,after
+exercise_feedback_coverage_percent,42.0,62.857
+exercises_with_feedback,147,220
+feedback_count,10000,14500
+feedback_text_unique_count,10,3459
+feedback_text_unique_ratio,0.001,0.2386
+scope_distribution,"{'Exercise': 6000, 'Session': 3000, 'Plan': 800, 'General': 200}","{'Exercise': 9000, 'Session': 4100, 'Plan': 1000, 'General': 400}"
+sentiment_distribution,"{'Negative': 1500, 'Neutral': 2500, 'Positive': 6000}","{'Negative': 1958, 'Neutral': 3771, 'Positive': 8771}"

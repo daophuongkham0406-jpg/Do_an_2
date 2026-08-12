@@ -1,0 +1,13 @@
+﻿table,column_or_key,duplicate_count,duplicate_percent,duplicate_type,severity,note
+exercises,exercise_id,0,0.0,Hard Duplicate,PASS,Primary key duplicate check.
+users,user_id,0,0.0,Hard Duplicate,PASS,Primary key duplicate check.
+workout_plans,plan_id,0,0.0,Hard Duplicate,PASS,Primary key duplicate check.
+workout_plan_items,plan_item_id,0,0.0,Hard Duplicate,PASS,Primary key duplicate check.
+workout_history_sessions,history_session_id,0,0.0,Hard Duplicate,PASS,Primary key duplicate check.
+workout_history_items,history_item_id,0,0.0,Hard Duplicate,PASS,Primary key duplicate check.
+workout_history_summary,summary_id,0,0.0,Hard Duplicate,PASS,Primary key duplicate check.
+user_feedback,feedback_id,0,0.0,Hard Duplicate,PASS,Primary key duplicate check.
+exercises,exercise_name,0,0.0,Soft Duplicate,PASS,Duplicate names may be aliases or real duplicates.
+workout_plan_items,plan_id+week_number+day_number+exercise_id,0,0.0,Expected Repetition,PASS,Same exercise can appear in repeated weeks/days; validator already checks order collisions.
+workout_history_items,history_session_id+exercise_id,0,0.0,Suspicious Repetition,PASS,Same exercise repeated inside one logged session.
+user_feedback,feedback_text,11041,76.145,Expected Repetition,PASS,unique_ratio=0.239; text templates may repeat in synthetic data.

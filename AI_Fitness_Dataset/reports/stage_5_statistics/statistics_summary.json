@@ -1,0 +1,1215 @@
+{
+  "generated_at": "2026-08-12T08:50:33",
+  "statistics_status": "PASS",
+  "dataset_overview": {
+    "table_shapes": [
+      {
+        "table": "exercises",
+        "rows": 350,
+        "columns": 45,
+        "primary_key": "exercise_id",
+        "unique_primary_keys": 350,
+        "duplicate_primary_keys": 0,
+        "blank_primary_keys": 0,
+        "memory_size_bytes": 1468910,
+        "file_size_bytes": 641716,
+        "status": "PASS"
+      },
+      {
+        "table": "users",
+        "rows": 500,
+        "columns": 32,
+        "primary_key": "user_id",
+        "unique_primary_keys": 500,
+        "duplicate_primary_keys": 0,
+        "blank_primary_keys": 0,
+        "memory_size_bytes": 1108626,
+        "file_size_bytes": 233165,
+        "status": "PASS"
+      },
+      {
+        "table": "workout_plans",
+        "rows": 1000,
+        "columns": 27,
+        "primary_key": "plan_id",
+        "unique_primary_keys": 1000,
+        "duplicate_primary_keys": 0,
+        "blank_primary_keys": 0,
+        "memory_size_bytes": 2007735,
+        "file_size_bytes": 500856,
+        "status": "PASS"
+      },
+      {
+        "table": "workout_plan_items",
+        "rows": 17634,
+        "columns": 32,
+        "primary_key": "plan_item_id",
+        "unique_primary_keys": 17634,
+        "duplicate_primary_keys": 0,
+        "blank_primary_keys": 0,
+        "memory_size_bytes": 50173435,
+        "file_size_bytes": 19892520,
+        "status": "PASS"
+      },
+      {
+        "table": "workout_history_sessions",
+        "rows": 18380,
+        "columns": 30,
+        "primary_key": "history_session_id",
+        "unique_primary_keys": 18380,
+        "duplicate_primary_keys": 0,
+        "blank_primary_keys": 0,
+        "memory_size_bytes": 34810643,
+        "file_size_bytes": 3953086,
+        "status": "PASS"
+      },
+      {
+        "table": "workout_history_items",
+        "rows": 80634,
+        "columns": 28,
+        "primary_key": "history_item_id",
+        "unique_primary_keys": 80634,
+        "duplicate_primary_keys": 0,
+        "blank_primary_keys": 0,
+        "memory_size_bytes": 144683666,
+        "file_size_bytes": 18481047,
+        "status": "PASS"
+      },
+      {
+        "table": "workout_history_summary",
+        "rows": 1000,
+        "columns": 18,
+        "primary_key": "summary_id",
+        "unique_primary_keys": 1000,
+        "duplicate_primary_keys": 0,
+        "blank_primary_keys": 0,
+        "memory_size_bytes": 1111676,
+        "file_size_bytes": 104825,
+        "status": "PASS"
+      },
+      {
+        "table": "user_feedback",
+        "rows": 14500,
+        "columns": 28,
+        "primary_key": "feedback_id",
+        "unique_primary_keys": 14500,
+        "duplicate_primary_keys": 0,
+        "blank_primary_keys": 0,
+        "memory_size_bytes": 31589556,
+        "file_size_bytes": 7033589,
+        "status": "PASS"
+      }
+    ],
+    "total_rows": 133998,
+    "total_columns": 240,
+    "largest_table_by_rows": "workout_history_items",
+    "largest_table_by_file_size": "workout_plan_items",
+    "smallest_table_by_rows": "exercises"
+  },
+  "missing_values": {
+    "critical_missing_count": 0,
+    "top_missing": [
+      {
+        "table": "workout_history_items",
+        "column": "actual_load_kg",
+        "rows": 80634,
+        "missing_count": 80634,
+        "missing_percent": 100.0,
+        "missing_type": "Expected Missing",
+        "severity": "PASS",
+        "note": "Missing is expected for this context."
+      },
+      {
+        "table": "workout_plan_items",
+        "column": "duration_seconds",
+        "rows": 17634,
+        "missing_count": 17634,
+        "missing_percent": 100.0,
+        "missing_type": "Expected Missing",
+        "severity": "PASS",
+        "note": "Missing is expected for this context."
+      },
+      {
+        "table": "user_feedback",
+        "column": "exercise_id",
+        "rows": 14500,
+        "missing_count": 5500,
+        "missing_percent": 37.931,
+        "missing_type": "Expected Missing",
+        "severity": "PASS",
+        "note": "Optional feedback scope columns may be blank for General/Plan/Session feedback."
+      },
+      {
+        "table": "user_feedback",
+        "column": "history_item_id",
+        "rows": 14500,
+        "missing_count": 5500,
+        "missing_percent": 37.931,
+        "missing_type": "Expected Missing",
+        "severity": "PASS",
+        "note": "Optional feedback scope columns may be blank for General/Plan/Session feedback."
+      },
+      {
+        "table": "user_feedback",
+        "column": "plan_item_id",
+        "rows": 14500,
+        "missing_count": 5500,
+        "missing_percent": 37.931,
+        "missing_type": "Expected Missing",
+        "severity": "PASS",
+        "note": "Optional feedback scope columns may be blank for General/Plan/Session feedback."
+      },
+      {
+        "table": "workout_history_items",
+        "column": "exercise_enjoyment",
+        "rows": 80634,
+        "missing_count": 4737,
+        "missing_percent": 5.875,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "workout_history_items",
+        "column": "technique_quality",
+        "rows": 80634,
+        "missing_count": 4737,
+        "missing_percent": 5.875,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "workout_history_items",
+        "column": "actual_rpe",
+        "rows": 80634,
+        "missing_count": 4737,
+        "missing_percent": 5.875,
+        "missing_type": "Expected Missing",
+        "severity": "PASS",
+        "note": "Missing is expected for this context."
+      },
+      {
+        "table": "workout_history_items",
+        "column": "difficulty_rating",
+        "rows": 80634,
+        "missing_count": 4737,
+        "missing_percent": 5.875,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "user_feedback",
+        "column": "history_session_id",
+        "rows": 14500,
+        "missing_count": 1400,
+        "missing_percent": 9.655,
+        "missing_type": "Expected Missing",
+        "severity": "PASS",
+        "note": "Optional feedback scope columns may be blank for General/Plan/Session feedback."
+      },
+      {
+        "table": "workout_history_sessions",
+        "column": "fatigue_after",
+        "rows": 18380,
+        "missing_count": 1084,
+        "missing_percent": 5.898,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "workout_history_sessions",
+        "column": "session_rpe",
+        "rows": 18380,
+        "missing_count": 1084,
+        "missing_percent": 5.898,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "user_feedback",
+        "column": "plan_id",
+        "rows": 14500,
+        "missing_count": 400,
+        "missing_percent": 2.759,
+        "missing_type": "Expected Missing",
+        "severity": "PASS",
+        "note": "Optional feedback scope columns may be blank for General/Plan/Session feedback."
+      },
+      {
+        "table": "workout_history_summary",
+        "column": "fatigue_after",
+        "rows": 1000,
+        "missing_count": 58,
+        "missing_percent": 5.8,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "workout_history_summary",
+        "column": "avg_enjoyment",
+        "rows": 1000,
+        "missing_count": 58,
+        "missing_percent": 5.8,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "workout_history_summary",
+        "column": "session_rpe",
+        "rows": 1000,
+        "missing_count": 58,
+        "missing_percent": 5.8,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "workout_history_summary",
+        "column": "avg_difficulty",
+        "rows": 1000,
+        "missing_count": 58,
+        "missing_percent": 5.8,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "exercises",
+        "column": "range_of_motion_type",
+        "rows": 350,
+        "missing_count": 19,
+        "missing_percent": 5.429,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "exercises",
+        "column": "load_position",
+        "rows": 350,
+        "missing_count": 11,
+        "missing_percent": 3.143,
+        "missing_type": "Acceptable Missing",
+        "severity": "PASS",
+        "note": "Low/acceptable missing rate."
+      },
+      {
+        "table": "exercises",
+        "column": "resistance_profile",
+        "rows": 350,
+        "missing_count": 0,
+        "missing_percent": 0.0,
+        "missing_type": "No Missing",
+        "severity": "PASS",
+        "note": "No missing values."
+      }
+    ]
+  },
+  "duplicates": {
+    "duplicate_primary_key_tables": [],
+    "duplicate_report": [
+      {
+        "table": "exercises",
+        "column_or_key": "exercise_id",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Hard Duplicate",
+        "severity": "PASS",
+        "note": "Primary key duplicate check."
+      },
+      {
+        "table": "users",
+        "column_or_key": "user_id",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Hard Duplicate",
+        "severity": "PASS",
+        "note": "Primary key duplicate check."
+      },
+      {
+        "table": "workout_plans",
+        "column_or_key": "plan_id",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Hard Duplicate",
+        "severity": "PASS",
+        "note": "Primary key duplicate check."
+      },
+      {
+        "table": "workout_plan_items",
+        "column_or_key": "plan_item_id",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Hard Duplicate",
+        "severity": "PASS",
+        "note": "Primary key duplicate check."
+      },
+      {
+        "table": "workout_history_sessions",
+        "column_or_key": "history_session_id",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Hard Duplicate",
+        "severity": "PASS",
+        "note": "Primary key duplicate check."
+      },
+      {
+        "table": "workout_history_items",
+        "column_or_key": "history_item_id",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Hard Duplicate",
+        "severity": "PASS",
+        "note": "Primary key duplicate check."
+      },
+      {
+        "table": "workout_history_summary",
+        "column_or_key": "summary_id",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Hard Duplicate",
+        "severity": "PASS",
+        "note": "Primary key duplicate check."
+      },
+      {
+        "table": "user_feedback",
+        "column_or_key": "feedback_id",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Hard Duplicate",
+        "severity": "PASS",
+        "note": "Primary key duplicate check."
+      },
+      {
+        "table": "exercises",
+        "column_or_key": "exercise_name",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Soft Duplicate",
+        "severity": "PASS",
+        "note": "Duplicate names may be aliases or real duplicates."
+      },
+      {
+        "table": "workout_plan_items",
+        "column_or_key": "plan_id+week_number+day_number+exercise_id",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Expected Repetition",
+        "severity": "PASS",
+        "note": "Same exercise can appear in repeated weeks/days; validator already checks order collisions."
+      },
+      {
+        "table": "workout_history_items",
+        "column_or_key": "history_session_id+exercise_id",
+        "duplicate_count": 0,
+        "duplicate_percent": 0.0,
+        "duplicate_type": "Suspicious Repetition",
+        "severity": "PASS",
+        "note": "Same exercise repeated inside one logged session."
+      },
+      {
+        "table": "user_feedback",
+        "column_or_key": "feedback_text",
+        "duplicate_count": 11041,
+        "duplicate_percent": 76.145,
+        "duplicate_type": "Expected Repetition",
+        "severity": "PASS",
+        "note": "unique_ratio=0.239; text templates may repeat in synthetic data."
+      }
+    ]
+  },
+  "exercise_statistics": {
+    "exercise_count": 350,
+    "category_distribution": {
+      "Resistance Training": 279,
+      "Bodyweight": 71
+    },
+    "difficulty_distribution": {
+      "Beginner": 152,
+      "Intermediate": 141,
+      "Advanced": 57
+    },
+    "top_equipment": {
+      "Dumbbell": 68,
+      "Barbell": 56,
+      "Cable Machine": 46,
+      "Mat": 32,
+      "Flat Bench": 23,
+      "Weight Plates": 23,
+      "D-Handle": 19,
+      "Bench": 18,
+      "Kettlebell": 18,
+      "Bodyweight": 13,
+      "Incline Bench": 13,
+      "Rope Attachment": 12,
+      "Squat Rack": 9,
+      "Smith Machine": 9,
+      "Landmine": 8,
+      "Resistance Band": 8,
+      "Straight Bar": 7,
+      "Decline Bench": 6,
+      "Pull-up Bar": 5,
+      "Cable": 5
+    },
+    "top_primary_muscles": {
+      "Gluteus Maximus": 75,
+      "Latissimus Dorsi": 47,
+      "Quadriceps": 45,
+      "Triceps Brachii": 40,
+      "Rectus Abdominis": 34,
+      "Hamstrings": 33,
+      "Pectoralis Major": 29,
+      "Rhomboids": 26,
+      "Anterior Deltoid": 24,
+      "Lateral Deltoid": 19,
+      "Biceps Brachii": 17,
+      "Obliques": 16,
+      "Brachialis": 16,
+      "Upper Trapezius": 15,
+      "Transverse Abdominis": 13,
+      "Middle Trapezius": 13,
+      "Core": 10,
+      "Posterior Deltoid": 8,
+      "Gluteus Medius": 8,
+      "Erector Spinae": 7
+    },
+    "top_secondary_muscles": {
+      "Anterior Deltoid": 60,
+      "Hamstrings": 57,
+      "Biceps Brachii": 45,
+      "Triceps Brachii": 43,
+      "Posterior Deltoid": 35,
+      "Erector Spinae": 28,
+      "Brachialis": 27,
+      "Obliques": 23,
+      "Gluteus Maximus": 23,
+      "Quadriceps": 19,
+      "Rhomboids": 18,
+      "Lateral Deltoid": 17,
+      "Trapezius": 16,
+      "Brachioradialis": 16,
+      "None": 14,
+      "Upper Trapezius": 14,
+      "Anconeus": 14,
+      "Middle Trapezius": 11,
+      "Serratus Anterior": 11,
+      "Pectoralis Major": 10
+    },
+    "top_movement_patterns": {
+      "Squat": 34,
+      "Horizontal Push": 33,
+      "Vertical Push": 33,
+      "Horizontal Pull": 32,
+      "Vertical Pull": 28,
+      "Elbow Flexion": 20,
+      "Hinge": 19,
+      "Trunk Flexion": 17,
+      "Elbow Extension": 17,
+      "Hip Extension": 12,
+      "Trunk Rotation": 11,
+      "Core Anti-Extension": 10,
+      "Gait": 10,
+      "Ankle Plantarflexion": 8,
+      "Scapular Elevation": 8,
+      "Total Body Integration": 8,
+      "Knee Extension": 7,
+      "Lunge": 7,
+      "Knee Flexion": 7,
+      "Core Anti-Rotation": 5
+    },
+    "goal_coverage": {
+      "Athletic Performance": 350,
+      "Balance": 350,
+      "Conditioning": 350,
+      "Coordination": 350,
+      "Core Stability": 350,
+      "Corrective Exercise": 350,
+      "Fat Loss": 350,
+      "Flexibility": 350,
+      "General Fitness": 350,
+      "Grip Strength": 350,
+      "Gymnastics": 350,
+      "Injury Prevention": 350,
+      "Joint Health": 350,
+      "Knee Health": 350,
+      "Mobility": 350,
+      "Mobility and Flexibility": 350,
+      "Muscle Gain": 350,
+      "Muscular Endurance": 350,
+      "Posture Correction": 350,
+      "Power": 350,
+      "Rehabilitation": 350,
+      "Rehabilitation and Joint Health": 350,
+      "Shoulder Health": 350,
+      "Shin Splint Relief": 350,
+      "Sport Performance": 350,
+      "Strength": 350,
+      "Strength Preparation": 350,
+      "Warm-up": 350
+    },
+    "contraindication_distribution": {
+      "Shoulder impingement": 41,
+      "Lumbar disc herniation": 32,
+      "Shoulder instability": 24,
+      "None": 21,
+      "Wrist pain": 20,
+      "Acute low back pain": 17,
+      "Elbow tendinopathy": 14,
+      "Biceps tendonitis": 13,
+      "Acute shoulder pain": 12,
+      "Knee instability": 11,
+      "Achilles tendinopathy": 10,
+      "Lumbar disc issues": 9,
+      "Acute shoulder impingement": 8,
+      "Severe shoulder impingement": 8,
+      "Wrist impingement": 7,
+      "Anterior shoulder instability": 7,
+      "Patellofemoral pain": 7,
+      "Cervical spine issues": 6,
+      "Severe knee osteoarthritis": 6,
+      "Acute hamstring strain": 6,
+      "Acute low-back pain": 5,
+      "Painful overhead range": 5,
+      "Acute knee pain": 5,
+      "Anterior shoulder pain": 5,
+      "Medial epicondylitis": 4,
+      "Spinal compression issues": 4,
+      "Severe hip osteoarthritis": 4,
+      "Acute groin strain": 4,
+      "Shoulder mobility issues": 4,
+      "Carpal tunnel syndrome": 4
+    },
+    "met_value_distribution": {
+      "min": 1.5,
+      "mean": 3.575,
+      "median": 3.5,
+      "max": 8.0
+    },
+    "technical_complexity_distribution": {
+      "min": 1.0,
+      "mean": 2.526,
+      "median": 2.5,
+      "max": 5.0
+    },
+    "mobility_requirement_distribution": {
+      "min": 1.0,
+      "mean": 2.446,
+      "median": 2.0,
+      "max": 5.0
+    },
+    "balance_requirement_distribution": {
+      "min": 1.0,
+      "mean": 2.367,
+      "median": 2.0,
+      "max": 5.0
+    }
+  },
+  "user_statistics": {
+    "user_count": 500,
+    "age_distribution": {
+      "min": 18.0,
+      "mean": 29.168,
+      "median": 28.0,
+      "max": 59.0
+    },
+    "gender_distribution": {
+      "Male": 188,
+      "Female": 144,
+      "Prefer not to say": 87,
+      "Other": 81
+    },
+    "height_distribution": {
+      "min": 150.0,
+      "mean": 166.918,
+      "median": 167.0,
+      "max": 188.0
+    },
+    "weight_distribution": {
+      "min": 38.3,
+      "mean": 68.65,
+      "median": 68.15,
+      "max": 113.5
+    },
+    "bmi_distribution": {
+      "min": 16.37,
+      "mean": 24.589,
+      "median": 24.54,
+      "max": 34.6
+    },
+    "primary_goal_distribution": {
+      "Athletic Performance": 75,
+      "Muscle Gain": 70,
+      "General Fitness": 69,
+      "Strength": 68,
+      "Fat Loss": 60,
+      "Muscular Endurance": 58,
+      "Mobility and Flexibility": 54,
+      "Rehabilitation and Joint Health": 46
+    },
+    "secondary_goal_distribution": {
+      "Muscular Endurance": 69,
+      "Rehabilitation and Joint Health": 68,
+      "Mobility and Flexibility": 67,
+      "General Fitness": 63,
+      "Muscle Gain": 62,
+      "Athletic Performance": 62,
+      "Fat Loss": 55,
+      "Strength": 54
+    },
+    "training_level_distribution": {
+      "Advanced": 176,
+      "Intermediate": 171,
+      "Beginner": 153
+    },
+    "training_days_per_week_distribution": {
+      "4": 113,
+      "3": 105,
+      "2": 100,
+      "6": 94,
+      "5": 88
+    },
+    "available_equipment_distribution": {
+      "Bodyweight": 188,
+      "Mat": 134,
+      "Bench": 97,
+      "Dumbbell": 83,
+      "Resistance Band": 76,
+      "Pull-up Bar": 74,
+      "Barbell": 74,
+      "Power Rack": 63,
+      "Weight Plate": 59,
+      "Cable Machine": 49,
+      "Floor": 35,
+      "Adjustable Bench": 32,
+      "Ab Wheel": 32,
+      "Parallettes": 32,
+      "Plates": 31,
+      "Chest Press Machine": 29,
+      "Dumbbells": 29,
+      "Seated Leg Curl Machine": 27,
+      "Wall": 27,
+      "Heel Wedge": 27,
+      "Plyo Box or Bench": 27,
+      "Lat Pulldown Machine": 26,
+      "Resistance Band (Optional)": 26,
+      "Barbell Pad": 26,
+      "Preacher Bench": 26,
+      "Plyo Box": 25,
+      "Flat Bench or Mat": 25,
+      "Squat Rack": 25,
+      "High Flat Bench": 25,
+      "Hack Squat Machine": 24
+    },
+    "preferred_split_distribution": {
+      "Auto": 139,
+      "Upper Lower": 95,
+      "Chest Back Legs": 85,
+      "Body Part Split": 82,
+      "Push Pull Legs": 80,
+      "Full Body": 19
+    },
+    "injury_distribution": {
+      "Ankle instability": 14,
+      "Shoulder impingement": 14,
+      "Previous knee pain": 11,
+      "Acute low back pain": 7,
+      "Wrist pain": 6,
+      "Mild lower-back discomfort": 5,
+      "Knee valgus": 5,
+      "Occasional lower back discomfort": 4,
+      "Wrist discomfort under load": 4,
+      "Limited ankle mobility": 3,
+      "Previous shoulder irritation": 3,
+      "Wrist discomfort during pressing": 1,
+      "Mild shoulder discomfort": 1,
+      "Reduced hip mobility": 1,
+      "Knee pain during deep flexion": 1
+    },
+    "session_duration_distribution": {
+      "min": 30.0,
+      "mean": 65.87,
+      "median": 70.0,
+      "max": 90.0
+    }
+  },
+  "plan_statistics": {
+    "plan_count": 1000,
+    "plan_items_count": 17634,
+    "plans_per_user": {
+      "min": 2,
+      "mean": 2.0,
+      "max": 2
+    },
+    "items_per_plan": {
+      "min": 2,
+      "mean": 17.634,
+      "max": 48
+    },
+    "items_per_day_session": {
+      "min": 1,
+      "mean": 4.473,
+      "max": 8
+    },
+    "days_per_week_distribution": {
+      "4": 227,
+      "3": 210,
+      "2": 200,
+      "6": 188,
+      "5": 175
+    },
+    "split_distribution": {
+      "Auto": 248,
+      "Upper Lower": 198,
+      "Push Pull Legs": 180,
+      "Chest Back Legs": 170,
+      "Body Part Split": 164,
+      "Full Body": 40
+    },
+    "goal_distribution": {
+      "Athletic Performance": 150,
+      "Muscle Gain": 140,
+      "General Fitness": 138,
+      "Strength": 136,
+      "Fat Loss": 120,
+      "Muscular Endurance": 116,
+      "Mobility and Flexibility": 108,
+      "Rehabilitation and Joint Health": 92
+    },
+    "training_level_snapshot_distribution": {
+      "Advanced": 352,
+      "Intermediate": 342,
+      "Beginner": 306
+    },
+    "progression_strategy_distribution": {
+      "Double Progression": 258,
+      "RPE-Based": 252,
+      "Linear Progression": 252,
+      "Auto": 238
+    },
+    "planned_sets_distribution": {
+      "min": 1.0,
+      "mean": 2.231,
+      "median": 2.0,
+      "max": 3.0
+    },
+    "rep_min_distribution": {
+      "min": 4.0,
+      "mean": 8.108,
+      "median": 8.0,
+      "max": 12.0
+    },
+    "rep_max_distribution": {
+      "min": 6.0,
+      "mean": 12.938,
+      "median": 15.0,
+      "max": 20.0
+    },
+    "target_rpe_distribution": {
+      "min": 5.0,
+      "mean": 6.997,
+      "median": 7.0,
+      "max": 8.0
+    },
+    "rest_seconds_distribution": {
+      "min": 45.0,
+      "mean": 76.101,
+      "median": 60.0,
+      "max": 150.0
+    },
+    "exercise_order_distribution": {
+      "min": 1.0,
+      "mean": 3.325,
+      "median": 3.0,
+      "max": 8.0
+    },
+    "unique_plan_structures": 590,
+    "duplicate_plan_structures": 410,
+    "average_unique_exercises_per_plan": 9.52,
+    "exercise_reuse_rate": 79.792,
+    "top_exercises_in_plans": {
+      "Push-Up": 2114,
+      "Bird Dog": 466,
+      "Plank": 454,
+      "Dead Bug": 395,
+      "Crab Walk": 375,
+      "Side-Lying Inner Thigh Raise": 372,
+      "Mountain Climbers": 367,
+      "Bicycle Crunch": 354,
+      "Band Pull-Apart": 346,
+      "Glute Bridge": 316,
+      "Dumbbell Front Raise": 308,
+      "Side Plank": 308,
+      "Reverse Crunch": 300,
+      "Glute Bridge March": 299,
+      "Lying Leg Raise": 282,
+      "Banded Good Morning": 261,
+      "Lateral Band Walk": 260,
+      "Dumbbell Hammer Curl": 256,
+      "Barbell Biceps Curl": 245,
+      "Dumbbell Shrug": 228
+    }
+  },
+  "history_statistics": {
+    "history_session_count": 18380,
+    "history_item_count": 80634,
+    "sessions_per_user": {
+      "min": 32,
+      "mean": 36.76,
+      "max": 41
+    },
+    "sessions_per_plan": {
+      "min": 16,
+      "mean": 18.38,
+      "max": 22
+    },
+    "items_per_session": {
+      "min": 1,
+      "mean": 4.387,
+      "max": 7
+    },
+    "completion_status_distribution": {
+      "Completed": 14857,
+      "Partial": 2439,
+      "Skipped": 1084
+    },
+    "completion_pct_distribution": {
+      "min": 0.0,
+      "mean": 94.102,
+      "median": 100.0,
+      "max": 100.0
+    },
+    "set_completion_pct_distribution": {
+      "min": 0.0,
+      "mean": 94.102,
+      "median": 100.0,
+      "max": 100.0
+    },
+    "actual_duration_distribution": {
+      "min": 0.0,
+      "mean": 49.412,
+      "median": 53.0,
+      "max": 99.0
+    },
+    "session_rpe_distribution": {
+      "min": 4.5,
+      "mean": 7.134,
+      "median": 7.0,
+      "max": 9.3
+    },
+    "energy_before_distribution": {
+      "min": 2.0,
+      "mean": 3.045,
+      "median": 3.0,
+      "max": 4.0
+    },
+    "fatigue_after_distribution": {
+      "min": 1.0,
+      "mean": 2.556,
+      "median": 2.0,
+      "max": 5.0
+    },
+    "pain_session_percent": 2.873,
+    "pain_area_distribution": {
+      "Joint discomfort": 326,
+      "Knee": 157,
+      "Back": 43,
+      "Shoulder": 2
+    },
+    "recovery_flag_distribution": {
+      "Ready": 14292,
+      "Monitor": 3560,
+      "Review": 528
+    },
+    "planned_sets_total": 181724,
+    "actual_sets_total": 171118,
+    "set_completion_rate": 94.164,
+    "planned_items_total": 80634,
+    "completed_items_total": 75897,
+    "item_completion_rate": 94.125,
+    "actual_sets_completed_distribution": {
+      "min": 0.0,
+      "mean": 2.122,
+      "median": 2.0,
+      "max": 3.0
+    },
+    "actual_rpe_distribution": {
+      "min": 4.5,
+      "mean": 7.15,
+      "median": 7.2,
+      "max": 9.3
+    }
+  },
+  "feedback_statistics": {
+    "feedback_count": 14500,
+    "feedback_per_user": {
+      "min": 2,
+      "mean": 29.0,
+      "max": 187
+    },
+    "feedback_scope_distribution": {
+      "Exercise": 9000,
+      "Session": 4100,
+      "Plan": 1000,
+      "General": 400
+    },
+    "feedback_type_distribution": {
+      "Rating": 5798,
+      "Preference": 5063,
+      "Progression": 1321,
+      "Difficulty": 1088,
+      "Duration": 533,
+      "Free Text": 400,
+      "Safety": 297
+    },
+    "sentiment_distribution": {
+      "Positive": 8771,
+      "Neutral": 3771,
+      "Negative": 1958
+    },
+    "rating_distribution": {
+      "5": 4568,
+      "4": 4203,
+      "3": 3771,
+      "2": 1196,
+      "1": 762
+    },
+    "enjoyment_rating_distribution": {
+      "4": 7290,
+      "3": 3947,
+      "5": 1522,
+      "2": 1243,
+      "1": 498
+    },
+    "difficulty_feedback_distribution": {
+      "Not Applicable": 5500,
+      "Appropriate": 4670,
+      "Too Easy": 3050,
+      "Too Hard": 1280
+    },
+    "fatigue_feedback_distribution": {
+      "Not Applicable": 9400,
+      "Low": 2537,
+      "Moderate": 1925,
+      "High": 620,
+      "Excessive": 18
+    },
+    "pain_feedback_distribution": {
+      "No Pain": 13803,
+      "Not Applicable": 400,
+      "Mild Discomfort": 269,
+      "Pain": 28
+    },
+    "duration_feedback_distribution": {
+      "Not Applicable": 10400,
+      "Appropriate": 2555,
+      "Too Long": 864,
+      "Too Short": 681
+    },
+    "exercise_preference_distribution": {
+      "Not Applicable": 5500,
+      "Like": 5384,
+      "Neutral": 2336,
+      "Dislike": 1280
+    },
+    "progression_preference_distribution": {
+      "Maintain": 8839,
+      "Increase Difficulty": 3050,
+      "Reduce Difficulty": 2211,
+      "Not Applicable": 400
+    },
+    "requested_action_distribution": {
+      "Keep": 4891,
+      "No Preference": 3221,
+      "Increase Difficulty": 3050,
+      "Replace Exercise": 1094,
+      "Reduce Session Duration": 789,
+      "Increase Session Duration": 681,
+      "Reduce Volume": 443,
+      "Reduce Difficulty": 146,
+      "Review Safety": 145,
+      "Change Split": 40
+    },
+    "feedback_status_distribution": {
+      "Active": 14500
+    },
+    "source_context_distribution": {
+      "after_exercise": 9000,
+      "after_session": 4100,
+      "after_plan": 1000,
+      "weekly_checkin": 400
+    },
+    "feedback_text_total_count": 14500,
+    "feedback_text_unique_count": 3459,
+    "feedback_text_unique_ratio": 0.239,
+    "top_repeated_feedback_text": {
+      "Buổi tập hôm nay ở mức ổn, có vài đoạn hơi đuối nhưng chưa cần thay đổi lớn. Mức đánh giá 3/5, khi theo giáo án hiện tại.": 155,
+      "Buổi tập hôm nay ở mức ổn, có vài đoạn hơi đuối nhưng chưa cần thay đổi lớn. Mức đánh giá 3/5, khi tập với mức hiện tại.": 151,
+      "Buổi tập hôm nay ở mức ổn, có vài đoạn hơi đuối nhưng chưa cần thay đổi lớn. Mức đánh giá 3/5, trong nhịp tập tuần này.": 148,
+      "Buổi tập này vừa sức, tôi hoàn thành tốt phần lớn nội dung và muốn giữ nhịp hiện tại. Mức đánh giá 4/5, khi tập với mức hiện tại.": 147,
+      "Buổi tập này vừa sức, tôi hoàn thành tốt phần lớn nội dung và muốn giữ nhịp hiện tại. Mức đánh giá 4/5, trong nhịp tập tuần này.": 138,
+      "Buổi tập này vừa sức, tôi hoàn thành tốt phần lớn nội dung và muốn giữ nhịp hiện tại. Mức đánh giá 5/5, trong nhịp tập tuần này.": 137,
+      "Buổi tập hôm nay ở mức ổn, có vài đoạn hơi đuối nhưng chưa cần thay đổi lớn. Mức đánh giá 3/5, ở lần ghi nhận gần đây.": 135,
+      "Buổi tập hôm nay ở mức ổn, có vài đoạn hơi đuối nhưng chưa cần thay đổi lớn. Mức đánh giá 3/5, ở phần cuối buổi.": 125,
+      "Buổi tập này vừa sức, tôi hoàn thành tốt phần lớn nội dung và muốn giữ nhịp hiện tại. Mức đánh giá 4/5, khi theo giáo án hiện tại.": 124,
+      "Buổi tập này vừa sức, tôi hoàn thành tốt phần lớn nội dung và muốn giữ nhịp hiện tại. Mức đánh giá 5/5, sau khi hoàn thành phần chính.": 122
+    },
+    "feedback_reason_tags_distribution": {
+      "Good fit": 6000,
+      "No Pain": 4453,
+      "Positive": 2771,
+      "Too easy": 2729,
+      "Monitor": 2500,
+      "Appropriate": 2359,
+      "Neutral": 2307,
+      "Keep": 2300,
+      "Like": 1644,
+      "Needs adjustment": 1500,
+      "No Preference": 1421,
+      "Too hard": 960,
+      "Low enjoyment": 960,
+      "Negative": 458,
+      "Too Easy": 321,
+      "Increase Difficulty": 321,
+      "Too Hard": 320,
+      "Dislike": 320,
+      "Discomfort": 250,
+      "Replace Exercise": 162,
+      "Reduce Difficulty": 146,
+      "Reduce Volume": 63,
+      "Mild Discomfort": 47,
+      "Review Safety": 47,
+      "Change Split": 40
+    },
+    "average_feedback_text_length": 150.202
+  },
+  "coverage_statistics": [
+    {
+      "coverage_metric": "users_with_plans",
+      "source_table": "users",
+      "target_table": "workout_plans",
+      "source_count": 500,
+      "covered_count": 500,
+      "uncovered_count": 0,
+      "coverage_percent": 100.0,
+      "status": "Excellent Coverage",
+      "note": "Users represented in workout plans."
+    },
+    {
+      "coverage_metric": "users_with_history",
+      "source_table": "users",
+      "target_table": "workout_history_sessions",
+      "source_count": 500,
+      "covered_count": 500,
+      "uncovered_count": 0,
+      "coverage_percent": 100.0,
+      "status": "Excellent Coverage",
+      "note": "Users represented in workout history."
+    },
+    {
+      "coverage_metric": "users_with_feedback",
+      "source_table": "users",
+      "target_table": "user_feedback",
+      "source_count": 500,
+      "covered_count": 500,
+      "uncovered_count": 0,
+      "coverage_percent": 100.0,
+      "status": "Excellent Coverage",
+      "note": "Users represented in feedback."
+    },
+    {
+      "coverage_metric": "exercises_used_in_plan_items",
+      "source_table": "exercises",
+      "target_table": "workout_plan_items",
+      "source_count": 350,
+      "covered_count": 221,
+      "uncovered_count": 129,
+      "coverage_percent": 63.143,
+      "status": "Moderate Coverage",
+      "note": "Exercise library coverage in generated plans."
+    },
+    {
+      "coverage_metric": "exercises_used_in_history_items",
+      "source_table": "exercises",
+      "target_table": "workout_history_items",
+      "source_count": 350,
+      "covered_count": 220,
+      "uncovered_count": 130,
+      "coverage_percent": 62.857,
+      "status": "Moderate Coverage",
+      "note": "Exercise library coverage in history."
+    },
+    {
+      "coverage_metric": "exercises_used_in_feedback",
+      "source_table": "exercises",
+      "target_table": "user_feedback",
+      "source_count": 350,
+      "covered_count": 220,
+      "uncovered_count": 130,
+      "coverage_percent": 62.857,
+      "status": "Moderate Coverage",
+      "note": "Exercise library coverage in feedback."
+    },
+    {
+      "coverage_metric": "plans_with_items",
+      "source_table": "workout_plans",
+      "target_table": "workout_plan_items",
+      "source_count": 1000,
+      "covered_count": 1000,
+      "uncovered_count": 0,
+      "coverage_percent": 100.0,
+      "status": "Excellent Coverage",
+      "note": "Plans with prescribed items."
+    },
+    {
+      "coverage_metric": "plans_with_history",
+      "source_table": "workout_plans",
+      "target_table": "workout_history_sessions",
+      "source_count": 1000,
+      "covered_count": 1000,
+      "uncovered_count": 0,
+      "coverage_percent": 100.0,
+      "status": "Excellent Coverage",
+      "note": "Plans with logged history."
+    },
+    {
+      "coverage_metric": "plans_with_feedback",
+      "source_table": "workout_plans",
+      "target_table": "user_feedback",
+      "source_count": 1000,
+      "covered_count": 1000,
+      "uncovered_count": 0,
+      "coverage_percent": 100.0,
+      "status": "Excellent Coverage",
+      "note": "Plans with feedback context."
+    },
+    {
+      "coverage_metric": "history_sessions_with_items",
+      "source_table": "workout_history_sessions",
+      "target_table": "workout_history_items",
+      "source_count": 18380,
+      "covered_count": 18380,
+      "uncovered_count": 0,
+      "coverage_percent": 100.0,
+      "status": "Excellent Coverage",
+      "note": "Sessions with item-level logs."
+    },
+    {
+      "coverage_metric": "history_items_with_feedback",
+      "source_table": "workout_history_items",
+      "target_table": "user_feedback",
+      "source_count": 80634,
+      "covered_count": 9000,
+      "uncovered_count": 71634,
+      "coverage_percent": 11.162,
+      "status": "Needs Improvement",
+      "note": "History item coverage in explicit feedback; low is normal because feedback is sampled."
+    }
+  ],
+  "recommendations": []
+}

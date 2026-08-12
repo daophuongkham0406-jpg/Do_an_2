@@ -1,0 +1,3 @@
+﻿issue_id,severity,dataset,column,row_id,message,suggested_fix
+MLISSUE000001,WARNING,recommendation,recommended_action,Replace Exercise,Low sample count for label Replace Exercise: 4.,Review class balance before Stage 6C training.
+MLISSUE000002,WARNING,recommendation,recommended_action,Increase Difficulty,Low sample count for label Increase Difficulty: 2.,Review class balance before Stage 6C training.

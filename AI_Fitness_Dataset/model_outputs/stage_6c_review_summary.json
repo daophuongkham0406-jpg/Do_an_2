@@ -1,0 +1,121 @@
+{
+  "stage_6c_review_status": "PASS WITH NOTES",
+  "ready_for_stage_6d": true,
+  "checked_at": "2026-08-12T10:22:33",
+  "files_checked": {
+    "models/recommendation_model.pkl": true,
+    "models/preference_model.pkl": true,
+    "models/safety_risk_model.pkl": true,
+    "models/recommendation_preprocessor.pkl": true,
+    "models/preference_preprocessor.pkl": true,
+    "models/safety_preprocessor.pkl": true,
+    "models/recommendation_label_encoder.pkl": true,
+    "models/preference_label_encoder.pkl": true,
+    "models/safety_label_encoder.pkl": true,
+    "models/feature_columns.json": true,
+    "models/model_metrics.json": true,
+    "models/model_registry.json": true,
+    "model_outputs/model_evaluation_summary.json": true,
+    "model_outputs/model_evaluation_report.md": true,
+    "model_outputs/model_training_log.txt": true,
+    "model_outputs/confusion_matrices.json": true,
+    "model_outputs/feature_importance.json": true,
+    "model_outputs/unsafe_prediction_report.json": true,
+    "model_outputs/prediction_examples.json": true,
+    "model_outputs/recommendation_classification_report.json": true,
+    "model_outputs/preference_classification_report.json": true,
+    "model_outputs/safety_classification_report.json": true
+  },
+  "models": {
+    "recommendation": {
+      "status": "PASS WITH NOTES",
+      "accuracy": 0.8266666666666667,
+      "macro_f1": 0.41219422700587083,
+      "main_issue": "Accuracy is acceptable but macro F1 is low because rare classes are not learned well.",
+      "weak_classes": [
+        "Increase Difficulty",
+        "Reduce Volume",
+        "Replace Exercise",
+        "Review Safety"
+      ],
+      "verdict": "Usable for Stage 6D trial only with rule-based safety override and class-imbalance notes."
+    },
+    "preference": {
+      "status": "PASS WITH NOTES",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "leakage_risk": "Proxy leakage risk from rating, sentiment, enjoyment_rating, exercise_enjoyment, requested_action, difficulty_feedback and progression_preference.",
+      "verdict": "Useful for post-feedback/internal preference prediction, not reliable for cold-start preference prediction."
+    },
+    "safety": {
+      "status": "PASS WITH NOTES",
+      "accuracy": 1.0,
+      "macro_f1": 1.0,
+      "rule_distillation_risk": "High. The model uses risk_score and risk_flag_count, so it is mostly distilling the rule-based safety engine.",
+      "verdict": "Useful as an auxiliary/distilled model only; rule-based safety must remain final."
+    }
+  },
+  "safety_override": {
+    "unsafe_before": 0,
+    "unsafe_after": 0,
+    "override_count": 0,
+    "status": "PASS"
+  },
+  "leakage_review": {
+    "direct_label_leakage": false,
+    "proxy_leakage_risk": [
+      "preference_proxy_features",
+      "safety_rule_distillation_features"
+    ],
+    "id_leakage": false,
+    "test_leakage_risk": false
+  },
+  "issues": {
+    "error_count": 0,
+    "warning_count": 6,
+    "info_count": 2,
+    "items": [
+      {
+        "severity": "WARNING",
+        "area": "recommendation",
+        "message": "Macro F1 is low and rare classes have weak or zero recall."
+      },
+      {
+        "severity": "WARNING",
+        "area": "recommendation",
+        "message": "Increase Difficulty support is 1 in test and recall is 0."
+      },
+      {
+        "severity": "WARNING",
+        "area": "recommendation",
+        "message": "Reduce Volume support is 4 in test and recall is 0."
+      },
+      {
+        "severity": "WARNING",
+        "area": "preference",
+        "message": "Perfect metrics are likely inflated by proxy features close to exercise_preference."
+      },
+      {
+        "severity": "WARNING",
+        "area": "safety",
+        "message": "Perfect metrics are likely rule distillation because risk_score and risk_flag_count are features."
+      },
+      {
+        "severity": "WARNING",
+        "area": "safety",
+        "message": "Avoid class is unavailable in the evaluated safety labels."
+      },
+      {
+        "severity": "INFO",
+        "area": "splits",
+        "message": "Train/validation/test user overlap is 0."
+      },
+      {
+        "severity": "INFO",
+        "area": "safety_override",
+        "message": "Unsafe prediction count after override is 0."
+      }
+    ]
+  },
+  "recommended_next_step": "Proceed to Stage 6D integration as a guarded trial: keep rule-based safety as final authority, monitor low-support classes, and avoid using the preference model for cold-start users without feedback signals."
+}

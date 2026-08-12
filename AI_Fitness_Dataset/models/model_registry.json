@@ -1,0 +1,23 @@
+{
+  "recommendation": {
+    "model_type": "HistGradientBoostingClassifier",
+    "model_path": "models\\recommendation_model.pkl",
+    "preprocessor_path": "models\\recommendation_preprocessor.pkl",
+    "label_encoder_path": "models\\recommendation_label_encoder.pkl",
+    "trained_at": "2026-08-12T10:49:22"
+  },
+  "preference": {
+    "model_type": "LogisticRegression",
+    "model_path": "models\\preference_model.pkl",
+    "preprocessor_path": "models\\preference_preprocessor.pkl",
+    "label_encoder_path": "models\\preference_label_encoder.pkl",
+    "trained_at": "2026-08-12T10:49:22"
+  },
+  "safety": {
+    "model_type": "LogisticRegression",
+    "model_path": "models\\safety_risk_model.pkl",
+    "preprocessor_path": "models\\safety_preprocessor.pkl",
+    "label_encoder_path": "models\\safety_label_encoder.pkl",
+    "trained_at": "2026-08-12T10:49:22"
+  }
+}

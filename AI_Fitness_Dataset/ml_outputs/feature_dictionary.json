@@ -1,0 +1,772 @@
+{
+  "recommendation": {
+    "label": "recommended_action",
+    "features": {
+      "training_level": {
+        "type": "categorical",
+        "description": "recommendation feature: training_level",
+        "stage_6c_encoding": "one_hot"
+      },
+      "primary_goal": {
+        "type": "categorical",
+        "description": "recommendation feature: primary_goal",
+        "stage_6c_encoding": "one_hot"
+      },
+      "secondary_goal": {
+        "type": "categorical",
+        "description": "recommendation feature: secondary_goal",
+        "stage_6c_encoding": "one_hot"
+      },
+      "gender": {
+        "type": "categorical",
+        "description": "recommendation feature: gender",
+        "stage_6c_encoding": "one_hot"
+      },
+      "age": {
+        "type": "numeric",
+        "description": "recommendation feature: age",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "height_cm": {
+        "type": "numeric",
+        "description": "recommendation feature: height_cm",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "weight_kg": {
+        "type": "numeric",
+        "description": "recommendation feature: weight_kg",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "bmi": {
+        "type": "numeric",
+        "description": "recommendation feature: bmi",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "bmi_category": {
+        "type": "categorical",
+        "description": "recommendation feature: bmi_category",
+        "stage_6c_encoding": "one_hot"
+      },
+      "training_days_per_week": {
+        "type": "numeric",
+        "description": "recommendation feature: training_days_per_week",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "preferred_split": {
+        "type": "categorical",
+        "description": "recommendation feature: preferred_split",
+        "stage_6c_encoding": "one_hot"
+      },
+      "gym_access_level": {
+        "type": "categorical",
+        "description": "recommendation feature: gym_access_level",
+        "stage_6c_encoding": "one_hot"
+      },
+      "available_equipment_count": {
+        "type": "numeric",
+        "description": "recommendation feature: available_equipment_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "injury_count": {
+        "type": "numeric",
+        "description": "recommendation feature: injury_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "limitation_count": {
+        "type": "numeric",
+        "description": "recommendation feature: limitation_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "exercise_category": {
+        "type": "categorical",
+        "description": "recommendation feature: exercise_category",
+        "stage_6c_encoding": "one_hot"
+      },
+      "exercise_difficulty": {
+        "type": "categorical",
+        "description": "recommendation feature: exercise_difficulty",
+        "stage_6c_encoding": "one_hot"
+      },
+      "minimum_training_level": {
+        "type": "categorical",
+        "description": "recommendation feature: minimum_training_level",
+        "stage_6c_encoding": "one_hot"
+      },
+      "primary_muscle_count": {
+        "type": "numeric",
+        "description": "recommendation feature: primary_muscle_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "secondary_muscle_count": {
+        "type": "numeric",
+        "description": "recommendation feature: secondary_muscle_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "equipment_count": {
+        "type": "numeric",
+        "description": "recommendation feature: equipment_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "technical_complexity_score": {
+        "type": "numeric",
+        "description": "recommendation feature: technical_complexity_score",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "fatigue_score": {
+        "type": "numeric",
+        "description": "recommendation feature: fatigue_score",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "mobility_requirement": {
+        "type": "numeric",
+        "description": "recommendation feature: mobility_requirement",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "balance_requirement": {
+        "type": "numeric",
+        "description": "recommendation feature: balance_requirement",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "estimated_MET": {
+        "type": "numeric",
+        "description": "recommendation feature: estimated_MET",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "primary_muscles": {
+        "type": "categorical",
+        "description": "recommendation feature: primary_muscles",
+        "stage_6c_encoding": "one_hot"
+      },
+      "secondary_muscles": {
+        "type": "categorical",
+        "description": "recommendation feature: secondary_muscles",
+        "stage_6c_encoding": "one_hot"
+      },
+      "equipment": {
+        "type": "categorical",
+        "description": "recommendation feature: equipment",
+        "stage_6c_encoding": "one_hot"
+      },
+      "movement_pattern": {
+        "type": "categorical",
+        "description": "recommendation feature: movement_pattern",
+        "stage_6c_encoding": "one_hot"
+      },
+      "joint_stress_areas": {
+        "type": "categorical",
+        "description": "recommendation feature: joint_stress_areas",
+        "stage_6c_encoding": "one_hot"
+      },
+      "contraindications": {
+        "type": "categorical",
+        "description": "recommendation feature: contraindications",
+        "stage_6c_encoding": "one_hot"
+      },
+      "joint_stress_count": {
+        "type": "numeric",
+        "description": "recommendation feature: joint_stress_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "contraindication_count": {
+        "type": "numeric",
+        "description": "recommendation feature: contraindication_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "completion_rate": {
+        "type": "numeric",
+        "description": "recommendation feature: completion_rate",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "set_completion_rate": {
+        "type": "numeric",
+        "description": "recommendation feature: set_completion_rate",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "skipped_rate": {
+        "type": "numeric",
+        "description": "recommendation feature: skipped_rate",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "partial_rate": {
+        "type": "numeric",
+        "description": "recommendation feature: partial_rate",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "average_rpe": {
+        "type": "numeric",
+        "description": "recommendation feature: average_rpe",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "average_fatigue": {
+        "type": "numeric",
+        "description": "recommendation feature: average_fatigue",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "pain_rate": {
+        "type": "numeric",
+        "description": "recommendation feature: pain_rate",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "trend": {
+        "type": "categorical",
+        "description": "recommendation feature: trend",
+        "stage_6c_encoding": "one_hot"
+      },
+      "safety_status": {
+        "type": "categorical",
+        "description": "recommendation feature: safety_status",
+        "stage_6c_encoding": "one_hot"
+      },
+      "risk_score": {
+        "type": "numeric",
+        "description": "recommendation feature: risk_score",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "risk_flag_count": {
+        "type": "numeric",
+        "description": "recommendation feature: risk_flag_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "contraindication_match_count": {
+        "type": "numeric",
+        "description": "recommendation feature: contraindication_match_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "pain_match_count": {
+        "type": "numeric",
+        "description": "recommendation feature: pain_match_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "sentiment_positive_count": {
+        "type": "numeric",
+        "description": "recommendation feature: sentiment_positive_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "sentiment_neutral_count": {
+        "type": "numeric",
+        "description": "recommendation feature: sentiment_neutral_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "sentiment_negative_count": {
+        "type": "numeric",
+        "description": "recommendation feature: sentiment_negative_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "too_easy_count": {
+        "type": "numeric",
+        "description": "recommendation feature: too_easy_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "too_hard_count": {
+        "type": "numeric",
+        "description": "recommendation feature: too_hard_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "liked_exercise_count": {
+        "type": "numeric",
+        "description": "recommendation feature: liked_exercise_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "disliked_exercise_count": {
+        "type": "numeric",
+        "description": "recommendation feature: disliked_exercise_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "pain_related_exercise_count": {
+        "type": "numeric",
+        "description": "recommendation feature: pain_related_exercise_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "days_per_week": {
+        "type": "numeric",
+        "description": "recommendation feature: days_per_week",
+        "stage_6c_encoding": "standard_scaler"
+      }
+    }
+  },
+  "preference": {
+    "label": "exercise_preference",
+    "features": {
+      "training_level": {
+        "type": "categorical",
+        "description": "preference feature: training_level",
+        "stage_6c_encoding": "one_hot"
+      },
+      "primary_goal": {
+        "type": "categorical",
+        "description": "preference feature: primary_goal",
+        "stage_6c_encoding": "one_hot"
+      },
+      "secondary_goal": {
+        "type": "categorical",
+        "description": "preference feature: secondary_goal",
+        "stage_6c_encoding": "one_hot"
+      },
+      "gender": {
+        "type": "categorical",
+        "description": "preference feature: gender",
+        "stage_6c_encoding": "one_hot"
+      },
+      "age": {
+        "type": "numeric",
+        "description": "preference feature: age",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "height_cm": {
+        "type": "numeric",
+        "description": "preference feature: height_cm",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "weight_kg": {
+        "type": "numeric",
+        "description": "preference feature: weight_kg",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "bmi": {
+        "type": "numeric",
+        "description": "preference feature: bmi",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "bmi_category": {
+        "type": "categorical",
+        "description": "preference feature: bmi_category",
+        "stage_6c_encoding": "one_hot"
+      },
+      "training_days_per_week": {
+        "type": "numeric",
+        "description": "preference feature: training_days_per_week",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "preferred_split": {
+        "type": "categorical",
+        "description": "preference feature: preferred_split",
+        "stage_6c_encoding": "one_hot"
+      },
+      "gym_access_level": {
+        "type": "categorical",
+        "description": "preference feature: gym_access_level",
+        "stage_6c_encoding": "one_hot"
+      },
+      "available_equipment_count": {
+        "type": "numeric",
+        "description": "preference feature: available_equipment_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "injury_count": {
+        "type": "numeric",
+        "description": "preference feature: injury_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "limitation_count": {
+        "type": "numeric",
+        "description": "preference feature: limitation_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "exercise_category": {
+        "type": "categorical",
+        "description": "preference feature: exercise_category",
+        "stage_6c_encoding": "one_hot"
+      },
+      "exercise_difficulty": {
+        "type": "categorical",
+        "description": "preference feature: exercise_difficulty",
+        "stage_6c_encoding": "one_hot"
+      },
+      "minimum_training_level": {
+        "type": "categorical",
+        "description": "preference feature: minimum_training_level",
+        "stage_6c_encoding": "one_hot"
+      },
+      "primary_muscle_count": {
+        "type": "numeric",
+        "description": "preference feature: primary_muscle_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "secondary_muscle_count": {
+        "type": "numeric",
+        "description": "preference feature: secondary_muscle_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "equipment_count": {
+        "type": "numeric",
+        "description": "preference feature: equipment_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "technical_complexity_score": {
+        "type": "numeric",
+        "description": "preference feature: technical_complexity_score",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "fatigue_score": {
+        "type": "numeric",
+        "description": "preference feature: fatigue_score",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "mobility_requirement": {
+        "type": "numeric",
+        "description": "preference feature: mobility_requirement",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "balance_requirement": {
+        "type": "numeric",
+        "description": "preference feature: balance_requirement",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "estimated_MET": {
+        "type": "numeric",
+        "description": "preference feature: estimated_MET",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "primary_muscles": {
+        "type": "categorical",
+        "description": "preference feature: primary_muscles",
+        "stage_6c_encoding": "one_hot"
+      },
+      "secondary_muscles": {
+        "type": "categorical",
+        "description": "preference feature: secondary_muscles",
+        "stage_6c_encoding": "one_hot"
+      },
+      "equipment": {
+        "type": "categorical",
+        "description": "preference feature: equipment",
+        "stage_6c_encoding": "one_hot"
+      },
+      "movement_pattern": {
+        "type": "categorical",
+        "description": "preference feature: movement_pattern",
+        "stage_6c_encoding": "one_hot"
+      },
+      "joint_stress_areas": {
+        "type": "categorical",
+        "description": "preference feature: joint_stress_areas",
+        "stage_6c_encoding": "one_hot"
+      },
+      "contraindications": {
+        "type": "categorical",
+        "description": "preference feature: contraindications",
+        "stage_6c_encoding": "one_hot"
+      },
+      "joint_stress_count": {
+        "type": "numeric",
+        "description": "preference feature: joint_stress_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "contraindication_count": {
+        "type": "numeric",
+        "description": "preference feature: contraindication_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "rating": {
+        "type": "numeric",
+        "description": "preference feature: rating",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "sentiment": {
+        "type": "categorical",
+        "description": "preference feature: sentiment",
+        "stage_6c_encoding": "one_hot"
+      },
+      "difficulty_feedback": {
+        "type": "categorical",
+        "description": "preference feature: difficulty_feedback",
+        "stage_6c_encoding": "one_hot"
+      },
+      "enjoyment_rating": {
+        "type": "numeric",
+        "description": "preference feature: enjoyment_rating",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "fatigue_feedback": {
+        "type": "categorical",
+        "description": "preference feature: fatigue_feedback",
+        "stage_6c_encoding": "one_hot"
+      },
+      "pain_feedback": {
+        "type": "categorical",
+        "description": "preference feature: pain_feedback",
+        "stage_6c_encoding": "one_hot"
+      },
+      "duration_feedback": {
+        "type": "categorical",
+        "description": "preference feature: duration_feedback",
+        "stage_6c_encoding": "one_hot"
+      },
+      "progression_preference": {
+        "type": "categorical",
+        "description": "preference feature: progression_preference",
+        "stage_6c_encoding": "one_hot"
+      },
+      "requested_action": {
+        "type": "categorical",
+        "description": "preference feature: requested_action",
+        "stage_6c_encoding": "one_hot"
+      },
+      "feedback_reason_tag_count": {
+        "type": "numeric",
+        "description": "preference feature: feedback_reason_tag_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "actual_rpe": {
+        "type": "numeric",
+        "description": "preference feature: actual_rpe",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "actual_load_kg": {
+        "type": "numeric",
+        "description": "preference feature: actual_load_kg",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "difficulty_rating": {
+        "type": "numeric",
+        "description": "preference feature: difficulty_rating",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "exercise_enjoyment": {
+        "type": "numeric",
+        "description": "preference feature: exercise_enjoyment",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "pain_during_exercise": {
+        "type": "categorical",
+        "description": "preference feature: pain_during_exercise",
+        "stage_6c_encoding": "one_hot"
+      },
+      "technique_quality": {
+        "type": "categorical",
+        "description": "preference feature: technique_quality",
+        "stage_6c_encoding": "one_hot"
+      },
+      "session_rpe": {
+        "type": "numeric",
+        "description": "preference feature: session_rpe",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "session_completion_pct": {
+        "type": "numeric",
+        "description": "preference feature: session_completion_pct",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "plan_item_role": {
+        "type": "categorical",
+        "description": "preference feature: plan_item_role",
+        "stage_6c_encoding": "one_hot"
+      }
+    }
+  },
+  "safety": {
+    "label": "safety_label",
+    "features": {
+      "training_level": {
+        "type": "categorical",
+        "description": "safety feature: training_level",
+        "stage_6c_encoding": "one_hot"
+      },
+      "primary_goal": {
+        "type": "categorical",
+        "description": "safety feature: primary_goal",
+        "stage_6c_encoding": "one_hot"
+      },
+      "secondary_goal": {
+        "type": "categorical",
+        "description": "safety feature: secondary_goal",
+        "stage_6c_encoding": "one_hot"
+      },
+      "gender": {
+        "type": "categorical",
+        "description": "safety feature: gender",
+        "stage_6c_encoding": "one_hot"
+      },
+      "age": {
+        "type": "numeric",
+        "description": "safety feature: age",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "height_cm": {
+        "type": "numeric",
+        "description": "safety feature: height_cm",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "weight_kg": {
+        "type": "numeric",
+        "description": "safety feature: weight_kg",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "bmi": {
+        "type": "numeric",
+        "description": "safety feature: bmi",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "bmi_category": {
+        "type": "categorical",
+        "description": "safety feature: bmi_category",
+        "stage_6c_encoding": "one_hot"
+      },
+      "training_days_per_week": {
+        "type": "numeric",
+        "description": "safety feature: training_days_per_week",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "preferred_split": {
+        "type": "categorical",
+        "description": "safety feature: preferred_split",
+        "stage_6c_encoding": "one_hot"
+      },
+      "gym_access_level": {
+        "type": "categorical",
+        "description": "safety feature: gym_access_level",
+        "stage_6c_encoding": "one_hot"
+      },
+      "available_equipment_count": {
+        "type": "numeric",
+        "description": "safety feature: available_equipment_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "injury_count": {
+        "type": "numeric",
+        "description": "safety feature: injury_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "limitation_count": {
+        "type": "numeric",
+        "description": "safety feature: limitation_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "exercise_category": {
+        "type": "categorical",
+        "description": "safety feature: exercise_category",
+        "stage_6c_encoding": "one_hot"
+      },
+      "exercise_difficulty": {
+        "type": "categorical",
+        "description": "safety feature: exercise_difficulty",
+        "stage_6c_encoding": "one_hot"
+      },
+      "minimum_training_level": {
+        "type": "categorical",
+        "description": "safety feature: minimum_training_level",
+        "stage_6c_encoding": "one_hot"
+      },
+      "primary_muscle_count": {
+        "type": "numeric",
+        "description": "safety feature: primary_muscle_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "secondary_muscle_count": {
+        "type": "numeric",
+        "description": "safety feature: secondary_muscle_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "equipment_count": {
+        "type": "numeric",
+        "description": "safety feature: equipment_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "technical_complexity_score": {
+        "type": "numeric",
+        "description": "safety feature: technical_complexity_score",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "fatigue_score": {
+        "type": "numeric",
+        "description": "safety feature: fatigue_score",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "mobility_requirement": {
+        "type": "numeric",
+        "description": "safety feature: mobility_requirement",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "balance_requirement": {
+        "type": "numeric",
+        "description": "safety feature: balance_requirement",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "estimated_MET": {
+        "type": "numeric",
+        "description": "safety feature: estimated_MET",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "primary_muscles": {
+        "type": "categorical",
+        "description": "safety feature: primary_muscles",
+        "stage_6c_encoding": "one_hot"
+      },
+      "secondary_muscles": {
+        "type": "categorical",
+        "description": "safety feature: secondary_muscles",
+        "stage_6c_encoding": "one_hot"
+      },
+      "equipment": {
+        "type": "categorical",
+        "description": "safety feature: equipment",
+        "stage_6c_encoding": "one_hot"
+      },
+      "movement_pattern": {
+        "type": "categorical",
+        "description": "safety feature: movement_pattern",
+        "stage_6c_encoding": "one_hot"
+      },
+      "joint_stress_areas": {
+        "type": "categorical",
+        "description": "safety feature: joint_stress_areas",
+        "stage_6c_encoding": "one_hot"
+      },
+      "contraindications": {
+        "type": "categorical",
+        "description": "safety feature: contraindications",
+        "stage_6c_encoding": "one_hot"
+      },
+      "joint_stress_count": {
+        "type": "numeric",
+        "description": "safety feature: joint_stress_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "contraindication_count": {
+        "type": "numeric",
+        "description": "safety feature: contraindication_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "pain_rate": {
+        "type": "numeric",
+        "description": "safety feature: pain_rate",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "pain_feedback": {
+        "type": "categorical",
+        "description": "safety feature: pain_feedback",
+        "stage_6c_encoding": "one_hot"
+      },
+      "pain_area_count": {
+        "type": "numeric",
+        "description": "safety feature: pain_area_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "pain_during_exercise": {
+        "type": "categorical",
+        "description": "safety feature: pain_during_exercise",
+        "stage_6c_encoding": "one_hot"
+      },
+      "pain_match_count": {
+        "type": "numeric",
+        "description": "safety feature: pain_match_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "contraindication_match_count": {
+        "type": "numeric",
+        "description": "safety feature: contraindication_match_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "risk_flag_count": {
+        "type": "numeric",
+        "description": "safety feature: risk_flag_count",
+        "stage_6c_encoding": "standard_scaler"
+      },
+      "risk_score": {
+        "type": "numeric",
+        "description": "safety feature: risk_score",
+        "stage_6c_encoding": "standard_scaler"
+      }
+    }
+  }
+}

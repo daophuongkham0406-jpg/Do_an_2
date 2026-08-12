@@ -1,0 +1,2 @@
+﻿issue_id,severity,component,user_id,exercise_id,message,suggested_fix
+INTISSUE000001,WARNING,hybrid_decision_engine,,,3 predictions fell back to rule-based recommendation.,Monitor ML confidence and low-confidence cases.
