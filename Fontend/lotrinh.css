@@ -86,6 +86,37 @@
 .survey-input {
   height: 42px;
 }
+.weekday-picker {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.weekday-btn {
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  transition: all 0.2s;
+}
+.weekday-btn:hover {
+  border-color: var(--border-hover);
+}
+.weekday-btn.active {
+  background: rgba(232, 255, 71, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.weekday-hint {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+  margin-top: 8px;
+}
 
 /* Container chính chứa 3 ô */
 .body-stats-row {
@@ -372,6 +403,17 @@
 .day-check-badge.show {
   display: inline-block;
 }
+.day-ex-count {
+  min-width: 58px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(77, 160, 255, 0.1);
+  color: #4da0ff;
+  border: 1px solid rgba(77, 160, 255, 0.18);
+}
 
 .day-body {
   padding: 20px 22px;
@@ -430,6 +472,35 @@
 .routine-item.completed .routine-item-info h4 {
   text-decoration: line-through;
   color: var(--text-muted);
+}
+.btn-ex-complete {
+  border: 1px solid rgba(78, 205, 196, 0.32);
+  background: rgba(78, 205, 196, 0.08);
+  color: #4ecdc4;
+  border-radius: 8px;
+  padding: 9px 12px;
+  min-width: 112px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.btn-ex-complete:hover {
+  background: rgba(78, 205, 196, 0.16);
+  border-color: #4ecdc4;
+}
+.routine-item.completed .btn-ex-complete {
+  background: #4ecdc4;
+  color: #0a0a0a;
+}
+.btn-ex-complete:disabled {
+  opacity: 0.9;
+  cursor: not-allowed;
+}
+.routine-item.preview-only .btn-ex-complete {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .tags {

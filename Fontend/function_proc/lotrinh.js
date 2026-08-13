@@ -5,6 +5,15 @@
 const AI_SERVER_URL = "http://localhost:5001";
 const BACKEND_API_URL = "http://localhost:5000";
 const TODAY = new Date().toISOString().split("T")[0];
+const WEEKDAY_LABELS = {
+  1: "Thứ 2",
+  2: "Thứ 3",
+  3: "Thứ 4",
+  4: "Thứ 5",
+  5: "Thứ 6",
+  6: "Thứ 7",
+  7: "Chủ nhật",
+};
 
 let USER_ID = "guest";
 try {
@@ -29,6 +38,7 @@ let todayNutrition         = { calories: 0, protein: 0, carbs: 0, fat: 0 };
 let todayTarget            = { calories: 2000, protein: 130 };
 let todayIsRest            = false;
 let planStartDateStr       = null;
+let lastAiPlanResponse     = null;
 
 // ════════════════════════════════════════
 // CHỌN ĐỘ DÀI LỘ TRÌNH (7/14/21/30 ngày)
@@ -38,6 +48,7 @@ function selectDur(el, days) {
   document.querySelectorAll(".dur-btn").forEach(b => b.classList.remove("active"));
   el.classList.add("active");
   selectedDays = days;
+  updateWeekdayHint();
 }
 
 function unlockLongPlans(planType) {
@@ -105,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const wInput = document.getElementById("weight");
   if (hInput) hInput.addEventListener("input", updateBmiPreview);
   if (wInput) wInput.addEventListener("input", updateBmiPreview);
+  setupWeekdayPicker();
 });
 
 // ════════════════════════════════════════
@@ -122,6 +134,10 @@ document.getElementById("btn-generate").addEventListener("click", async () => {
 
   if (!height || !weight || !age) {
     showToast("⚠️ Vui lòng nhập chiều cao, cân nặng và tuổi!", "error");
+    return;
+  }
+  if (!survey.available_training_day_numbers.length) {
+    showToast("⚠️ Vui lòng chọn ít nhất 1 ngày rảnh trong tuần!", "error");
     return;
   }
 
@@ -153,14 +169,58 @@ document.getElementById("btn-generate").addEventListener("click", async () => {
 
 function collectSurveyPayload() {
   const valueOf = (id, fallback = "") => document.getElementById(id)?.value || fallback;
+  const selectedWeekdays = getSelectedWeekdays();
   return {
     gender: valueOf("gender", "Prefer not to say"),
-    training_days_per_week: Number(valueOf("trainingDays", 3)),
+    training_days_per_week: selectedWeekdays.length || Number(valueOf("trainingDays", 3)),
+    available_training_days: selectedWeekdays.map(day => WEEKDAY_LABELS[day]),
+    available_training_day_numbers: selectedWeekdays,
     session_duration_minutes: Number(valueOf("sessionMinutes", 60)),
     intensity_preference: valueOf("intensityPreference", "Vừa phải"),
     priority_muscles: valueOf("priorityMuscles", ""),
     avoid_notes: valueOf("avoidNotes", ""),
   };
+}
+
+function setupWeekdayPicker() {
+  document.querySelectorAll(".weekday-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("active");
+      const trainingDaysInput = document.getElementById("trainingDays");
+      if (trainingDaysInput) trainingDaysInput.value = Math.max(1, getSelectedWeekdays().length);
+      updateWeekdayHint();
+    });
+  });
+  updateWeekdayHint();
+}
+
+function getSelectedWeekdays() {
+  return [...document.querySelectorAll(".weekday-btn.active")]
+    .map(btn => Number(btn.dataset.weekday))
+    .filter(day => day >= 1 && day <= 7)
+    .sort((a, b) => a - b);
+}
+
+function setSelectedWeekdays(days) {
+  const normalized = new Set((days || []).map(Number).filter(day => day >= 1 && day <= 7));
+  document.querySelectorAll(".weekday-btn").forEach(btn => {
+    btn.classList.toggle("active", normalized.has(Number(btn.dataset.weekday)));
+  });
+  const trainingDaysInput = document.getElementById("trainingDays");
+  if (trainingDaysInput) trainingDaysInput.value = Math.max(1, normalized.size || Number(trainingDaysInput.value || 3));
+  updateWeekdayHint();
+}
+
+function updateWeekdayHint() {
+  const hint = document.getElementById("weekdayHint");
+  if (!hint) return;
+  const selectedWeekdays = getSelectedWeekdays();
+  if (!selectedWeekdays.length) {
+    hint.textContent = "Chọn ít nhất 1 ngày rảnh để AI xếp lịch tập.";
+    return;
+  }
+  const labels = selectedWeekdays.map(day => WEEKDAY_LABELS[day]).join(", ");
+  hint.textContent = `Lộ trình ${selectedDays} ngày sẽ xếp ngày tập vào: ${labels}. Các ngày còn lại là nghỉ/phục hồi.`;
 }
 
 // ════════════════════════════════════════
@@ -232,6 +292,7 @@ async function doGeneratePlan(goal, level, equipment, userInfo, height, weight, 
   document.getElementById("progressWrap").classList.remove("show");
   currentPlanData = null;
   currentPlanId   = null;
+  lastAiPlanResponse = null;
 
   // Xoá draft cũ khi bắt đầu tạo mới
   localStorage.removeItem(DRAFT_KEY);
@@ -272,6 +333,7 @@ async function doGeneratePlan(goal, level, equipment, userInfo, height, weight, 
     const data = await response.json();
     if (data.status === "OK" && data.plan_data) {
       currentPlanData = data.plan_data;
+      lastAiPlanResponse = data;
 
       // ✅ LƯU DRAFT VÀO LOCALSTORAGE
       saveDraftPlan(currentPlanData, { goal, level, equipment, userInfo, height, weight, age, survey });
@@ -394,6 +456,7 @@ function applyDraft() {
     if (fi.level)     document.getElementById("level").value     = fi.level;
     if (fi.equipment) document.getElementById("equipment").value = fi.equipment;
     if (fi.userInfo)  document.getElementById("userInfo").value  = fi.userInfo;
+    if (fi.survey?.available_training_day_numbers) setSelectedWeekdays(fi.survey.available_training_day_numbers);
     updateBmiPreview();
   }
 
@@ -461,6 +524,8 @@ function renderPlan(planData, container, progress = null) {
     } else {
       if (day.exercises?.length > 0) dayDone = day.exercises.every(ex => exProgress[ex.name] === true);
     }
+    const totalExercisesInDay = day.is_rest ? 0 : (day.exercises?.length || 0);
+    const completedExercisesInDay = day.is_rest ? 0 : (pd?.completed_exercises_count ?? day.exercises?.filter(ex => exProgress[ex.name] === true).length ?? 0);
     if (dayDone) { dayCard.classList.add("day-done-card"); completedDaysCount++; }
 
     dayCard.innerHTML = `
@@ -470,6 +535,7 @@ function renderPlan(planData, container, progress = null) {
           <span class="day-name">${day.day_name || ""}</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
+          ${day.is_rest ? "" : `<span class="day-ex-count" id="day-ex-count-${day.day_number}">${completedExercisesInDay}/${totalExercisesInDay} bài</span>`}
           <span class="day-focus">${day.is_rest ? "NGHỈ NGƠI" : day.focus || ""}</span>
           <span class="day-check-badge ${dayDone ? "show" : ""}">✓ Hoàn thành</span>
         </div>
@@ -519,10 +585,10 @@ function renderPlan(planData, container, progress = null) {
                       <span class="tag tag-rest">⏱ ${ex.rest}s</span>
                   </div>
               </div>
+              <button class="btn-ex-complete" type="button" ${done ? "disabled" : ""}>${done ? "Đã hoàn thành" : "Hoàn thành"}</button>
               <button class="btn-ex-detail" title="Xem chi tiết">›</button>`;
 
-          // XỬ LÝ SỰ KIỆN CLICK CHECKBOX
-          exEl.querySelector(".ex-checkbox-wrap").addEventListener("click", (e) => {
+          const completeExercise = (e) => {
               e.stopPropagation();
               
               // NẾU LÀ BẢN XEM TRƯỚC -> HIỆN THÔNG BÁO, KHÔNG CHO CLICK
@@ -530,18 +596,25 @@ function renderPlan(planData, container, progress = null) {
                   showToast("📍 Nhấn 'Áp dụng lộ trình này' để bắt đầu tập và tích hoàn thành!", "error");
                   return;
               }
+              if (exEl.classList.contains("completed")) {
+                  showToast("✅ Bài này đã hoàn thành và không thể hoàn tác.", "success");
+                  return;
+              }
 
-              // Nếu đã áp dụng rồi thì chạy bình thường
               checkinExercise(
                   currentPlanId,
                   day.day_number,
                   ex.name,
-                  !exEl.classList.contains("completed"),
+                  true,
                   exEl,
                   dayCard,
                   false
               );
-          });
+          };
+
+          // XỬ LÝ SỰ KIỆN CLICK CHECKBOX / NÚT HOÀN THÀNH
+          exEl.querySelector(".ex-checkbox-wrap").addEventListener("click", completeExercise);
+          exEl.querySelector(".btn-ex-complete").addEventListener("click", completeExercise);
 
           // Xem chi tiết thì vẫn cho xem bình thường ở cả 2 chế độ
           exEl.querySelector(".routine-item-info").onclick = (e) => { e.stopPropagation(); openExerciseModal(ex); };
@@ -629,10 +702,19 @@ async function savePlan(planData) {
   if (btn) { btn.disabled = true; btn.innerText = "Đang lưu..."; }
 
   try {
-    const res = await fetch(`${AI_SERVER_URL}/api/save-plan`, {
+    const res = await fetch(`${BACKEND_API_URL}/api/plans/save-ai-plan`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan_data: planData, userId: USER_ID, height, weight, age }),
+      body: JSON.stringify({
+        plan_data: planData,
+        userId: USER_ID,
+        height,
+        weight,
+        age,
+        source: lastAiPlanResponse?.source || "ai_fitness_dataset_only",
+        input_snapshot: lastAiPlanResponse?.input || collectSurveyPayload(),
+        ai_decision: lastAiPlanResponse?.ai_decision || {},
+      }),
     });
     const result = await res.json();
 
@@ -759,7 +841,7 @@ async function analyzeAndAddFood() {
   if (resultBox) resultBox.style.display = "none";
 
   try {
-    const res  = await fetch(`${AI_SERVER_URL}/api/analyze-food`, {
+    const res  = await fetch(`${BACKEND_API_URL}/api/analyze-food`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ food_text: foodText, userId: USER_ID }),
@@ -813,7 +895,7 @@ async function confirmAddFoodNutrition(cal, prot, carbs, fat) {
 
 async function saveNutritionToServer(cal, prot, carbs, fat, note) {
   try {
-    const res  = await fetch(`${AI_SERVER_URL}/api/save-nutrition`, {
+    const res  = await fetch(`${BACKEND_API_URL}/api/save-nutrition`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: USER_ID, date: TODAY, calories: cal, protein: prot, carbs, fat, note }),
@@ -829,7 +911,7 @@ async function saveNutritionToServer(cal, prot, carbs, fat, note) {
 
 async function loadTodayNutrition() {
   try {
-    const res  = await fetch(`${AI_SERVER_URL}/api/get-nutrition?userId=${USER_ID}&date=${TODAY}`);
+    const res  = await fetch(`${BACKEND_API_URL}/api/get-nutrition?userId=${USER_ID}&date=${TODAY}`);
     const data = await res.json();
     todayNutrition = data;
     updateNutritionUI();
@@ -897,10 +979,21 @@ async function checkinExercise(planId, dayNumber, exName, completed, exEl, dayCa
       if (badge) badge.classList.remove("show");
     }
   } else {
+    if (!completed && exEl.classList.contains("completed")) {
+      showToast("✅ Bài này đã hoàn thành và không thể hoàn tác.", "success");
+      return;
+    }
     if (completed) { exEl.classList.add("completed"); exEl.querySelector(".ex-checkbox").textContent = "✓"; }
-    else           { exEl.classList.remove("completed"); exEl.querySelector(".ex-checkbox").textContent = ""; }
+    const completeBtn = exEl.querySelector(".btn-ex-complete");
+    if (completeBtn) {
+      completeBtn.textContent = "Đã hoàn thành";
+      completeBtn.disabled = true;
+    }
     const body    = document.getElementById(`day-body-${dayNumber}`);
-    const allDone = [...body.querySelectorAll(".routine-item")].every(el => el.classList.contains("completed"));
+    const exerciseItems = [...body.querySelectorAll(".routine-item")];
+    const completedItems = exerciseItems.filter(el => el.classList.contains("completed")).length;
+    const allDone = exerciseItems.length > 0 && completedItems === exerciseItems.length;
+    updateDayExerciseCount(dayNumber, completedItems, exerciseItems.length);
     const badge   = dayCard.querySelector(".day-check-badge");
     if (allDone) {
       dayCard.classList.add("day-done-card");
@@ -920,12 +1013,28 @@ async function checkinExercise(planId, dayNumber, exName, completed, exEl, dayCa
   }
 
   try {
-    fetch(`${AI_SERVER_URL}/api/checkin-exercise`, {
+    const res = await fetch(`${BACKEND_API_URL}/api/plans/checkin-exercise`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ planId, dayNumber, exerciseName: exName, completed }),
     });
-  } catch (e) {}
+    const data = await res.json();
+    if (!data.success) showToast("⚠️ Chưa lưu được tiến độ: " + (data.error || "Lỗi máy chủ"), "error");
+    if (data.day_progress) {
+      updateDayExerciseCount(
+        dayNumber,
+        Number(data.day_progress.completed_exercises_count) || 0,
+        Number(data.day_progress.total_exercises_count) || 0,
+      );
+    }
+  } catch (e) {
+    showToast("⚠️ Mất kết nối, tiến độ chỉ mới cập nhật trên màn hình.", "error");
+  }
+}
+
+function updateDayExerciseCount(dayNumber, completedCount, totalCount) {
+  const countEl = document.getElementById(`day-ex-count-${dayNumber}`);
+  if (countEl) countEl.textContent = `${completedCount}/${totalCount} bài`;
 }
 
 // ════════════════════════════════════════
@@ -961,7 +1070,7 @@ function closeCancelModal() {
 async function executeCancelPlan() {
   closeCancelModal();
   try {
-    const res    = await fetch(`${AI_SERVER_URL}/api/cancel-plan/${USER_ID}`, { method: "DELETE" });
+    const res    = await fetch(`${BACKEND_API_URL}/api/plans/cancel-active/${USER_ID}`, { method: "DELETE" });
     const result = await res.json();
     if (result.success) {
       clearDraftPlan();
@@ -980,7 +1089,7 @@ async function executeCancelPlan() {
 // ════════════════════════════════════════
 async function checkActivePlanOnLoad() {
   try {
-    const res  = await fetch(`${AI_SERVER_URL}/api/get-active-plan?userId=${USER_ID}`);
+    const res  = await fetch(`${BACKEND_API_URL}/api/plans/get-active-plan?userId=${USER_ID}`);
     const data = await res.json();
 
     if (data.plan) {
@@ -1121,7 +1230,7 @@ async function executeLockPlanDay() {
   if (!pId) { showToast("❌ Không tìm thấy ID lộ trình!", "error"); return; }
   closeLockDayModal();
   try {
-    const res  = await fetch(`${AI_SERVER_URL}/api/lock-plan-day`, {
+    const res  = await fetch(`${BACKEND_API_URL}/api/plans/lock-day`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ planId: pId, plan_id: pId, dayNumber: dNum, day_number: dNum }),
@@ -1140,7 +1249,7 @@ async function executeLockPlanDay() {
 
 async function lockNutritionDay() {
   try {
-    const res  = await fetch(`${AI_SERVER_URL}/api/lock-nutrition`, {
+    const res  = await fetch(`${BACKEND_API_URL}/api/lock-nutrition`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: USER_ID, date: TODAY }),
@@ -1220,6 +1329,9 @@ function isDayUnlocked(dayNumber) {
     .fa-total{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid var(--border,#2a2a2a);} .fa-total-row{display:flex;justify-content:space-between;font-size:13px;} .fa-total-row strong{color:var(--accent,#e8ff47);}
     .nutr-note-box{display:flex;gap:10px;align-items:flex-start;background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.15);border-radius:8px;padding:12px;font-size:12px;color:var(--text-secondary,#aaa);line-height:1.5;} .nutr-note-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
     .routine-item{display:flex;align-items:center;gap:14px;} .ex-checkbox-wrap{flex-shrink:0;cursor:pointer;padding:4px;} .routine-item-info{flex:1;cursor:pointer;padding:2px 0;} .routine-item-info:hover h4{color:var(--accent,#e8ff47);} .tag-rest{color:#a78bfa;background:rgba(167,139,250,0.08);}
+    .day-ex-count{min-width:58px;text-align:center;font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;background:rgba(77,160,255,0.1);color:#4da0ff;border:1px solid rgba(77,160,255,0.18);}
+    .btn-ex-complete{border:1px solid rgba(78,205,196,0.32);background:rgba(78,205,196,0.08);color:#4ecdc4;border-radius:8px;padding:9px 12px;min-width:112px;font-size:11px;font-weight:800;cursor:pointer;transition:all 0.2s;flex-shrink:0;font-family:inherit;}
+    .btn-ex-complete:hover{background:rgba(78,205,196,0.16);border-color:#4ecdc4;} .routine-item.completed .btn-ex-complete{background:#4ecdc4;color:#0a0a0a;} .btn-ex-complete:disabled{opacity:0.9;cursor:not-allowed;} .routine-item.preview-only .btn-ex-complete{opacity:0.55;cursor:not-allowed;}
     .btn-ex-detail{width:32px;height:32px;border-radius:8px;border:1px solid var(--border,#2a2a2a);background:transparent;color:var(--text-muted,#666);font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
     .btn-ex-detail:hover{border-color:var(--accent);color:var(--accent);}
     .ex-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:9000;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s ease;}

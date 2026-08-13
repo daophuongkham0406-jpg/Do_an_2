@@ -7,7 +7,6 @@ from bson.objectid import ObjectId
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_mail import Mail  
-import google.generativeai as genai
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import datetime
@@ -22,6 +21,8 @@ from quanly_plan import plan_bp
 from quanly_trangchu import trangchu_bp
 from quanly_cauhoi import cauhoi_bp
 from quanly_tcn import tcn_bp
+from quanly_dinhduong import nutrition_bp
+from quanly_coach import coach_bp
 from routes.ml_routes import ml_bp
 
 # --- IMPORT SEPAY ---
@@ -62,6 +63,8 @@ app.register_blueprint(avatar_bp, url_prefix='/api/profile')
 app.register_blueprint(trangchu_bp)
 app.register_blueprint(cauhoi_bp)
 app.register_blueprint(tcn_bp)
+app.register_blueprint(nutrition_bp)
+app.register_blueprint(coach_bp)
 app.register_blueprint(ml_bp)
 
 # --- ĐĂNG KÝ SEPAY BLUEPRINT (KHÔNG có url_prefix để khớp /api/payment/...) ---

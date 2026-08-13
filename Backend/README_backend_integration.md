@@ -1,95 +1,74 @@
-# Backend + Frontend AI Integration
+# Backend + AI Fitness Dataset Integration
 
-## 1. Backend Purpose
+## 1. Purpose
 
-Backend Flask exposes a safe API layer for the FIT ME web page. The frontend calls Flask, and Flask calls `AI_Fitness_Dataset` Stage 6D. The frontend never loads `.pkl` model files directly.
+Flask is the safe API layer for FIT ME. Workout generation uses only the local
+`AI_Fitness_Dataset`; it does not call external exercise APIs and does not read
+old MongoDB exercise data.
 
-## 2. Install Dependencies
-
-```powershell
-cd D:\git_hub\Do_an_2
-.\.venv\Scripts\Activate.ps1
-pip install -r Backend\requirements.txt
-```
-
-Required ML dependencies include `pandas`, `numpy`, `scikit-learn`, and `joblib`.
-
-## 3. Run Flask
-
-```powershell
-cd D:\git_hub\Do_an_2
-.\.venv\Scripts\Activate.ps1
-python Backend\app.py
-```
-
-Flask runs on:
+## 2. Workout Generation Flow
 
 ```text
-http://localhost:5000
+User creates workout plan
+Frontend sends profile + goal + available days + equipment + health notes
+Backend receives request
+Backend references only AI_Fitness_Dataset:
+  - exercises
+  - workout_plans
+  - workout_plan_items
+  - users
+  - workout_history_sessions
+  - workout_history_items
+  - user_feedback
+  - workout_history_summary
+Backend applies rules:
+  - safety
+  - recommendation
+  - preference
+  - history/adherence/fatigue
+Backend selects matching exercises from AI_Fitness_Dataset
+Backend returns personalized plan to frontend
+User applies the plan
+MongoDB stores the generated plan and real user progress
 ```
 
-## 4. API Endpoints
+## 3. Dataset Files Used
+
+`Backend/services/ml_integration_service.py` reads these CSV exports:
+
+```text
+AI_Fitness_Dataset/exports/csv/exercises.csv
+AI_Fitness_Dataset/exports/csv/workout_plans.csv
+AI_Fitness_Dataset/exports/csv/workout_plan_items.csv
+AI_Fitness_Dataset/exports/csv/users.csv
+AI_Fitness_Dataset/exports/csv/workout_history_sessions.csv
+AI_Fitness_Dataset/exports/csv/workout_history_items.csv
+AI_Fitness_Dataset/exports/csv/user_feedback.csv
+AI_Fitness_Dataset/exports/csv/workout_history_summary.csv
+```
+
+## 4. Storage Rule
+
+MongoDB does not need to store the 350 exercise reference records. MongoDB stores:
+
+- the generated plan selected for the real user
+- the input snapshot used to generate it
+- AI decision/context metadata
+- daily progress
+- completed exercise counts
+- nutrition and coach-chat context when needed
+
+## 5. API
 
 ```text
 GET  /api/ml/health
 POST /api/ml/generate-plan
+POST /api/plans/save-ai-plan
+GET  /api/plans/get-active-plan
+POST /api/plans/checkin-exercise
 ```
 
-## 5. Example Request
+## 6. Current Source
 
-```powershell
-Invoke-RestMethod -Uri "http://localhost:5000/api/ml/generate-plan" `
-  -Method POST `
-  -ContentType "application/json" `
-  -Body '{"goal":"Tăng cơ","level":"Trung bình","height":170,"weight":65,"age":24,"equipment":"Phòng Gym đầy đủ","duration_days":7,"note":"đau lưng nhẹ"}'
-```
+Current mode: `ai_fitness_dataset_only`.
 
-## 6. Frontend Call
-
-`Fontend/function_proc/lotrinh.js` calls:
-
-```text
-http://localhost:5000/api/ml/generate-plan
-```
-
-The backend returns both:
-
-- `plan`: stable API response shape with `final_action`, `decision_source`, and explanations.
-- `plan_data`: UI-compatible shape used by the existing `renderPlan(...)` function.
-
-## 7. AI Dataset Connection
-
-`Backend/services/ml_integration_service.py` loads:
-
-```text
-AI_Fitness_Dataset/ml_integration/web_adapter.py
-```
-
-The adapter calls the Stage 6D integration pipeline through `run_for_user(...)`, loads CSV data, loads the model bundle once, runs ML + rule safety + hybrid decision, then formats the result for the web.
-
-## 8. Current Mode
-
-Current mode: Real Stage 6D adapter.
-
-If ML dependencies are missing, install `Backend/requirements.txt` before testing `generate-plan`.
-
-## 9. Prediction Logs
-
-Web calls append JSONL logs to:
-
-```text
-AI_Fitness_Dataset/integration_outputs/web_prediction_logs.jsonl
-```
-
-Prediction log chưa phải ground truth cho đến khi user gửi feedback sau buổi tập.
-
-## 10. Known Limitations
-
-The existing page still has older secondary calls to `http://localhost:5001` for apply-plan, check-in, nutrition, and active-plan workflows. The AI generation button is integrated with Flask `5000`; migrating every legacy endpoint is a separate follow-up.
-
-## 11. Next Steps
-
-1. Install backend dependencies.
-2. Run Flask on port `5000`.
-3. Open `http://localhost:5173/lotrinh.html`.
-4. Test the button `Tạo Lộ Trình Bằng AI`.

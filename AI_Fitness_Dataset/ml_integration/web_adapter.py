@@ -106,6 +106,10 @@ def _normalize_payload(payload: dict) -> dict:
         "age": _safe_int(payload.get("age"), 24),
         "available_equipment": equipment,
         "training_days_per_week": _safe_int(payload.get("training_days_per_week"), 3),
+        "available_training_day_numbers": _normalize_weekday_numbers(
+            payload.get("available_training_day_numbers"),
+            payload.get("available_training_days"),
+        ),
         "session_duration_minutes": _safe_int(payload.get("session_duration_minutes"), 60),
         "intensity_preference": payload.get("intensity_preference", "Vừa phải"),
         "priority_muscles": _split_notes(payload.get("priority_muscles")),
@@ -141,7 +145,7 @@ def _build_plan_data(indexes: dict[str, Any], user_id: str, normalized: dict[str
 
     requested_days = normalized["duration_days"]
     template_days = sorted(by_day) or [1]
-    training_weekdays = _training_weekdays(normalized.get("training_days_per_week", 3))
+    training_weekdays = set(normalized.get("available_training_day_numbers") or []) or _training_weekdays(normalized.get("training_days_per_week", 3))
     training_day_count = 0
     for day_number in range(1, requested_days + 1):
         weekday = ((day_number - 1) % 7) + 1
@@ -167,7 +171,7 @@ def _build_plan_data(indexes: dict[str, Any], user_id: str, normalized: dict[str
     return {
         "plan_name": "Lộ trình AI cá nhân hóa",
         "title": "Lộ trình AI cá nhân hóa",
-        "summary": f"Lộ trình {requested_days} ngày cho mục tiêu {normalized['primary_goal']}, cấp độ {normalized['training_level']}, {normalized['training_days_per_week']} buổi/tuần.",
+        "summary": f"Lộ trình {requested_days} ngày cho mục tiêu {normalized['primary_goal']}, cấp độ {normalized['training_level']}, {len(training_weekdays)} buổi/tuần.",
         "duration_days": requested_days,
         "source_plan_id": plan_id,
         "source_user_id": user_id,
@@ -296,6 +300,31 @@ def _split_notes(value: Any) -> list[str]:
     if isinstance(value, list):
         return [str(item).strip() for item in value if str(item).strip()]
     return [item.strip() for item in str(value or "").replace(";", ",").split(",") if item.strip()]
+
+
+def _normalize_weekday_numbers(numbers_value: Any, names_value: Any = None) -> list[int]:
+    day_map = {
+        "mon": 1, "monday": 1, "thu 2": 1, "thứ 2": 1, "t2": 1,
+        "tue": 2, "tuesday": 2, "thu 3": 2, "thứ 3": 2, "t3": 2,
+        "wed": 3, "wednesday": 3, "thu 4": 3, "thứ 4": 3, "t4": 3,
+        "thu": 4, "thursday": 4, "thu 5": 4, "thứ 5": 4, "t5": 4,
+        "fri": 5, "friday": 5, "thu 6": 5, "thứ 6": 5, "t6": 5,
+        "sat": 6, "saturday": 6, "thu 7": 6, "thứ 7": 6, "t7": 6,
+        "sun": 7, "sunday": 7, "chu nhat": 7, "chủ nhật": 7, "cn": 7,
+    }
+    weekdays: set[int] = set()
+    for value in [numbers_value, names_value]:
+        if value is None:
+            continue
+        items = value if isinstance(value, list) else str(value).replace(";", ",").split(",")
+        for item in items:
+            text = str(item).strip().lower()
+            number = _safe_int(text, 0)
+            if 1 <= number <= 7:
+                weekdays.add(number)
+            elif text in day_map:
+                weekdays.add(day_map[text])
+    return sorted(weekdays)
 
 
 def _training_weekdays(training_days: int) -> set[int]:

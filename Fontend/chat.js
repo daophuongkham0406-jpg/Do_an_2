@@ -1,4 +1,4 @@
-const CHAT_API_URL = "http://127.0.0.1:5002/api/chat";
+const CHAT_API_URL = "http://localhost:5000/api/coach/chat";
 
 const chatbotHTML = `
     <button class="chatbot-toggler">
@@ -22,9 +22,9 @@ const chatbotHTML = `
         </ul>
 
         <div class="chat-suggestions">
-            <button class="suggestion-btn">Lên lộ trình Clean Bulk</button>
-            <button class="suggestion-btn">Mục tiêu tăng 3kg cơ</button>
-            <button class="suggestion-btn">Bài tập ngực hôm nay</button>
+            <button class="suggestion-btn">Hôm nay tôi nên tập gì?</button>
+            <button class="suggestion-btn">Tôi còn thiếu bao nhiêu protein?</button>
+            <button class="suggestion-btn">Bài đầu tiên cần lưu ý gì?</button>
         </div>
 
         <div class="chat-input">
@@ -77,12 +77,18 @@ const createChatLi = (message, className) => {
 
 const generateResponse = async (incomingChatLi, userMessage) => {
   const messageElement = incomingChatLi.querySelector("p");
+  const user = getLoggedInUser();
 
   try {
     const response = await fetch(CHAT_API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMessage }),
+      body: JSON.stringify({
+        message: userMessage,
+        userId: user._id || user.id || user.user_id || user.userid || "guest",
+        currentDayNumber: getCurrentPlanDayNumber(),
+        currentPage: location.pathname,
+      }),
     });
 
     const data = await response.json();
@@ -93,10 +99,26 @@ const generateResponse = async (incomingChatLi, userMessage) => {
       messageElement.textContent = `Lỗi: ${data.error || "Không thể lấy câu trả lời."}`;
     }
   } catch (error) {
-    messageElement.textContent = "Lỗi kết nối máy chủ AI (Cổng 5002)!";
+    messageElement.textContent = "Lỗi kết nối AI HLV trên máy chủ chính!";
   } finally {
     chatbox.scrollTo(0, chatbox.scrollHeight);
   }
+};
+
+const getLoggedInUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem("loggedInUser") || "{}");
+  } catch (e) {
+    return {};
+  }
+};
+
+const getCurrentPlanDayNumber = () => {
+  const visibleDay = document.querySelector(".day-card:not(.hidden-day)");
+  const dayNumber = Number(visibleDay?.dataset?.dayNumber);
+  if (dayNumber > 0) return dayNumber;
+  const activeDay = document.querySelector(".day-card");
+  return Number(activeDay?.dataset?.dayNumber) || 0;
 };
 
 const handleChat = (message) => {
