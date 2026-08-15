@@ -1,0 +1,13 @@
+{
+  "summary": {
+    "rows": 250,
+    "steps": 1241,
+    "issues": 0,
+    "affected_exercises": 0
+  },
+  "issues": [],
+  "translation": {
+    "gemini_rows": 0,
+    "fallback_rows": 250
+  }
+}

@@ -39,6 +39,7 @@ let todayTarget            = { calories: 2000, protein: 130 };
 let todayIsRest            = false;
 let planStartDateStr       = null;
 let lastAiPlanResponse     = null;
+let planTextRefreshTried   = false;
 
 // ════════════════════════════════════════
 // CHỌN ĐỘ DÀI LỘ TRÌNH (7/14/21/30 ngày)
@@ -125,7 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
 document.getElementById("btn-generate").addEventListener("click", async () => {
   const goal      = document.getElementById("goal").value;
   const level     = document.getElementById("level").value;
-  const equipment = document.getElementById("equipment").value;
   const userInfo  = document.getElementById("userInfo").value;
   const height    = document.getElementById("height").value;
   const weight    = document.getElementById("weight").value;
@@ -154,9 +154,9 @@ document.getElementById("btn-generate").addEventListener("click", async () => {
         () => {
           const finalGoal = bmiData.suggested_goal || goal;
           document.getElementById("goal").value = finalGoal;
-          doGeneratePlan(finalGoal, level, equipment, userInfo, height, weight, age, survey);
+          doGeneratePlan(finalGoal, level, userInfo, height, weight, age, survey);
         },
-        () => doGeneratePlan(goal, level, equipment, userInfo, height, weight, age, survey)
+        () => doGeneratePlan(goal, level, userInfo, height, weight, age, survey)
       );
       return;
     }
@@ -164,7 +164,7 @@ document.getElementById("btn-generate").addEventListener("click", async () => {
     console.warn("BMI check lỗi:", e);
   }
 
-  doGeneratePlan(goal, level, equipment, userInfo, height, weight, age, survey);
+  doGeneratePlan(goal, level, userInfo, height, weight, age, survey);
 });
 
 function collectSurveyPayload() {
@@ -274,7 +274,7 @@ function showBmiAdviceModal(bmiData, onAccept, onReject) {
 // ════════════════════════════════════════
 // GỌI API TẠO LỘ TRÌNH
 // ════════════════════════════════════════
-async function doGeneratePlan(goal, level, equipment, userInfo, height, weight, age, survey = {}) {
+async function doGeneratePlan(goal, level, userInfo, height, weight, age, survey = {}) {
   document.getElementById("plan-title").innerText = `LỘ TRÌNH ${goal.toUpperCase()} — ${selectedDays} NGÀY`;
   document.getElementById("plan-sub").innerText   = `${level} · ${height}cm · ${weight}kg · ${age} tuổi`;
 
@@ -307,7 +307,6 @@ async function doGeneratePlan(goal, level, equipment, userInfo, height, weight, 
       body: JSON.stringify({
         goal,
         level,
-        equipment,
         note: [userInfo, survey.avoid_notes].filter(Boolean).join(". "),
         userInfo,
         height,
@@ -336,7 +335,7 @@ async function doGeneratePlan(goal, level, equipment, userInfo, height, weight, 
       lastAiPlanResponse = data;
 
       // ✅ LƯU DRAFT VÀO LOCALSTORAGE
-      saveDraftPlan(currentPlanData, { goal, level, equipment, userInfo, height, weight, age, survey });
+      saveDraftPlan(currentPlanData, { goal, level, userInfo, height, weight, age, survey });
 
       renderPlan(data.plan_data, container);
       appendPlanActions(container, data.plan_data);
@@ -454,7 +453,6 @@ function applyDraft() {
     if (fi.age)       document.getElementById("age").value       = fi.age;
     if (fi.goal)      document.getElementById("goal").value      = fi.goal;
     if (fi.level)     document.getElementById("level").value     = fi.level;
-    if (fi.equipment) document.getElementById("equipment").value = fi.equipment;
     if (fi.userInfo)  document.getElementById("userInfo").value  = fi.userInfo;
     if (fi.survey?.available_training_day_numbers) setSelectedWeekdays(fi.survey.available_training_day_numbers);
     updateBmiPreview();
@@ -516,6 +514,8 @@ function renderPlan(planData, container, progress = null) {
 
     const targetCal  = Number((pd?.target_calories) || day.target_calories || (day.is_rest ? defaultCalRest : defaultCalWorkout));
     const targetProt = Number((pd?.target_protein)  || day.target_protein  || (day.is_rest ? defaultProtRest : defaultProtWorkout));
+    const targetCarbs = Number(day.target_carbs || 0);
+    const targetFat = Number(day.target_fat || 0);
 
     let dayDone = false;
     if (day.is_rest) {
@@ -545,6 +545,8 @@ function renderPlan(planData, container, progress = null) {
         <div class="dn-divider"></div>
         <div class="dn-item"><span class="dn-icon">💪</span><span class="dn-label">Protein mục tiêu</span><span class="dn-val">${targetProt}g <small>protein</small></span></div>
         <div class="dn-divider"></div>
+        ${targetCarbs ? `<div class="dn-item"><span class="dn-icon">🍚</span><span class="dn-label">Carb gợi ý</span><span class="dn-val">${targetCarbs}g</span></div><div class="dn-divider"></div>` : ""}
+        ${targetFat ? `<div class="dn-item"><span class="dn-icon">🥑</span><span class="dn-label">Fat gợi ý</span><span class="dn-val">${targetFat}g</span></div><div class="dn-divider"></div>` : ""}
         <div class="dn-item"><span class="dn-icon">${day.is_rest ? "🛌" : "🏋️"}</span><span class="dn-label">Loại ngày</span><span class="dn-val" style="color:${day.is_rest ? "#a78bfa" : "#4ecdc4"}">${day.is_rest ? "Nghỉ ngơi" : "Ngày tập"}</span></div>
       </div>
       <div class="day-body" id="day-body-${day.day_number}"></div>`;
@@ -578,9 +580,10 @@ function renderPlan(planData, container, progress = null) {
                   <div class="ex-checkbox">${done ? "✓" : ""}</div>
               </div>
               <div class="routine-item-info">
-                  <h4>${ex.name}</h4>
+                  <h4>${ex.name_vi || ex.name}</h4>
                   <div class="tags">
                       <span class="tag tag-muscle">${ex.muscle || "Toàn thân"}</span>
+                      ${ex.goal ? `<span class="tag tag-goal">${ex.goal}</span>` : ""}
                       <span class="tag tag-sets">${ex.sets} sets × ${ex.reps} reps</span>
                       <span class="tag tag-rest">⏱ ${ex.rest}s</span>
                   </div>
@@ -651,6 +654,45 @@ function renderPlan(planData, container, progress = null) {
   updateProgressBar(completedDaysCount, totalDays);
 }
 
+function planNeedsTextRefresh(planData) {
+  const staleMarkers = [
+    "Thực hiện bước này chậm",
+    "Chuẩn bị tư thế cho bài",
+    "Thực hiện pha chính của bài",
+    "Giữ kỹ thuật ổn định trong bước này",
+    "Thực hiện pha chính dứt khoát",
+    "Chuẩn bị đúng tư thế",
+    "Nắm hoặc giữ chắc điểm tựa",
+  ];
+  return (planData?.days || []).some(day =>
+    (day.exercises || []).some(ex =>
+      (ex.steps || []).some(step => staleMarkers.some(marker => String(step || "").includes(marker)))
+    )
+  );
+}
+
+async function refreshActivePlanTextIfNeeded(planId, planData) {
+  if (!planId || planTextRefreshTried || !planNeedsTextRefresh(planData)) return false;
+  planTextRefreshTried = true;
+  try {
+    const res = await fetch(`${BACKEND_API_URL}/api/plans/refresh-ai-plan-text/${planId}`, { method: "POST" });
+    const data = await res.json();
+    if (!data.success || !data.plan) return false;
+    currentPlanData = data.plan.plan_data;
+    const container = document.getElementById("plan-container");
+    renderPlan(currentPlanData, container, data.plan.daily_progress);
+    appendPlanActions(container, currentPlanData);
+    document.getElementById("plan-action-buttons").style.display = "none";
+    document.getElementById("btn-cancel-plan").classList.add("show");
+    switchToNutritionSidebar(currentPlanData);
+    showToast("✅ Đã làm mới hướng dẫn bài tập tiếng Việt.", "success");
+    return true;
+  } catch (e) {
+    console.warn("Không làm mới được hướng dẫn bài tập:", e);
+    return false;
+  }
+}
+
 // ════════════════════════════════════════
 // CHUYỂN NGÀY
 // ════════════════════════════════════════
@@ -711,7 +753,7 @@ async function savePlan(planData) {
         height,
         weight,
         age,
-        source: lastAiPlanResponse?.source || "ai_fitness_dataset_only",
+        source: lastAiPlanResponse?.source || "ai_exercises_csv_rule_engine",
         input_snapshot: lastAiPlanResponse?.input || collectSurveyPayload(),
         ai_decision: lastAiPlanResponse?.ai_decision || {},
       }),
@@ -1102,6 +1144,7 @@ async function checkActivePlanOnLoad() {
 
       renderPlan(currentPlanData, container, data.plan.daily_progress);
       appendPlanActions(container, currentPlanData);
+      refreshActivePlanTextIfNeeded(currentPlanId, currentPlanData);
 
       document.getElementById("plan-action-buttons").style.display = "none";
       document.getElementById("btn-cancel-plan").classList.add("show");
@@ -1170,20 +1213,26 @@ checkActivePlanOnLoad();
 function openExerciseModal(ex) {
   const diffLabel = { B:"Người mới", I:"Trung bình", A:"Nâng cao" };
   const diffCls   = { B:"badge-b", I:"badge-i", A:"badge-a" };
+  const difficulty = ex.difficulty || diffLabel[ex.diff] || "Trung bình";
+  const met = Number(ex.met || 0);
   document.getElementById("emIcon").textContent   = ex.icon || "🏋️";
   document.getElementById("emMuscle").textContent = (ex.muscle || "").toUpperCase();
-  document.getElementById("emName").textContent   = ex.name;
+  document.getElementById("emName").textContent   = ex.name_vi || ex.name;
   document.getElementById("emBadges").innerHTML   = `
-    <span class="em-badge ${diffCls[ex.diff] || "badge-i"}">${diffLabel[ex.diff] || "Trung bình"}</span>
-    <span class="em-badge" style="background:rgba(77,160,255,.12);color:#4da0ff;border:1px solid rgba(77,160,255,.25)">${ex.equip || "Dụng cụ"}</span>`;
+    <span class="em-badge ${diffCls[ex.diff] || "badge-i"}">${difficulty}</span>
+    ${ex.category ? `<span class="em-badge" style="background:rgba(77,160,255,.12);color:#4da0ff;border:1px solid rgba(77,160,255,.25)">${ex.category}</span>` : ""}
+    ${ex.goal ? `<span class="em-badge" style="background:rgba(78,205,196,.12);color:#4ecdc4;border:1px solid rgba(78,205,196,.25)">${ex.goal}</span>` : ""}`;
   document.getElementById("emStats").innerHTML = `
     <div class="em-stat"><div class="em-stat-num">${ex.sets}</div><div class="em-stat-lbl">Sets</div></div>
     <div class="em-stat"><div class="em-stat-num">${ex.reps}</div><div class="em-stat-lbl">Reps</div></div>
-    <div class="em-stat"><div class="em-stat-num">${ex.rest}s</div><div class="em-stat-lbl">Nghỉ</div></div>`;
+    <div class="em-stat"><div class="em-stat-num">${ex.rest}s</div><div class="em-stat-lbl">Nghỉ</div></div>
+    ${met ? `<div class="em-stat"><div class="em-stat-num">${met}</div><div class="em-stat-lbl">MET</div></div>` : ""}`;
   document.getElementById("em-pane-steps").innerHTML = ex.steps?.length
     ? `<ol class="em-steps">${ex.steps.map((s,i) => `<li class="em-step"><span class="em-step-num">0${i+1}</span><div class="em-step-text">${s}</div></li>`).join("")}</ol>`
     : `<p style="color:var(--text-muted);font-size:14px;padding:16px 0;">Chưa có hướng dẫn.</p>`;
   const muscles = [{ role:"Cơ chính", name:ex.muscle }];
+  if (ex.body_part) muscles.push({ role:"Vùng cơ", name:ex.body_part });
+  if (ex.muscle_keys) muscles.push({ role:"Mã nhóm cơ", name:ex.muscle_keys });
   if (ex.sec?.length) ex.sec.forEach(s => muscles.push({ role:"Cơ phụ", name:s }));
   document.getElementById("em-pane-muscles").innerHTML = `
     <div class="em-muscle-list">${muscles.map(m => `

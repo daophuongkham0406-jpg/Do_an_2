@@ -2,8 +2,10 @@ from flask import Blueprint, jsonify, request
 from bson.objectid import ObjectId
 from ketnoidb import db
 from datetime import datetime
+from services.ml_integration_service import MLIntegrationService
 
 plan_bp = Blueprint('plan', __name__)
+ml_refresh_service = MLIntegrationService()
 
 
 def serialize_plan(plan):
@@ -35,7 +37,13 @@ def build_daily_progress(plan_data):
             exercises.append({
                 "exercise_id": ex.get("exercise_id") or ex.get("id") or "",
                 "name": ex.get("name") or ex.get("exercise_name") or "Bài tập",
+                "name_vi": ex.get("name_vi") or "",
                 "muscle": ex.get("muscle") or "",
+                "muscle_keys": ex.get("muscle_keys") or "",
+                "body_part": ex.get("body_part") or "",
+                "goal": ex.get("goal") or "",
+                "category": ex.get("category") or "",
+                "met": ex.get("met"),
                 "equipment": ex.get("equip") or ex.get("equipment") or "",
                 "sets": ex.get("sets"),
                 "reps": ex.get("reps"),
@@ -57,6 +65,8 @@ def build_daily_progress(plan_data):
             "focus": day.get("focus"),
             "target_calories": day.get("target_calories"),
             "target_protein": day.get("target_protein"),
+            "target_carbs": day.get("target_carbs"),
+            "target_fat": day.get("target_fat"),
             "completed_exercises_count": 0,
             "total_exercises_count": len(exercises),
             "day_done": False,
@@ -65,6 +75,62 @@ def build_daily_progress(plan_data):
             "exercises": exercises,
         })
     return progress
+
+
+def refresh_plan_exercise_text(plan_data: dict) -> dict:
+    plan_data = dict(plan_data or {})
+    exercise_map = {row.get("id"): row for row in ml_refresh_service._load_exercises()}
+    for day in plan_data.get("days", []):
+        for ex in day.get("exercises", []):
+            source = exercise_map.get(ex.get("exercise_id") or ex.get("id"))
+            if not source:
+                continue
+            refreshed = ml_refresh_service._format_exercise(
+                source,
+                ml_refresh_service._map_goal((plan_data.get("input_snapshot") or {}).get("goal")),
+                day.get("day_number") or 1,
+                1,
+                plan_data.get("plan_id") or "",
+            )
+            for key in ["name_vi", "steps", "tips", "goal", "category", "difficulty", "met", "body_part", "muscle", "muscle_keys"]:
+                ex[key] = refreshed.get(key)
+    return plan_data
+
+
+def refresh_daily_progress_text(daily_progress: list, plan_data: dict) -> list:
+    refreshed_by_day = {
+        day.get("day_number"): {
+            ex.get("exercise_id"): ex
+            for ex in day.get("exercises", [])
+            if ex.get("exercise_id")
+        }
+        for day in plan_data.get("days", [])
+    }
+    for day in daily_progress or []:
+        day_source = refreshed_by_day.get(day.get("day_number"), {})
+        day["target_calories"] = next(
+            (src_day.get("target_calories") for src_day in plan_data.get("days", []) if src_day.get("day_number") == day.get("day_number")),
+            day.get("target_calories"),
+        )
+        day["target_protein"] = next(
+            (src_day.get("target_protein") for src_day in plan_data.get("days", []) if src_day.get("day_number") == day.get("day_number")),
+            day.get("target_protein"),
+        )
+        day["target_carbs"] = next(
+            (src_day.get("target_carbs") for src_day in plan_data.get("days", []) if src_day.get("day_number") == day.get("day_number")),
+            day.get("target_carbs"),
+        )
+        day["target_fat"] = next(
+            (src_day.get("target_fat") for src_day in plan_data.get("days", []) if src_day.get("day_number") == day.get("day_number")),
+            day.get("target_fat"),
+        )
+        for ex in day.get("exercises", []):
+            source = day_source.get(ex.get("exercise_id"))
+            if not source:
+                continue
+            for key in ["name_vi", "steps", "tips", "goal", "category", "difficulty", "met", "body_part", "muscle", "muscle_keys"]:
+                ex[key] = source.get(key)
+    return daily_progress or []
 
 # 1. Lấy Lộ trình đang "active" của một User
 @plan_bp.route('/active/<user_id>', methods=['GET'])
@@ -100,8 +166,8 @@ def save_ai_plan():
         doc = {
             "user_id": user_id,
             "status": "active",
-            "source": "AI_FITNESS_DATASET_ONLY",
-            "generation_source": data.get("source", "ai_fitness_dataset_only"),
+            "source": data.get("source", "ai_exercises_csv_rule_engine"),
+            "generation_source": data.get("source", "ai_exercises_csv_rule_engine"),
             "input_snapshot": data.get("input_snapshot") or {},
             "ai_decision": data.get("ai_decision") or {},
             "plan_data": plan_data,
@@ -127,6 +193,25 @@ def get_active_plan_query():
         return jsonify({"plan": None, "message": "Thiếu userId"}), 400
     plan = db.plan.find_one({"user_id": user_id, "status": "active"}, sort=[("created_at", -1)])
     return jsonify({"plan": serialize_plan(plan) if plan else None}), 200
+
+
+@plan_bp.route('/refresh-ai-plan-text/<plan_id>', methods=['POST'])
+def refresh_ai_plan_text(plan_id):
+    try:
+        plan = db.plan.find_one({"_id": ObjectId(plan_id)})
+        if not plan:
+            return jsonify({"success": False, "error": "Không tìm thấy lộ trình"}), 404
+        plan_data = refresh_plan_exercise_text(plan.get("plan_data") or {})
+        daily_progress = refresh_daily_progress_text(plan.get("daily_progress") or [], plan_data)
+        now = datetime.utcnow()
+        db.plan.update_one(
+            {"_id": ObjectId(plan_id)},
+            {"$set": {"plan_data": plan_data, "daily_progress": daily_progress, "updated_at": now}},
+        )
+        refreshed = db.plan.find_one({"_id": ObjectId(plan_id)})
+        return jsonify({"success": True, "plan": serialize_plan(refreshed)}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @plan_bp.route('/cancel-active/<user_id>', methods=['DELETE'])

@@ -1,313 +1,362 @@
 import csv
+import hashlib
 import json
+import math
+import os
+import re
+import sys
 from datetime import datetime
 
-from utils.path_utils import AI_FITNESS_DIR
+from utils.path_utils import AI_DIR
+
+if str(AI_DIR) not in sys.path:
+    sys.path.insert(0, str(AI_DIR))
+
+from vietnamese_normalizer import (  # noqa: E402
+    display_label,
+    display_pipe_values,
+    normalize_text,
+    normalize_avoid_terms,
+    safety_tag_for_avoid_key,
+)
+from vietnamese_exercise_text import translate_steps, vietnamese_exercise_name  # noqa: E402
+
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
 
 
 class MLIntegrationService:
     def __init__(self):
-        self.ai_dir = AI_FITNESS_DIR
-        self.model_dir = AI_FITNESS_DIR / "models"
-        self.csv_dir = AI_FITNESS_DIR / "exports" / "csv"
-        self.output_dir = AI_FITNESS_DIR / "integration_outputs"
+        self.ai_dir = AI_DIR
+        self.exercise_path = AI_DIR / "exercises.csv"
+        self._translation_cache = {}
 
     def generate_plan(self, payload: dict) -> dict:
-        result = self._dataset_plan(payload)
-        result.setdefault("status", "OK")
-        result.setdefault("generated_at", datetime.utcnow().isoformat())
-        return result
+        exercises = self._load_exercises()
+        if not exercises:
+            raise ValueError("Không tìm thấy dữ liệu bài tập tại AI/exercises.csv")
 
-    def _dataset_plan(self, payload: dict) -> dict:
-        duration_days = self._safe_int(payload.get("duration_days") or payload.get("duration"), 7)
-        duration_days = max(1, min(duration_days, 30))
-        note = (
-            "Lộ trình được tạo chỉ từ AI_Fitness_Dataset: exercises, workout_plans, "
-            "workout_plan_items, users, workout_history, user_feedback và history_summary."
-        )
+        duration_days = max(1, min(self._safe_int(payload.get("duration_days") or payload.get("duration"), 7), 30))
+        training_days = max(1, min(self._safe_int(payload.get("training_days_per_week"), 3), 7))
+        goal = self._map_goal(payload.get("goal"))
+        level = self._map_level(payload.get("level"))
+        avoid = normalize_avoid_terms(self._avoid_text(payload))
+        bmi = self._bmi(payload)
+        nutrition = self._nutrition_targets(payload, goal, training_days, exercises)
+        plan_id = self._make_id("PLAN", payload, duration_days)
+
+        split = self._build_split(goal, training_days, payload)
+        training_weekdays = self._available_weekdays(payload) or self._training_weekdays(training_days)
         days = []
-        dataset = self._load_dataset_context(payload)
-        exercises_pool = dataset["exercises"]
-        split = self._build_split(payload)
-        training_weekdays = self._available_weekdays(payload) or self._training_weekdays(self._safe_int(payload.get("training_days_per_week"), 3))
-        training_day_count = 0
+        training_index = 0
+
         for day_number in range(1, duration_days + 1):
             weekday = ((day_number - 1) % 7) + 1
             is_rest = weekday not in training_weekdays
-            workout = split[training_day_count % len(split)] if not is_rest else {"focus": "Nghỉ ngơi", "primary": [], "secondary": []}
-            if not is_rest:
-                training_day_count += 1
-            selected = [] if is_rest else self._select_dataset_exercises(exercises_pool, workout, payload, dataset)
+            if is_rest:
+                days.append(self._rest_day(day_number, nutrition))
+                continue
+
+            focus = split[training_index % len(split)]
+            training_index += 1
+            selected = self._select_exercises(exercises, focus, goal, level, avoid, payload)
+            day_items = [
+                self._format_exercise(item, goal, day_number, order_index + 1, plan_id)
+                for order_index, item in enumerate(selected)
+            ]
             days.append({
                 "day_number": day_number,
                 "day_name": f"Ngày {day_number}",
-                "is_rest": is_rest,
-                "focus": "Nghỉ ngơi + giãn cơ nhẹ" if is_rest else workout["focus"],
-                "target_calories": 1900 if is_rest else 2200,
-                "target_protein": 120 if is_rest else 150,
-                "exercises": [self._format_fallback_exercise(exercise, payload, note) for exercise in selected],
+                "is_rest": False,
+                "focus": focus["name"],
+                "target_calories": nutrition["workout"]["calories"],
+                "target_protein": nutrition["workout"]["protein"],
+                "target_carbs": nutrition["workout"]["carbs"],
+                "target_fat": nutrition["workout"]["fat"],
+                "exercises": day_items,
             })
 
         plan_data = {
-            "plan_name": "Lộ trình AI Fitness cá nhân hóa",
-            "title": "Lộ trình AI Fitness cá nhân hóa",
-            "summary": f"Lộ trình {duration_days} ngày dựa trên khảo sát hiện tại.",
+            "plan_id": plan_id,
+            "plan_name": "Lộ trình FIT ME theo luật cá nhân hóa",
+            "title": "Lộ trình FIT ME theo luật cá nhân hóa",
+            "summary": self._summary(goal, level, duration_days, training_days, bmi),
             "duration_days": duration_days,
-            "source_plan_id": "",
-            "source_user_id": dataset["similar_user_id"],
-            "daily_calories_workout": 2200,
-            "daily_calories_rest": 1900,
-            "daily_protein_workout": 150,
-            "daily_protein_rest": 120,
-            "safety_note": note,
+            "source_plan_id": plan_id,
+            "source_user_id": str(payload.get("user_id") or payload.get("userId") or ""),
+            "daily_calories_workout": nutrition["workout"]["calories"],
+            "daily_calories_rest": nutrition["rest"]["calories"],
+            "daily_protein_workout": nutrition["workout"]["protein"],
+            "daily_protein_rest": nutrition["rest"]["protein"],
+            "nutrition_note": nutrition["note"],
+            "safety_note": self._safety_note(avoid),
+            "bmi": bmi,
             "days": days,
         }
         return {
             "status": "OK",
-            "source": "ai_fitness_dataset_only",
+            "source": "ai_exercises_csv_rule_engine",
             "input": payload,
             "plan_data": plan_data,
             "plan": {
                 "title": plan_data["title"],
                 "summary": plan_data["summary"],
-                "safety_note": note,
-                "days": [{
-                    "day": day["day_number"],
-                    "focus": day["focus"],
-                    "exercises": day["exercises"],
-                } for day in days],
+                "safety_note": plan_data["safety_note"],
+                "days": [{"day": day["day_number"], "focus": day["focus"], "exercises": day["exercises"]} for day in days],
             },
             "ai_decision": {
-                "final_action": "Reduce Difficulty",
-                "decision_source": "ai_fitness_dataset_rule_engine",
+                "final_action": "Generate Rule-Based Plan",
+                "decision_source": "AI/exercises.csv",
                 "was_overridden": False,
-                "safety_status": "DatasetRules",
-                "confidence": dataset["confidence"],
-                "explanation": note,
+                "safety_status": "VietnameseAvoidTermsApplied",
+                "confidence": 82,
+                "explanation": "Lộ trình được sinh từ AI/exercises.csv, luật gym, chuẩn hóa tiếng Việt và công thức dinh dưỡng.",
                 "dataset_context": {
-                    "exercises": len(dataset["exercises"]),
-                    "workout_plans": len(dataset["workout_plans"]),
-                    "workout_plan_items": len(dataset["workout_plan_items"]),
-                    "users": len(dataset["users"]),
-                    "workout_history_sessions": len(dataset["history_sessions"]),
-                    "workout_history_items": len(dataset["history_items"]),
-                    "user_feedback": len(dataset["feedback"]),
-                    "history_summary": len(dataset["history_summary"]),
-                    "similar_user_id": dataset["similar_user_id"],
-                    "rules": ["safety", "recommendation", "preference", "history/adherence/fatigue"],
+                    "exercises": len(exercises),
+                    "rules": ["goal", "level", "muscle_balance", "injury_avoidance", "sets_reps_rest", "nutrition_formula"],
+                    "avoid_keys": avoid["avoid_keys"],
+                    "unknown_avoid_terms": avoid["unknown_terms"],
                 },
             },
         }
 
-    def _safe_int(self, value, default: int) -> int:
-        try:
-            return int(float(value))
-        except (TypeError, ValueError):
-            return default
-
-    def _load_exercise_pool(self) -> list[dict]:
-        path = self.csv_dir / "exercises.csv"
-        if not path.exists():
-            return []
-        with path.open("r", encoding="utf-8-sig", newline="") as file:
+    def _load_exercises(self) -> list[dict]:
+        with self.exercise_path.open("r", encoding="utf-8-sig", newline="") as file:
             return list(csv.DictReader(file))
 
-    def _load_csv(self, filename: str) -> list[dict]:
-        path = self.csv_dir / filename
-        if not path.exists():
-            return []
-        with path.open("r", encoding="utf-8-sig", newline="") as file:
-            return list(csv.DictReader(file))
+    def _select_exercises(self, exercises, focus, goal, level, avoid, payload):
+        session_minutes = self._safe_int(payload.get("session_duration_minutes"), 60)
+        target_count = 4 if session_minutes <= 45 else 5 if session_minutes <= 70 else 6
+        selected = []
+        used_ids = set()
+        muscle_counts = {}
+        candidates = [
+            item for item in exercises
+            if self._level_rank(item.get("difficulty")) <= self._level_rank(level)
+            and self._goal_matches(item, goal)
+            and self._is_safe(item, avoid)
+        ]
 
-    def _load_dataset_context(self, payload: dict) -> dict:
-        exercises = self._load_csv("exercises.csv")
-        workout_plans = self._load_csv("workout_plans.csv")
-        workout_plan_items = self._load_csv("workout_plan_items.csv")
-        users = self._load_csv("users.csv")
-        history_sessions = self._load_csv("workout_history_sessions.csv")
-        history_items = self._load_csv("workout_history_items.csv")
-        feedback = self._load_csv("user_feedback.csv")
-        history_summary = self._load_csv("workout_history_summary.csv")
-        similar_user = self._find_similar_user(users, payload)
-        similar_user_id = similar_user.get("user_id", "")
-        similar_plan_ids = {
-            plan.get("plan_id")
-            for plan in workout_plans
-            if self._plan_matches_payload(plan, payload, similar_user_id)
-        }
-        if not similar_plan_ids and similar_user_id:
-            similar_plan_ids = {
-                plan.get("plan_id")
-                for plan in workout_plans
-                if plan.get("user_id") == similar_user_id
-            }
-        dataset = {
-            "exercises": exercises,
-            "workout_plans": workout_plans,
-            "workout_plan_items": workout_plan_items,
-            "users": users,
-            "history_sessions": history_sessions,
-            "history_items": history_items,
-            "feedback": feedback,
-            "history_summary": history_summary,
-            "similar_user_id": similar_user_id,
-            "similar_plan_ids": {plan_id for plan_id in similar_plan_ids if plan_id},
-            "plan_item_scores": {},
-            "preference_scores": {},
-            "history_scores": {},
-            "fatigue_penalties": {},
-            "confidence": 0,
-        }
-        dataset["plan_item_scores"] = self._build_plan_item_scores(workout_plan_items, dataset["similar_plan_ids"])
-        dataset["preference_scores"] = self._build_preference_scores(feedback)
-        dataset["history_scores"] = self._build_history_scores(history_items)
-        dataset["fatigue_penalties"] = self._build_fatigue_penalties(history_summary, workout_plan_items)
-        dataset["confidence"] = min(95, 55 + min(len(dataset["similar_plan_ids"]), 10) * 3)
-        return dataset
+        for slot in focus["slots"]:
+            pool = [item for item in candidates if item["id"] not in used_ids and self._matches_slot(item, slot)]
+            if not pool:
+                pool = [item for item in candidates if item["id"] not in used_ids]
+            pool.sort(key=lambda item: self._rank_exercise(item, goal, level, focus, muscle_counts, payload))
+            if not pool:
+                continue
+            chosen = pool[0]
+            selected.append(chosen)
+            used_ids.add(chosen["id"])
+            primary = self._tokens(chosen.get("primary_muscles"))
+            for muscle in primary:
+                muscle_counts[muscle] = muscle_counts.get(muscle, 0) + 1
+            if len(selected) >= target_count:
+                break
+        return selected
 
-    def _find_similar_user(self, users: list[dict], payload: dict) -> dict:
-        target_goal = self._map_goal(payload.get("goal"))
-        target_level = self._map_level(payload.get("level"))
-        target_days = self._safe_int(payload.get("training_days_per_week"), 3)
-        target_minutes = self._safe_int(payload.get("session_duration_minutes"), 60)
-        target_equipment = set(self._equipment_tokens(payload.get("equipment")))
-        best_user = {}
-        best_score = -1
-        for user in users:
-            score = 0
-            if user.get("primary_goal") == target_goal:
-                score += 4
-            if user.get("training_level") == target_level:
-                score += 3
-            if self._safe_int(user.get("training_days_per_week"), 0) == target_days:
-                score += 2
-            if abs(self._safe_int(user.get("session_duration_minutes"), 0) - target_minutes) <= 15:
-                score += 1
-            user_equipment = set(self._json_values(user.get("available_equipment")))
-            if target_equipment and target_equipment.intersection(user_equipment):
-                score += 1
-            if score > best_score:
-                best_score = score
-                best_user = user
-        return best_user
-
-    def _plan_matches_payload(self, plan: dict, payload: dict, similar_user_id: str) -> bool:
-        goal = self._map_goal(payload.get("goal"))
-        level = self._map_level(payload.get("level"))
-        days = self._safe_int(payload.get("training_days_per_week"), 3)
-        if similar_user_id and plan.get("user_id") == similar_user_id:
-            return True
-        if plan.get("primary_goal_snapshot") != goal:
+    def _is_safe(self, exercise, avoid):
+        tags = set(self._tokens(exercise.get("tags")))
+        muscles = set(self._tokens(exercise.get("primary_muscles")) + self._tokens(exercise.get("secondary_muscles")))
+        body_part = str(exercise.get("body_part") or "")
+        category = str(exercise.get("category") or "")
+        name = str(exercise.get("name_en") or "").lower()
+        knee_sensitive = {"quadriceps", "hamstrings", "gluteus_maximus", "gluteus_medius", "adductors", "abductors", "gastrocnemius", "soleus"}
+        shoulder_sensitive = {"anterior_deltoid", "lateral_deltoid", "posterior_deltoid", "trapezius", "serratus_anterior", "pectoralis_major"}
+        lower_back_sensitive = {"erector_spinae", "quadratus_lumborum", "gluteus_maximus", "hamstrings", "latissimus_dorsi"}
+        for key in avoid["avoid_keys"]:
+            safety_tag = safety_tag_for_avoid_key(key)
+            if safety_tag and safety_tag not in tags:
+                return False
+            if key == "knee" and (body_part in {"upper_legs", "lower_legs"} or muscles.intersection(knee_sensitive)):
+                return False
+            if key == "shoulder" and (body_part in {"shoulders", "chest"} or muscles.intersection(shoulder_sensitive) or "overhead" in name):
+                return False
+            if key == "lower_back" and (body_part == "back" or muscles.intersection(lower_back_sensitive) or any(word in name for word in ["deadlift", "good morning", "back extension"])):
+                return False
+            if key in muscles or key == body_part:
+                return False
+            if key in {"elbow", "wrist"} and body_part in {"upper_arms", "lower_arms"}:
+                return False
+            if key == "neck" and (body_part in {"back", "shoulders"} or "neck" in name):
+                return False
+        if category == "olympic" and any(key in avoid["avoid_keys"] for key in {"knee", "shoulder", "lower_back", "wrist"}):
             return False
-        if plan.get("training_level_snapshot") != level:
-            return False
-        return abs(self._safe_int(plan.get("days_per_week"), days) - days) <= 1
+        return True
 
-    def _build_plan_item_scores(self, items: list[dict], plan_ids: set[str]) -> dict:
-        scores = {}
-        for item in items:
-            if plan_ids and item.get("plan_id") not in plan_ids:
-                continue
-            exercise_id = item.get("exercise_id", "")
-            if not exercise_id:
-                continue
-            priority = self._safe_int(item.get("priority_score"), 1)
-            role = str(item.get("exercise_role", "")).lower()
-            role_bonus = 2 if "primary" in role else 1 if "secondary" in role else 0
-            scores[exercise_id] = scores.get(exercise_id, 0) + priority + role_bonus
-        return scores
+    def _goal_matches(self, exercise, goal):
+        goals = set(self._tokens(exercise.get("goals")))
+        category = str(exercise.get("category") or "")
+        met = self._safe_float(exercise.get("met"), 5)
+        if goal == "fat_loss":
+            return category in {"cardio", "plyometrics", "strength", "strongman"} or met >= 6
+        if goal == "muscle_gain":
+            return "hypertrophy" in goals or category == "strength"
+        if goal == "strength":
+            return "strength" in goals or "power" in goals
+        if goal == "endurance":
+            return "endurance" in goals or category in {"cardio", "plyometrics"}
+        if goal == "mobility":
+            return "mobility" in goals or category == "stretching"
+        if goal == "rehabilitation":
+            return "rehabilitation" in goals or "mobility" in goals or category == "stretching"
+        return True
 
-    def _build_preference_scores(self, feedback_rows: list[dict]) -> dict:
-        scores = {}
-        for row in feedback_rows:
-            exercise_id = row.get("exercise_id", "")
-            if not exercise_id:
-                continue
-            sentiment = str(row.get("sentiment", "")).lower()
-            requested = str(row.get("requested_action", "")).lower()
-            preference = str(row.get("exercise_preference", "")).lower()
-            pain = str(row.get("pain_feedback", "")).lower()
-            score = 0
-            if "positive" in sentiment or "prefer" in preference:
-                score += 2
-            if "negative" in sentiment or "avoid" in requested or "replace" in requested:
-                score -= 4
-            if pain and pain not in {"none", "no", "nan"}:
-                score -= 4
-            scores[exercise_id] = scores.get(exercise_id, 0) + score
-        return scores
+    def _rank_exercise(self, exercise, goal, level, focus, muscle_counts, payload):
+        met = self._safe_float(exercise.get("met"), 5)
+        mechanic = str(exercise.get("mechanic") or "")
+        primary = self._tokens(exercise.get("primary_muscles"))
+        overused_penalty = sum(muscle_counts.get(muscle, 0) for muscle in primary)
+        intensity = normalize_text(str(payload.get("intensity_preference") or "vua phai"))
+        intensity_score = abs(met - 5.5)
+        if "nhe" in intensity or "an toan" in intensity:
+            intensity_score = met
+        elif "thu thach" in intensity:
+            intensity_score = -met
+        goal_bonus = 0
+        if goal == "fat_loss":
+            goal_bonus -= met
+            if exercise.get("body_part") == "full_body":
+                goal_bonus -= 2
+            if mechanic == "compound":
+                goal_bonus -= 1
+        elif mechanic == "compound" and goal in {"strength", "muscle_gain"}:
+            goal_bonus -= 1
+        slot_bonus = -2 if any(self._matches_slot(exercise, slot) for slot in focus["slots"][:3]) else 0
+        level_penalty = abs(self._level_rank(exercise.get("difficulty")) - self._level_rank(level))
+        return (overused_penalty, slot_bonus, goal_bonus, intensity_score, level_penalty, exercise.get("name_en", ""))
 
-    def _build_history_scores(self, history_items: list[dict]) -> dict:
-        scores = {}
-        for row in history_items:
-            exercise_id = row.get("exercise_id", "")
-            if not exercise_id:
-                continue
-            status = str(row.get("completion_status", "")).lower()
-            enjoyment = self._safe_int(row.get("exercise_enjoyment"), 0)
-            difficulty = self._safe_int(row.get("difficulty_rating"), 0)
-            pain = str(row.get("pain_during_exercise", "")).lower()
-            score = 0
-            if "completed" in status:
-                score += 1
-            if enjoyment >= 4:
-                score += 1
-            if difficulty >= 5:
-                score -= 1
-            if pain in {"yes", "true", "1"}:
-                score -= 4
-            scores[exercise_id] = scores.get(exercise_id, 0) + score
-        return scores
+    def _matches_slot(self, exercise, slot):
+        slot = str(slot or "")
+        values = set(self._tokens(exercise.get("primary_muscles")) + self._tokens(exercise.get("secondary_muscles")))
+        values.add(str(exercise.get("body_part") or ""))
+        values.add(str(exercise.get("force_type") or ""))
+        values.add(str(exercise.get("category") or ""))
+        return slot in values
 
-    def _build_fatigue_penalties(self, history_summary: list[dict], plan_items: list[dict]) -> dict:
-        plan_penalties = {}
-        for row in history_summary:
-            if self._safe_int(row.get("fatigue_after"), 0) < 4 and str(row.get("recovery_flag", "")).lower() not in {"poor", "red"}:
-                continue
-            plan_id = row.get("plan_id")
-            if not plan_id:
-                continue
-            plan_penalties[plan_id] = plan_penalties.get(plan_id, 0) + 1
-        exercise_penalties = {}
-        for item in plan_items:
-            penalty = plan_penalties.get(item.get("plan_id"), 0)
-            exercise_id = item.get("exercise_id", "")
-            if penalty and exercise_id:
-                exercise_penalties[exercise_id] = exercise_penalties.get(exercise_id, 0) + penalty
-        return exercise_penalties
-
-    def _build_split(self, payload: dict) -> list[dict]:
-        training_days = self._safe_int(payload.get("training_days_per_week"), 3)
-        priority = self._split_text(payload.get("priority_muscles"))
-        core = ["Rectus Abdominis", "Obliques", "Core"]
-        splits = {
-            2: [
-                {"focus": "Full Body A", "primary": ["Pectoralis Major", "Latissimus Dorsi", "Quadriceps"], "secondary": core},
-                {"focus": "Full Body B", "primary": ["Gluteus Maximus", "Hamstrings", "Deltoids"], "secondary": core},
-                {"focus": "Nghỉ ngơi", "primary": [], "secondary": []},
+    def _format_exercise(self, exercise, goal, day_number, order_index, plan_id):
+        prescription = self._prescription(goal, exercise)
+        muscles = exercise.get("primary_muscles")
+        return {
+            "plan_item_id": f"WPI{day_number:02d}{order_index:02d}{exercise.get('id', '')[:6].upper()}",
+            "plan_id": plan_id,
+            "exercise_id": exercise.get("id", ""),
+            "name": exercise.get("name_en", "Exercise"),
+            "name_vi": vietnamese_exercise_name(exercise.get("name_en", "")),
+            "muscle": display_pipe_values(muscles),
+            "muscle_keys": muscles,
+            "body_part": display_label(exercise.get("body_part", ""), "body_part"),
+            "goal": display_pipe_values(exercise.get("goals"), "goal"),
+            "category": display_label(exercise.get("category", ""), "category"),
+            "difficulty": display_label(exercise.get("difficulty", ""), "difficulty"),
+            "sets": prescription["sets"],
+            "reps": prescription["reps"],
+            "rest": prescription["rest"],
+            "met": self._safe_float(exercise.get("met"), 0),
+            "image": exercise.get("image_flat_main") or exercise.get("image_flat_start") or exercise.get("image_flat_peak") or "",
+            "steps": self._steps_vi(exercise)[:5],
+            "tips": [
+                f"Mục tiêu: {display_pipe_values(exercise.get('goals'), 'goal')}",
+                f"Nhóm cơ chính: {display_pipe_values(muscles)}",
             ],
-            3: [
-                {"focus": "Ngực + tay sau", "primary": ["Pectoralis Major"], "secondary": ["Triceps Brachii"] + core[:1]},
-                {"focus": "Lưng + tay trước", "primary": ["Latissimus Dorsi"], "secondary": ["Biceps Brachii", "Brachialis"] + core[:1]},
-                {"focus": "Chân + core", "primary": ["Quadriceps", "Gluteus Maximus", "Hamstrings"], "secondary": core},
-                {"focus": "Nghỉ ngơi", "primary": [], "secondary": []},
-            ],
-            4: [
-                {"focus": "Đẩy: ngực + vai + tay sau", "primary": ["Pectoralis Major", "Deltoids"], "secondary": ["Triceps Brachii"]},
-                {"focus": "Kéo: lưng + tay trước", "primary": ["Latissimus Dorsi", "Middle Back"], "secondary": ["Biceps Brachii", "Brachialis"]},
-                {"focus": "Chân", "primary": ["Quadriceps", "Gluteus Maximus", "Hamstrings"], "secondary": ["Calves"]},
-                {"focus": "Core + phục hồi chủ động", "primary": core, "secondary": ["Rotator Cuff", "Rear Deltoid"]},
-                {"focus": "Nghỉ ngơi", "primary": [], "secondary": []},
-            ],
+            "action": "Recommend",
+            "decision_source": "AI/exercises.csv rule engine",
+            "explanation": "Bài được chọn theo mục tiêu, trình độ, nhóm cơ và luật tránh chấn thương.",
         }
-        split = splits[2] if training_days <= 2 else splits[4] if training_days >= 4 else splits[3]
-        split = [item for item in split if item["focus"] != "Nghỉ ngơi"]
+
+    def _prescription(self, goal, exercise):
+        category = exercise.get("category")
+        if goal == "strength":
+            return {"sets": 4, "reps": "3-6", "rest": 150}
+        if goal == "endurance" or goal == "fat_loss":
+            if category == "cardio":
+                return {"sets": 3, "reps": "30-60 giây", "rest": 45}
+            return {"sets": 3, "reps": "12-20", "rest": 45}
+        if goal in {"mobility", "rehabilitation"} or category == "stretching":
+            return {"sets": 2, "reps": "20-45 giây", "rest": 30}
+        return {"sets": 3, "reps": "8-12", "rest": 75}
+
+    def _nutrition_targets(self, payload, goal, training_days, exercises):
+        weight = self._safe_float(payload.get("weight"), 70)
+        height = self._safe_float(payload.get("height"), 170)
+        age = self._safe_float(payload.get("age"), 25)
+        gender = str(payload.get("gender") or payload.get("sex") or "").lower()
+        male = gender not in {"female", "nu", "nữ"}
+        bmr = 10 * weight + 6.25 * height - 5 * age + (5 if male else -161)
+        activity_factor = 1.2 + min(training_days, 6) * 0.055
+        tdee = bmr * activity_factor
+        avg_met = sum(self._safe_float(item.get("met"), 5) for item in exercises) / max(len(exercises), 1)
+        workout_bonus = min(350, max(120, avg_met * weight * 0.35))
+        adjustment = {
+            "fat_loss": -350,
+            "muscle_gain": 250,
+            "strength": 150,
+            "endurance": 100,
+            "mobility": 0,
+            "rehabilitation": 0,
+        }.get(goal, 0)
+        workout_cal = round((tdee + adjustment + workout_bonus) / 10) * 10
+        rest_cal = round((tdee + adjustment - 120) / 10) * 10
+        protein_factor = 2.0 if goal in {"muscle_gain", "strength"} else 1.8 if goal == "fat_loss" else 1.6
+        protein = round(weight * protein_factor)
+
+        def macros(calories):
+            protein_cal = protein * 4
+            fat = round((calories * 0.25) / 9)
+            carbs = round(max(0, calories - protein_cal - fat * 9) / 4)
+            return {"calories": int(calories), "protein": protein, "carbs": carbs, "fat": fat}
+
+        return {
+            "workout": macros(workout_cal),
+            "rest": macros(rest_cal),
+            "note": "Calo/protein được tính từ BMR, TDEE ước tính, mục tiêu và cường độ bài tập; Gemini có thể dùng thêm để diễn giải thực đơn, không thay thế công thức nền.",
+        }
+
+    def _build_split(self, goal, training_days, payload=None):
+        if goal in {"fat_loss", "endurance"}:
+            base = [
+                {"name": "Toàn thân + tim mạch", "slots": ["full_body", "cardio", "upper_legs", "core", "push", "pull"]},
+                {"name": "Chân + core đốt năng lượng", "slots": ["upper_legs", "lower_legs", "core", "plyometrics", "full_body"]},
+                {"name": "Thân trên + cardio", "slots": ["chest", "back", "shoulders", "upper_arms", "cardio"]},
+            ]
+        elif goal == "mobility" or goal == "rehabilitation":
+            base = [
+                {"name": "Mobility toàn thân", "slots": ["stretching", "core", "back", "shoulders", "upper_legs"]},
+                {"name": "Phục hồi thân dưới", "slots": ["stretching", "upper_legs", "lower_legs", "core"]},
+                {"name": "Phục hồi thân trên", "slots": ["stretching", "back", "chest", "shoulders"]},
+            ]
+        else:
+            base = [
+                {"name": "Push: ngực + vai + tay sau", "slots": ["chest", "shoulders", "triceps_brachii", "push", "core"]},
+                {"name": "Pull: lưng + tay trước", "slots": ["back", "latissimus_dorsi", "biceps_brachii", "pull", "core"]},
+                {"name": "Legs: đùi + mông + bắp chân", "slots": ["upper_legs", "quadriceps", "hamstrings", "gluteus_maximus", "lower_legs"]},
+                {"name": "Upper/Full Body bổ trợ", "slots": ["chest", "back", "shoulders", "core", "full_body"]},
+            ]
+        result = base[:max(1, min(training_days, len(base)))] or base
+        priority = normalize_avoid_terms((payload or {}).get("priority_muscles", "")).get("avoid_keys", [])
         if priority:
-            split[0]["primary"] = priority + split[0]["primary"]
-            split[0]["focus"] = "Ưu tiên " + ", ".join(priority[:2])
-        return split
+            result[0] = {
+                **result[0],
+                "name": "Ưu tiên " + ", ".join(self._display_slot(slot) for slot in priority[:3]),
+                "slots": priority + result[0]["slots"],
+            }
+        return result
 
-    def _training_weekdays(self, training_days: int) -> set[int]:
+    def _rest_day(self, day_number, nutrition):
+        return {
+            "day_number": day_number,
+            "day_name": f"Ngày {day_number}",
+            "is_rest": True,
+            "focus": "Nghỉ ngơi + phục hồi",
+            "target_calories": nutrition["rest"]["calories"],
+            "target_protein": nutrition["rest"]["protein"],
+            "target_carbs": nutrition["rest"]["carbs"],
+            "target_fat": nutrition["rest"]["fat"],
+            "exercises": [],
+        }
+
+    def _training_weekdays(self, training_days):
         schedules = {
             1: {1},
             2: {1, 4},
@@ -317,278 +366,159 @@ class MLIntegrationService:
             6: {1, 2, 3, 4, 5, 6},
             7: {1, 2, 3, 4, 5, 6, 7},
         }
-        return schedules.get(max(1, min(training_days, 7)), schedules[3])
+        return schedules.get(training_days, schedules[3])
 
-    def _available_weekdays(self, payload: dict) -> set[int]:
-        day_map = {
-            "mon": 1, "monday": 1, "thu 2": 1, "thứ 2": 1, "t2": 1,
-            "tue": 2, "tuesday": 2, "thu 3": 2, "thứ 3": 2, "t3": 2,
-            "wed": 3, "wednesday": 3, "thu 4": 3, "thứ 4": 3, "t4": 3,
-            "thu": 4, "thursday": 4, "thu 5": 4, "thứ 5": 4, "t5": 4,
-            "fri": 5, "friday": 5, "thu 6": 5, "thứ 6": 5, "t6": 5,
-            "sat": 6, "saturday": 6, "thu 7": 6, "thứ 7": 6, "t7": 6,
-            "sun": 7, "sunday": 7, "chu nhat": 7, "chủ nhật": 7, "cn": 7,
-        }
-        weekdays: set[int] = set()
-        for value in [payload.get("available_training_day_numbers"), payload.get("available_training_days")]:
-            if value is None:
-                continue
-            items = value if isinstance(value, list) else str(value).replace(";", ",").split(",")
-            for item in items:
-                text = str(item).strip().lower()
-                number = self._safe_int(text, 0)
-                if 1 <= number <= 7:
-                    weekdays.add(number)
-                elif text in day_map:
-                    weekdays.add(day_map[text])
-        return weekdays
+    def _available_weekdays(self, payload):
+        values = payload.get("available_training_day_numbers")
+        if not values:
+            return set()
+        if not isinstance(values, list):
+            values = str(values).replace(";", ",").split(",")
+        weekdays = {self._safe_int(value, 0) for value in values}
+        return {day for day in weekdays if 1 <= day <= 7}
 
-    def _select_dataset_exercises(self, pool: list[dict], workout: dict, payload: dict, dataset: dict) -> list[dict]:
-        if not pool:
-            return []
-        session_minutes = self._safe_int(payload.get("session_duration_minutes"), 60)
-        max_count = 4 if session_minutes <= 45 else 5 if session_minutes <= 70 else 6
-        fatigue_budget = 18 if session_minutes <= 45 else 24 if session_minutes <= 70 else 30
-        selected: list[dict] = []
-        used_ids: set[str] = set()
+    def _avoid_text(self, payload):
+        return " ".join(str(payload.get(key, "")) for key in ["avoid_notes", "note", "userInfo", "injuries", "health_notes"])
 
-        slots = []
-        for muscle in workout.get("primary", [])[:4]:
-            slots.extend([muscle, muscle] if muscle not in {"Biceps Brachii", "Triceps Brachii", "Brachialis", "Calves"} else [muscle])
-        for muscle in workout.get("secondary", [])[:4]:
-            slots.append(muscle)
+    def _map_goal(self, value):
+        text = normalize_text(str(value or ""))
+        if "giam" in text or "fat" in text or "weight" in text:
+            return "fat_loss"
+        if "suc manh" in text or "strength" in text:
+            return "strength"
+        if "suc ben" in text or "endurance" in text:
+            return "endurance"
+        if "linh hoat" in text or "mobility" in text:
+            return "mobility"
+        if "phuc hoi" in text or "rehab" in text:
+            return "rehabilitation"
+        return "muscle_gain"
 
-        for muscle in slots:
-            if len(selected) >= max_count:
-                break
-            current_fatigue = sum(self._fatigue_score(item) for item in selected)
-            if current_fatigue >= fatigue_budget:
-                break
-            candidates = [
-                item for item in pool
-                if item.get("exercise_id") not in used_ids
-                and self._matches_payload(item, payload)
-                and self._matches_muscle(item, muscle)
-            ]
-            if not candidates:
-                continue
-            candidates.sort(key=lambda item: self._exercise_rank(item, payload, dataset))
-            chosen = candidates[0]
-            used_ids.add(chosen.get("exercise_id", ""))
-            selected.append(chosen)
-        return selected
+    def _map_level(self, value):
+        text = normalize_text(str(value or ""))
+        if "moi" in text or "beginner" in text:
+            return "beginner"
+        if "nang cao" in text or "advanced" in text:
+            return "advanced"
+        return "intermediate"
 
-    def _matches_payload(self, exercise: dict, payload: dict) -> bool:
-        goal = self._map_goal(payload.get("goal"))
-        level = self._map_level(payload.get("level"))
-        equipment = self._equipment_tokens(payload.get("equipment"))
-        avoid_text = " ".join([
-            str(payload.get("avoid_notes", "")),
-            str(payload.get("note", "")),
-            str(payload.get("userInfo", "")),
-        ]).lower()
-        exercise_blob = " ".join(str(exercise.get(key, "")) for key in [
-            "exercise_name", "equipment", "recommended_goals", "joint_stress_areas", "contraindications",
-        ]).lower()
-        if goal and goal not in self._json_values(exercise.get("recommended_goals")):
-            return False
-        if self._level_rank(exercise.get("minimum_training_level")) > self._level_rank(level):
-            return False
-        if equipment and not self._has_required_equipment(exercise, equipment):
-            return False
-        primary_blob = " ".join([
-            exercise.get("exercise_name", ""),
-            exercise.get("primary_muscles", ""),
-            exercise.get("movement_pattern", ""),
-        ]).lower()
-        if ("vai" in avoid_text or "shoulder" in avoid_text) and any(
-            marker in primary_blob for marker in ["shoulder", "deltoid", "overhead", "lateral raise", "upright row"]
-        ):
-            return False
-        if ("gối" in avoid_text or "knee" in avoid_text) and any(
-            marker in primary_blob for marker in ["squat", "lunge", "knee", "quadriceps", "leg extension"]
-        ):
-            return False
-        if ("lưng" in avoid_text or "back" in avoid_text) and any(
-            marker in primary_blob for marker in ["deadlift", "hinge", "good morning", "lower back", "back extension"]
-        ):
-            return False
-        return True
-
-    def _format_fallback_exercise(self, exercise: dict, payload: dict, note: str) -> dict:
-        goal = self._map_goal(payload.get("goal"))
-        reps = "6-10" if goal == "Strength" else "12-15" if goal == "Fat Loss" else "8-12"
-        fatigue = self._fatigue_score(exercise)
-        rest = 105 if fatigue >= 7 else 75 if fatigue >= 5 else 60
-        return {
-            "name": exercise.get("exercise_name") or "Exercise",
-            "muscle": self._first_json_value(exercise.get("primary_muscles")) or "Toàn thân",
-            "sets": 2 if fatigue >= 8 else 3,
-            "reps": reps,
-            "rest": rest,
-            "diff": self._level_code(exercise.get("minimum_training_level")),
-            "equip": self._first_json_value(exercise.get("equipment")) or payload.get("equipment", "Dụng cụ"),
-            "steps": self._json_values(exercise.get("execution_steps"))[:4] or [
-                "Khởi động kỹ trước khi vào set chính",
-                "Giữ kỹ thuật ổn định và tập trong biên độ không đau",
-            ],
-            "tips": self._json_values(exercise.get("cues"))[:3] or [
-                f"Fatigue score: {fatigue}. Bài được chọn từ AI_Fitness_Dataset theo nhóm cơ, thiết bị và mức mỏi.",
-            ],
-            "action": "Reduce Difficulty",
-            "decision_source": "ai_fitness_dataset_rule_engine",
-            "explanation": note,
-        }
-
-    def _exercise_rank(self, exercise: dict, payload: dict, dataset=None) -> tuple:
-        intensity = str(payload.get("intensity_preference", "")).lower()
-        fatigue = self._fatigue_score(exercise)
-        injury_risk = str(exercise.get("relative_injury_risk", "")).lower()
-        risk_penalty = 2 if "high" in injury_risk else 1 if "moderate" in injury_risk else 0
-        if "thử thách" in intensity:
-            fatigue_rank = abs(fatigue - 6)
-        elif "nhẹ" in intensity or "an toàn" in intensity:
-            fatigue_rank = fatigue
-        else:
-            fatigue_rank = abs(fatigue - 4.5)
-        complexity = self._safe_int(exercise.get("technical_complexity_score"), 3)
-        exercise_id = exercise.get("exercise_id", "")
-        dataset = dataset or {}
-        template_bonus = dataset.get("plan_item_scores", {}).get(exercise_id, 0)
-        preference_bonus = dataset.get("preference_scores", {}).get(exercise_id, 0)
-        history_bonus = dataset.get("history_scores", {}).get(exercise_id, 0)
-        fatigue_penalty = dataset.get("fatigue_penalties", {}).get(exercise_id, 0)
-        dataset_score = template_bonus + preference_bonus + history_bonus - fatigue_penalty
-        return (risk_penalty, -dataset_score, fatigue_rank, complexity, exercise.get("exercise_name", ""))
-
-    def _matches_muscle(self, exercise: dict, muscle: str) -> bool:
-        target = str(muscle).lower()
-        blob = " ".join([
-            exercise.get("primary_muscles", ""),
-            exercise.get("secondary_muscles", ""),
-            exercise.get("body_region", ""),
-            exercise.get("movement_pattern", ""),
-            exercise.get("exercise_name", ""),
-        ]).lower()
-        aliases = {
-            "core": ["rectus abdominis", "obliques", "core", "abdom"],
-            "middle back": ["trapezius", "rhomboids", "middle back", "latissimus"],
-            "deltoids": ["deltoid", "shoulder"],
-            "calves": ["calf", "gastrocnemius", "soleus"],
-        }
-        return target in blob or any(alias in blob for alias in aliases.get(target, []))
-
-    def _fatigue_score(self, exercise: dict) -> int:
-        return self._safe_int(exercise.get("systemic_fatigue_score"), 3) + self._safe_int(exercise.get("local_fatigue_score"), 3)
-
-    def _map_goal(self, value) -> str:
-        text = str(value or "").lower()
-        if "giảm" in text or "fat" in text:
-            return "Fat Loss"
-        if "sức mạnh" in text or "strength" in text:
-            return "Strength"
-        if "sức bền" in text or "endurance" in text:
-            return "Muscular Endurance"
-        return "Muscle Gain"
-
-    def _map_level(self, value) -> str:
-        text = str(value or "").lower()
-        if "mới" in text or "beginner" in text:
-            return "Beginner"
-        if "kỳ cựu" in text or "nâng cao" in text or "advanced" in text:
-            return "Advanced"
-        return "Intermediate"
-
-    def _equipment_tokens(self, value) -> list[str]:
-        text = str(value or "").lower()
-        if "gym" in text or "phòng gym" in text or "day du" in text or "đầy đủ" in text:
-            return [
-                "Barbell", "Bench", "Box", "Cable", "Dumbbell", "EZ Bar", "Exercise Ball",
-                "Foam Roller", "Kettlebell", "Machine", "Mat", "Medicine Ball", "Pull-up Bar",
-                "Resistance Band", "Smith Machine", "TRX", "Weight Plate", "Bodyweight",
-            ]
-        if "không tạ" in text or "bodyweight" in text or "ở nhà" in text or "tại nhà" in text:
-            return ["Bodyweight", "Mat", "Resistance Band"]
-        if "tạ đơn" in text or "dumbbell" in text:
-            return ["Dumbbell", "Bodyweight", "Mat", "Resistance Band"]
-        return []
-
-    def _has_required_equipment(self, exercise: dict, available_equipment: list[str]) -> bool:
-        allowed = {self._normalize_equipment(item) for item in available_equipment}
-        required = {
-            self._normalize_equipment(item)
-            for item in self._json_values(exercise.get("equipment"))
-            if self._normalize_equipment(item) not in {"", "none", "bodyweight"}
-        }
-        return required.issubset(allowed)
-
-    def _normalize_equipment(self, value) -> str:
-        text = str(value or "").strip().lower()
-        aliases = {
-            "barbell": "barbell",
-            "bench": "bench",
-            "box": "box",
-            "cable": "cable",
-            "dumbbell": "dumbbell",
-            "ez bar": "ez bar",
-            "exercise ball": "exercise ball",
-            "foam roller": "foam roller",
-            "kettlebell": "kettlebell",
-            "machine": "machine",
-            "mat": "mat",
-            "medicine ball": "medicine ball",
-            "pull-up bar": "pull-up bar",
-            "resistance band": "resistance band",
-            "smith machine": "smith machine",
-            "trx": "trx",
-            "weight plate": "weight plate",
-            "bodyweight": "bodyweight",
-        }
-        return aliases.get(text, text)
-
-    def _level_rank(self, level) -> int:
+    def _level_rank(self, level):
         text = str(level or "").lower()
-        if "advanced" in text:
+        if text == "advanced":
             return 3
-        if "intermediate" in text:
+        if text == "intermediate":
             return 2
         return 1
 
-    def _level_code(self, level) -> str:
-        rank = self._level_rank(level)
-        return "A" if rank == 3 else "I" if rank == 2 else "B"
+    def _bmi(self, payload):
+        height_m = self._safe_float(payload.get("height"), 0) / 100
+        weight = self._safe_float(payload.get("weight"), 0)
+        if height_m <= 0 or weight <= 0:
+            return None
+        return round(weight / (height_m * height_m), 1)
 
-    def _split_text(self, value) -> list[str]:
-        muscle_map = {
-            "ngực": "Pectoralis Major",
-            "lưng": "Latissimus Dorsi",
-            "vai": "Deltoids",
-            "tay sau": "Triceps Brachii",
-            "tay trước": "Biceps Brachii",
-            "mông": "Gluteus Maximus",
-            "đùi": "Quadriceps",
-            "chân": "Quadriceps",
-            "core": "Core",
-            "bụng": "Core",
+    def _summary(self, goal, level, duration_days, training_days, bmi):
+        goal_vi = {
+            "fat_loss": "giảm cân/giảm mỡ",
+            "muscle_gain": "tăng cơ",
+            "strength": "tăng sức mạnh",
+            "endurance": "tăng sức bền",
+            "mobility": "tăng linh hoạt",
+            "rehabilitation": "phục hồi",
+        }.get(goal, goal)
+        bmi_text = f" BMI hiện tại {bmi}." if bmi else ""
+        return f"Lộ trình {duration_days} ngày, {training_days} buổi/tuần cho mục tiêu {goal_vi}, trình độ {display_label(level, 'difficulty')}.{bmi_text}"
+
+    def _safety_note(self, avoid):
+        if not avoid["avoid_keys"]:
+            return "Không ghi nhận nhóm cơ hoặc vùng chấn thương cần tránh."
+        injury_labels = {
+            "knee": "gối",
+            "lower_back": "lưng dưới",
+            "shoulder": "vai",
+            "elbow": "khuỷu tay",
+            "wrist": "cổ tay",
+            "neck": "cổ/gáy",
         }
-        text = str(value or "").lower().replace(";", ",")
-        result = []
-        for raw in text.split(","):
-            raw = raw.strip()
-            for key, mapped in muscle_map.items():
-                if key in raw and mapped not in result:
-                    result.append(mapped)
-        return result
+        labels = [
+            injury_labels.get(key) or (
+                display_label(key, "muscle")
+                if display_label(key, "muscle") != key
+                else display_label(key, "body_part")
+            )
+            for key in avoid["avoid_keys"]
+        ]
+        unknown = f" Chưa nhận diện: {', '.join(avoid['unknown_terms'])}." if avoid["unknown_terms"] else ""
+        return "Đã áp dụng luật tránh/giảm tải cho: " + ", ".join(labels) + "." + unknown
 
-    def _json_values(self, value) -> list[str]:
-        if isinstance(value, list):
-            return [str(item) for item in value]
+    def _display_slot(self, value):
+        return display_label(value, "muscle") if display_label(value, "muscle") != value else display_label(value, "body_part")
+
+    def _split_steps(self, value):
+        return [part.strip() for part in str(value or "").split("|") if part.strip()]
+
+    def _steps_vi(self, exercise):
+        key = exercise.get("id") or exercise.get("name_en") or ""
+        if key in self._translation_cache:
+            return self._translation_cache[key]
+        if exercise.get("instructions_vi"):
+            steps = self._split_steps(exercise.get("instructions_vi"))
+            if steps:
+                self._translation_cache[key] = steps
+                return steps
+        source_steps = self._split_steps(exercise.get("instructions_en"))
+        translated = self._translate_steps_with_gemini(exercise.get("name_en", ""), source_steps)
+        if not translated:
+            translated = translate_steps(exercise.get("instructions_en"), exercise.get("name_en", ""))
+        self._translation_cache[key] = translated
+        return translated
+
+    def _translate_steps_with_gemini(self, exercise_name, source_steps):
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key or genai is None or not source_steps:
+            return None
         try:
-            parsed = json.loads(str(value or "[]"))
-            return [str(item) for item in parsed] if isinstance(parsed, list) else []
-        except json.JSONDecodeError:
-            return [str(value)] if value else []
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            prompt = f"""
+Dịch hướng dẫn bài tập gym sau sang tiếng Việt tự nhiên, dễ hiểu, đúng kỹ thuật.
+Không thêm kiến thức ngoài nội dung gốc. Không dùng markdown. Chỉ trả về JSON hợp lệ dạng:
+{{"steps":["...","..."]}}
 
-    def _first_json_value(self, value) -> str:
-        values = self._json_values(value)
-        return values[0] if values else ""
+Bài tập: {exercise_name}
+Hướng dẫn gốc:
+{json.dumps(source_steps, ensure_ascii=False)}
+"""
+            response = model.generate_content(prompt)
+            text = (response.text or "").strip()
+            text = re.sub(r"^```json|```$", "", text, flags=re.IGNORECASE).strip()
+            data = json.loads(text)
+            steps = data.get("steps") if isinstance(data, dict) else None
+            if not isinstance(steps, list):
+                return None
+            clean_steps = [str(step).strip() for step in steps if str(step).strip()]
+            return clean_steps if clean_steps else None
+        except Exception:
+            return None
+
+    def _tokens(self, value):
+        return [part.strip() for part in str(value or "").split("|") if part.strip() and part.strip().lower() != "nan"]
+
+    def _make_id(self, prefix, payload, duration_days):
+        seed = "|".join(str(payload.get(key, "")) for key in ["user_id", "userId", "goal", "level", "height", "weight", "age"])
+        seed += f"|{duration_days}|{datetime.utcnow().isoformat()}"
+        digest = hashlib.sha1(seed.encode("utf-8")).hexdigest()[:8].upper()
+        return f"{prefix}{digest}"
+
+    def _safe_int(self, value, default):
+        try:
+            return int(float(value))
+        except (TypeError, ValueError):
+            return default
+
+    def _safe_float(self, value, default=0):
+        try:
+            number = float(value)
+            return number if math.isfinite(number) else default
+        except (TypeError, ValueError):
+            return default

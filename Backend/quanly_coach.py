@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime
 
 import requests
@@ -28,9 +29,8 @@ def coach_chat():
     context = build_coach_context(user_id, current_day_number)
     intent = detect_intent(message)
     context["intent"] = intent
-    reply = deterministic_context_reply(message, context)
-    if not reply:
-        reply = ask_gemini_coach(message, context, intent) or fallback_coach_reply(message, context)
+    context["requested_day"] = resolve_requested_day(message, context) if intent == "plan" else context.get("today", {})
+    reply = ask_gemini_coach(message, context, intent) or fallback_coach_reply(message, context)
 
     save_chat_log(user_id, message, reply, context)
     return jsonify({"success": True, "reply": reply, "context": public_context(context)}), 200
@@ -58,6 +58,7 @@ def build_coach_context(user_id: str, current_day_number: int = 0) -> dict:
         "profile": summarize_profile(profile),
         "plan": summarize_plan(plan, plan_data),
         "today": summarize_day(selected_day),
+        "days": summarize_days(days, progress),
         "progress": summarize_progress(progress),
         "nutrition": summarize_nutrition(nutrition, selected_day),
     }
@@ -137,6 +138,13 @@ def summarize_day(selected_day: dict) -> dict:
     }
 
 
+def summarize_days(days: list, progress: list) -> list[dict]:
+    return [
+        summarize_day(select_context_day(days, progress, safe_int(day.get("day_number"), 0)))
+        for day in days or []
+    ]
+
+
 def summarize_progress(progress: list) -> dict:
     total_days = len(progress or [])
     done_days = sum(1 for day in progress or [] if day.get("day_done"))
@@ -182,15 +190,17 @@ Bạn là AI Huấn Luyện Viên chuyên gia của FIT ME, nhưng vẫn có th�
 Ý định đã phân loại: {intent}
 
 Luật trả lời:
-- Trả lời trực tiếp đúng câu hỏi ngay câu đầu tiên. Không mở đầu bằng câu nhắc lại lộ trình.
-- Nếu intent là plan: trả lời đúng trọng tâm câu hỏi về lộ trình hiện tại trước; chỉ nêu ngày, bài, tiến độ hoặc bước tiếp theo liên quan trực tiếp.
+- Luôn trả lời trực tiếp đúng câu hỏi ngay câu đầu tiên.
+- Nếu intent là plan: phải dùng requested_day trước tiên. Nếu user hỏi "ngày 2", "ngày tiếp theo", "ngày mai" thì trả lời đúng ngày đó, không chuyển sang dinh dưỡng.
+- Nếu user hỏi bài của một ngày cụ thể: nêu ngày đó là buổi gì, nghỉ hay tập, danh sách bài, set/reps/rest và trạng thái hoàn thành nếu có.
+- Nếu user hỏi "bài tiếp theo" nhưng không hỏi ngày tiếp theo: trả lời bài chưa hoàn thành kế tiếp trong today.
 - Nếu intent là fitness, nutrition, recovery hoặc pain: dùng hồ sơ, lộ trình, tiến độ, dinh dưỡng trong ngữ cảnh để cá nhân hóa.
 - Nếu intent là general: trả lời bằng kiến thức tổng quát như một trợ lý AI bình thường; chỉ nhắc FIT ME khi thật sự liên quan.
 - Nếu người dùng nói "lỡ", "ăn dư", "tập thiếu", "quên", "trễ": trấn an trước, rồi đưa cách xử lý cụ thể trong hôm nay hoặc ngày mai.
 - Không trả lời kiểu chung chung như "bạn hỏi cụ thể hơn" khi vẫn có thể đưa hướng xử lý an toàn.
 - Không kê đơn y tế. Nếu có đau dữ dội, kéo dài, chóng mặt, đau ngực, khó thở, nôn ói, sốt hoặc ngất thì khuyên dừng tập và gặp chuyên gia y tế.
 - Không tự xác nhận đã hoàn thành bài tập; nếu cần thì hướng dẫn người dùng bấm check-in.
-- Giữ câu trả lời tự nhiên, 3-7 dòng, có gợi ý hành động rõ ràng.
+- Giữ câu trả lời tự nhiên, ngắn gọn 3-7 dòng, có gợi ý hành động rõ ràng.
 
 NGỮ CẢNH:
 {context_text}
@@ -236,10 +246,22 @@ def compact_context_for_prompt(context: dict, intent: str) -> dict:
             "note": "Câu hỏi không liên quan trực tiếp tới tập luyện; chỉ dùng hồ sơ FIT ME nếu thật sự cần.",
             "profile": context.get("profile", {}),
         }
+    if intent == "plan":
+        return {
+            "profile": context.get("profile", {}),
+            "plan": context.get("plan", {}),
+            "today": context.get("today", {}),
+            "requested_day": context.get("requested_day") or context.get("today", {}),
+            "all_days": context.get("days", []),
+            "progress": context.get("progress", {}),
+            "nutrition": context.get("nutrition", {}),
+            "instruction": "For plan questions, answer from requested_day first. Use all_days only to compare or find another day.",
+        }
     return {
         "profile": context.get("profile", {}),
         "plan": context.get("plan", {}),
         "today": context.get("today", {}),
+        "requested_day": context.get("requested_day") or context.get("today", {}),
         "progress": context.get("progress", {}),
         "nutrition": context.get("nutrition", {}),
     }
@@ -290,7 +312,9 @@ def detect_intent(message: str) -> str:
     lowered = message.lower()
     if any(key in lowered for key in ["đau", "dau", "mỏi", "moi", "chóng mặt", "choang", "buồn nôn", "nôn", "khó thở", "kho tho", "đau ngực", "dau nguc", "chuột rút", "cramp", "chấn thương"]):
         return "pain"
-    if any(key in lowered for key in ["ngày nghỉ", "ngay nghi", "có nghỉ", "co nghi", "nghỉ không", "nghi khong", "hôm nay tập", "hom nay tap", "tập gì", "tap gi", "bài gì", "bai gi", "bài tiếp", "bai tiep", "tiếp theo", "tiep theo", "tập tiếp", "tap tiep", "lịch tập", "lich tap", "lộ trình", "tiến độ"]):
+    if re.search(r"\b(ngày|ngay|buổi|buoi)\s*\d+\b", lowered):
+        return "plan"
+    if any(key in lowered for key in ["ngày nghỉ", "ngay nghi", "có nghỉ", "co nghi", "nghỉ không", "nghi khong", "ngày mai", "ngay mai", "ngày sau", "ngay sau", "ngày tiếp", "ngay tiep", "hôm nay tập", "hom nay tap", "tập gì", "tap gi", "bài gì", "bai gi", "bài tiếp", "bai tiep", "tiếp theo", "tiep theo", "tập tiếp", "tap tiep", "lịch tập", "lich tap", "lộ trình", "tiến độ"]):
         return "plan"
     if any(key in lowered for key in ["protein", "calo", "calories", "kcal", "ăn ", " an ", "dinh dưỡng", "bữa", "đói", "carb", "fat", "tôm", "gà", "trứng", "cơm", "lỡ ăn", "ăn dư", "ăn thiếu", "uống"]):
         return "nutrition"
@@ -418,13 +442,30 @@ def technique_reply(today: dict) -> str:
     return "\n".join(lines)
 
 
+def resolve_requested_day(message: str, context: dict) -> dict:
+    lowered = message.lower()
+    days = context.get("days") or []
+    today = context.get("today") or {}
+    explicit = re.search(r"\b(?:ngày|ngay|buổi|buoi)\s*(\d+)\b", lowered)
+    if explicit:
+        day_number = safe_int(explicit.group(1), 0)
+        return next((day for day in days if safe_int(day.get("day_number"), 0) == day_number), today)
+    if any(key in lowered for key in ["ngày mai", "ngay mai", "ngày sau", "ngay sau", "ngày tiếp", "ngay tiep"]):
+        next_day_number = safe_int(today.get("day_number"), 0) + 1
+        return next((day for day in days if safe_int(day.get("day_number"), 0) == next_day_number), today)
+    return today
+
+
 def plan_reply(message: str, context: dict) -> str:
     lowered = message.lower()
-    today = context.get("today", {})
+    today = resolve_requested_day(message, context)
     progress = context.get("progress", {})
     exercises = today.get("exercises", [])
     unfinished = [ex for ex in exercises if not ex.get("completed")]
     completed = [ex for ex in exercises if ex.get("completed")]
+
+    if any(key in lowered for key in ["ngày mai", "ngay mai", "ngày sau", "ngay sau", "ngày tiếp", "ngay tiep"]) or re.search(r"\b(?:ngày|ngay|buổi|buoi)\s*\d+\b", lowered):
+        return describe_plan_day(today)
 
     if any(key in lowered for key in ["tiến độ", "tien do", "hoàn thành", "hoan thanh", "xong bao nhiêu", "xong bao nhieu"]):
         return (
@@ -482,6 +523,22 @@ def answer_from_current_day(message: str, today: dict, progress: dict) -> str:
             "Nếu câu hỏi của bạn là về đau, mệt hoặc kỹ thuật, hãy nói rõ vị trí/cảm giác để mình điều chỉnh sát hơn."
         )
     return describe_today_training(today, progress)
+
+
+def describe_plan_day(day: dict) -> str:
+    day_number = day.get("day_number")
+    if not day_number:
+        return "Mình chưa tìm thấy ngày đó trong lộ trình hiện tại."
+    if day.get("is_rest"):
+        return f"Ngày {day_number} là ngày nghỉ/phục hồi. Bạn không có bài chính; chỉ nên đi bộ nhẹ, giãn cơ 10-15 phút và giữ đủ protein."
+    exercises = day.get("exercises", [])
+    if not exercises:
+        return f"Ngày {day_number} chưa có bài tập trong lộ trình."
+    lines = [f"Ngày {day_number} là buổi {day.get('focus')}. Các bài cần tập:"]
+    for ex in exercises:
+        status = "đã xong" if ex.get("completed") else "chưa xong"
+        lines.append(f"- {ex.get('name')}: {ex.get('sets')} sets x {ex.get('reps')} reps, nghỉ {ex.get('rest')}s ({status}).")
+    return "\n".join(lines)
 
 
 def describe_today_training(today: dict, progress: dict) -> str:

@@ -12,7 +12,7 @@ def health():
     return jsonify({
         "status": "OK",
         "message": "ML API is running",
-        "source": "ai_fitness_dataset_only",
+        "source": "ai_exercises_csv_rule_engine",
     }), 200
 
 

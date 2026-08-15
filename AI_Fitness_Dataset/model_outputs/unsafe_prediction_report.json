@@ -1,4 +1,0 @@
-{
-  "recommendation": [],
-  "safety_override_rule": "Review/Avoid or risk_score>=0.45 blocks Increase Difficulty/Increase Volume."
-}
