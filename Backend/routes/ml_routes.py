@@ -1,6 +1,7 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, abort, jsonify, request, send_from_directory
 
 from services.ml_integration_service import MLIntegrationService
+from utils.path_utils import AI_DIR
 
 
 ml_bp = Blueprint("ml_bp", __name__, url_prefix="/api/ml")
@@ -36,4 +37,13 @@ def generate_plan():
             "status": "ERROR",
             "message": str(exc),
         }), 500
+
+
+@ml_bp.route("/exercise-image/<path:filename>", methods=["GET"])
+def exercise_image(filename):
+    image_dir = AI_DIR / "image" / "flat"
+    target = image_dir / filename
+    if not target.is_file() or target.parent.resolve() != image_dir.resolve():
+        abort(404)
+    return send_from_directory(image_dir, filename)
 

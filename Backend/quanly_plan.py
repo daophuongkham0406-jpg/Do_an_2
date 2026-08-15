@@ -44,6 +44,8 @@ def build_daily_progress(plan_data):
                 "goal": ex.get("goal") or "",
                 "category": ex.get("category") or "",
                 "met": ex.get("met"),
+                "image": ex.get("image") or "",
+                "images": ex.get("images") or [],
                 "equipment": ex.get("equip") or ex.get("equipment") or "",
                 "sets": ex.get("sets"),
                 "reps": ex.get("reps"),
@@ -92,7 +94,7 @@ def refresh_plan_exercise_text(plan_data: dict) -> dict:
                 1,
                 plan_data.get("plan_id") or "",
             )
-            for key in ["name_vi", "steps", "tips", "goal", "category", "difficulty", "met", "body_part", "muscle", "muscle_keys"]:
+            for key in ["name_vi", "steps", "tips", "goal", "category", "difficulty", "met", "body_part", "muscle", "muscle_keys", "image", "images"]:
                 ex[key] = refreshed.get(key)
     return plan_data
 
@@ -128,7 +130,7 @@ def refresh_daily_progress_text(daily_progress: list, plan_data: dict) -> list:
             source = day_source.get(ex.get("exercise_id"))
             if not source:
                 continue
-            for key in ["name_vi", "steps", "tips", "goal", "category", "difficulty", "met", "body_part", "muscle", "muscle_keys"]:
+            for key in ["name_vi", "steps", "tips", "goal", "category", "difficulty", "met", "body_part", "muscle", "muscle_keys", "image", "images"]:
                 ex[key] = source.get(key)
     return daily_progress or []
 

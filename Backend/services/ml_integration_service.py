@@ -6,6 +6,7 @@ import os
 import re
 import sys
 from datetime import datetime
+from pathlib import Path
 
 from utils.path_utils import AI_DIR
 
@@ -238,6 +239,7 @@ class MLIntegrationService:
     def _format_exercise(self, exercise, goal, day_number, order_index, plan_id):
         prescription = self._prescription(goal, exercise)
         muscles = exercise.get("primary_muscles")
+        images = self._exercise_images(exercise)
         return {
             "plan_item_id": f"WPI{day_number:02d}{order_index:02d}{exercise.get('id', '')[:6].upper()}",
             "plan_id": plan_id,
@@ -254,7 +256,8 @@ class MLIntegrationService:
             "reps": prescription["reps"],
             "rest": prescription["rest"],
             "met": self._safe_float(exercise.get("met"), 0),
-            "image": exercise.get("image_flat_main") or exercise.get("image_flat_start") or exercise.get("image_flat_peak") or "",
+            "image": images[0]["url"] if images else "",
+            "images": images,
             "steps": self._steps_vi(exercise)[:5],
             "tips": [
                 f"Mục tiêu: {display_pipe_values(exercise.get('goals'), 'goal')}",
@@ -264,6 +267,30 @@ class MLIntegrationService:
             "decision_source": "AI/exercises.csv rule engine",
             "explanation": "Bài được chọn theo mục tiêu, trình độ, nhóm cơ và luật tránh chấn thương.",
         }
+
+    def _exercise_images(self, exercise):
+        labels = {
+            "image_flat_start": "Tư thế bắt đầu",
+            "image_flat_peak": "Tư thế chính",
+            "image_flat_main": "Minh họa",
+        }
+        images = []
+        seen = set()
+        for key in ("image_flat_start", "image_flat_peak", "image_flat_main"):
+            value = str(exercise.get(key) or "").strip().replace("\\", "/")
+            if not value:
+                continue
+            filename = Path(value).name
+            if not filename or filename in seen:
+                continue
+            seen.add(filename)
+            images.append({
+                "label": labels[key],
+                "path": value,
+                "filename": filename,
+                "url": f"/api/ml/exercise-image/{filename}",
+            })
+        return images
 
     def _prescription(self, goal, exercise):
         category = exercise.get("category")

@@ -35,7 +35,7 @@ let selectedDays           = 7;
 let currentPlanData        = null;
 let currentPlanId          = null;
 let todayNutrition         = { calories: 0, protein: 0, carbs: 0, fat: 0 };
-let todayTarget            = { calories: 2000, protein: 130 };
+let todayTarget            = { calories: 2000, protein: 130, carbs: 250, fat: 60 };
 let todayIsRest            = false;
 let planStartDateStr       = null;
 let lastAiPlanResponse     = null;
@@ -569,6 +569,8 @@ function renderPlan(planData, container, progress = null) {
             // ... trong hàm renderPlan, phần xử lý ngày tập (else của day.is_rest)
       day.exercises.forEach((ex) => {
           const done = exProgress[ex.name] || false;
+          const exerciseImages = getExerciseImages(ex);
+          const thumbImage = exerciseImages[0]?.url || "";
           const exEl = document.createElement("div");
           
           // Nếu chưa áp dụng lộ trình (currentPlanId là null), thêm class 'preview-only'
@@ -579,6 +581,7 @@ function renderPlan(planData, container, progress = null) {
               <div class="ex-checkbox-wrap">
                   <div class="ex-checkbox">${done ? "✓" : ""}</div>
               </div>
+              ${thumbImage ? `<button class="routine-thumb" type="button" title="Xem ảnh hướng dẫn"><img src="${thumbImage}" alt="${ex.name_vi || ex.name}"></button>` : `<button class="routine-thumb no-image" type="button" title="Chưa có ảnh">🏋️</button>`}
               <div class="routine-item-info">
                   <h4>${ex.name_vi || ex.name}</h4>
                   <div class="tags">
@@ -620,6 +623,7 @@ function renderPlan(planData, container, progress = null) {
           exEl.querySelector(".btn-ex-complete").addEventListener("click", completeExercise);
 
           // Xem chi tiết thì vẫn cho xem bình thường ở cả 2 chế độ
+          exEl.querySelector(".routine-thumb").onclick = (e) => { e.stopPropagation(); openExerciseModal(ex); };
           exEl.querySelector(".routine-item-info").onclick = (e) => { e.stopPropagation(); openExerciseModal(ex); };
           exEl.querySelector(".btn-ex-detail").onclick = (e) => { e.stopPropagation(); openExerciseModal(ex); };
 
@@ -666,6 +670,7 @@ function planNeedsTextRefresh(planData) {
   ];
   return (planData?.days || []).some(day =>
     (day.exercises || []).some(ex =>
+      !getExerciseImages(ex).length ||
       (ex.steps || []).some(step => staleMarkers.some(marker => String(step || "").includes(marker)))
     )
   );
@@ -685,7 +690,7 @@ async function refreshActivePlanTextIfNeeded(planId, planData) {
     document.getElementById("plan-action-buttons").style.display = "none";
     document.getElementById("btn-cancel-plan").classList.add("show");
     switchToNutritionSidebar(currentPlanData);
-    showToast("✅ Đã làm mới hướng dẫn bài tập tiếng Việt.", "success");
+    showToast("✅ Đã làm mới hướng dẫn và ảnh bài tập.", "success");
     return true;
   } catch (e) {
     console.warn("Không làm mới được hướng dẫn bài tập:", e);
@@ -808,6 +813,8 @@ function switchToNutritionSidebar(planData) {
   const calRest     = Number(planData.daily_calories_rest)    || 1900;
   const protWorkout = Number(planData.daily_protein_workout)  || 150;
   const protRest    = Number(planData.daily_protein_rest)     || 120;
+  const defaultWorkoutDay = (planData.days || []).find(d => !d.is_rest) || {};
+  const defaultRestDay = (planData.days || []).find(d => d.is_rest) || {};
 
   todayTarget.calories = todayIsRest
     ? (Number(todayDay?.target_calories) || calRest)
@@ -815,6 +822,12 @@ function switchToNutritionSidebar(planData) {
   todayTarget.protein = todayIsRest
     ? (Number(todayDay?.target_protein) || protRest)
     : (Number(todayDay?.target_protein) || protWorkout);
+  todayTarget.carbs = todayIsRest
+    ? (Number(todayDay?.target_carbs) || Number(defaultRestDay.target_carbs) || 220)
+    : (Number(todayDay?.target_carbs) || Number(defaultWorkoutDay.target_carbs) || 280);
+  todayTarget.fat = todayIsRest
+    ? (Number(todayDay?.target_fat) || Number(defaultRestDay.target_fat) || 55)
+    : (Number(todayDay?.target_fat) || Number(defaultWorkoutDay.target_fat) || 70);
 
   sidebar.innerHTML = `
     <div class="nutr-sidebar">
@@ -825,6 +838,8 @@ function switchToNutritionSidebar(planData) {
       <div class="nutr-target-card">
         <div class="nutr-target-row"><span class="nutr-target-lbl">🔥 Calo mục tiêu</span><span class="nutr-target-val">${todayTarget.calories} kcal</span></div>
         <div class="nutr-target-row"><span class="nutr-target-lbl">💪 Protein mục tiêu</span><span class="nutr-target-val">${todayTarget.protein}g</span></div>
+        <div class="nutr-target-row"><span class="nutr-target-lbl">🍚 Carb mục tiêu</span><span class="nutr-target-val">${todayTarget.carbs}g</span></div>
+        <div class="nutr-target-row"><span class="nutr-target-lbl">🥑 Fat mục tiêu</span><span class="nutr-target-val">${todayTarget.fat}g</span></div>
         <div class="nutr-day-type ${todayIsRest ? "rest" : "workout"}">${todayIsRest ? "🛌 Ngày nghỉ — ăn nhẹ hơn" : "🏋️ Ngày tập — nạp đủ năng lượng"}</div>
       </div>
       <div class="nutr-progress-wrap">
@@ -832,7 +847,12 @@ function switchToNutritionSidebar(planData) {
         <div class="nutr-bar-bg"><div class="nutr-bar-fill cal-bar" id="ntCalBar" style="width:0%"></div></div>
         <div class="nutr-progress-row" style="margin-top:10px;"><span>Protein đã nạp</span><span id="ntProtDone">0 / ${todayTarget.protein}g</span></div>
         <div class="nutr-bar-bg"><div class="nutr-bar-fill prot-bar" id="ntProtBar" style="width:0%"></div></div>
+        <div class="nutr-progress-row" style="margin-top:10px;"><span>Carb đã nạp</span><span id="ntCarbsDone">0 / ${todayTarget.carbs}g</span></div>
+        <div class="nutr-bar-bg"><div class="nutr-bar-fill carbs-bar" id="ntCarbsBar" style="width:0%"></div></div>
+        <div class="nutr-progress-row" style="margin-top:10px;"><span>Fat đã nạp</span><span id="ntFatDone">0 / ${todayTarget.fat}g</span></div>
+        <div class="nutr-bar-bg"><div class="nutr-bar-fill fat-bar" id="ntFatBar" style="width:0%"></div></div>
       </div>
+      <div id="nutritionStatusNotice" class="nutr-status-notice" style="display:none;"></div>
       <div class="nutr-tabs">
         <button class="nutr-tab on" data-tab="manual" onclick="switchNutrTab('manual',this)">✏️ Nhập tay</button>
         <button class="nutr-tab" data-tab="ai" onclick="switchNutrTab('ai',this)">🤖 Nhập món ăn</button>
@@ -840,6 +860,8 @@ function switchToNutritionSidebar(planData) {
       <div class="nutr-tab-pane on" id="nutr-pane-manual">
         <div class="nutr-input-group"><label>Calories (kcal)</label><input type="number" id="ni_cal" placeholder="VD: 500" min="0" max="5000"></div>
         <div class="nutr-input-group"><label>Protein (g)</label><input type="number" id="ni_prot" placeholder="VD: 35" min="0" max="500"></div>
+        <div class="nutr-input-group"><label>Carbs (g)</label><input type="number" id="ni_carbs" placeholder="VD: 60" min="0" max="800"></div>
+        <div class="nutr-input-group"><label>Fat (g)</label><input type="number" id="ni_fat" placeholder="VD: 15" min="0" max="300"></div>
         <button class="nutr-btn-add" onclick="addManualNutrition()">+ Cộng vào hôm nay</button>
       </div>
       <div class="nutr-tab-pane" id="nutr-pane-ai">
@@ -864,11 +886,11 @@ function switchNutrTab(tabId, btn) {
 async function addManualNutrition() {
   const cal   = parseFloat(document.getElementById("ni_cal").value) || 0;
   const prot  = parseFloat(document.getElementById("ni_prot").value) || 0;
-  const carbs = 0;
-  const fat   = 0;
-  if (!cal && !prot) { showToast("⚠️ Vui lòng nhập ít nhất Calories hoặc Protein", "error"); return; }
+  const carbs = parseFloat(document.getElementById("ni_carbs").value) || 0;
+  const fat   = parseFloat(document.getElementById("ni_fat").value) || 0;
+  if (!cal && !prot && !carbs && !fat) { showToast("⚠️ Vui lòng nhập ít nhất một chỉ số dinh dưỡng", "error"); return; }
   await saveNutritionToServer(cal, prot, carbs, fat, "Nhập tay");
-  ["ni_cal","ni_prot"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+  ["ni_cal","ni_prot","ni_carbs","ni_fat"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   showToast("✅ Đã cập nhật dinh dưỡng!", "success");
 }
 
@@ -889,9 +911,10 @@ async function analyzeAndAddFood() {
       body: JSON.stringify({ food_text: foodText, userId: USER_ID }),
     });
     const data = await res.json();
-    if (!data.success || !data.data) { showToast("❌ " + (data.error || "AI không phân tích được"), "error"); return; }
+    if (!data.success || !data.data) { showToast("⚠️ " + (data.error || "Chưa đủ dữ liệu để phân tích món này"), "error"); return; }
 
     const { total, items, summary } = data.data;
+    const needsManualInput = Boolean(data.data.needs_manual_input);
     const safeTotal = {
       calories: Number(total.calories) || 0,
       protein:  Number(total.protein)  || 0,
@@ -906,7 +929,7 @@ async function analyzeAndAddFood() {
         <div class="fa-items">${(items || []).map(item => `
           <div class="fa-item">
             <span class="fa-item-name">${item.name} <small>${item.amount}</small></span>
-            <span class="fa-item-nums">${item.calories} kcal · ${item.protein}g P</span>
+            <span class="fa-item-nums">${item.calories} kcal · ${item.protein}g P · ${item.carbs}g C · ${item.fat}g F</span>
           </div>`).join("")}</div>
         <div class="fa-total">
           <div class="fa-total-row"><span>🔥 Tổng Calories</span><strong>${safeTotal.calories} kcal</strong></div>
@@ -914,9 +937,12 @@ async function analyzeAndAddFood() {
           <div class="fa-total-row"><span>🍞 Carbs</span><strong>${safeTotal.carbs}g</strong></div>
           <div class="fa-total-row"><span>🧈 Fat</span><strong>${safeTotal.fat}g</strong></div>
         </div>
-        <button class="nutr-btn-add" id="btnConfirmFood">✅ Thêm vào hôm nay</button>`;
-      document.getElementById("btnConfirmFood").onclick = () =>
-        confirmAddFoodNutrition(safeTotal.calories, safeTotal.protein, safeTotal.carbs, safeTotal.fat);
+        ${needsManualInput ? `<div class="fa-manual-note">Bạn hãy nhập tay kcal, protein, carbs và fat nếu có nhãn dinh dưỡng hoặc khối lượng chính xác.</div>` : `<button class="nutr-btn-add" id="btnConfirmFood">✅ Thêm vào hôm nay</button>`}`;
+      const confirmBtn = document.getElementById("btnConfirmFood");
+      if (confirmBtn) {
+        confirmBtn.onclick = () =>
+          confirmAddFoodNutrition(safeTotal.calories, safeTotal.protein, safeTotal.carbs, safeTotal.fat);
+      }
     }
   } catch (e) {
     showToast("❌ Lỗi kết nối AI", "error");
@@ -947,6 +973,8 @@ async function saveNutritionToServer(cal, prot, carbs, fat, note) {
   } catch (e) {
     todayNutrition.calories = (todayNutrition.calories || 0) + cal;
     todayNutrition.protein  = (todayNutrition.protein  || 0) + prot;
+    todayNutrition.carbs    = (todayNutrition.carbs    || 0) + carbs;
+    todayNutrition.fat      = (todayNutrition.fat      || 0) + fat;
     updateNutritionUI();
   }
 }
@@ -963,19 +991,34 @@ async function loadTodayNutrition() {
 function updateNutritionUI() {
   const calDoneEl  = document.getElementById("ntCalDone");
   const protDoneEl = document.getElementById("ntProtDone");
+  const carbsDoneEl = document.getElementById("ntCarbsDone");
+  const fatDoneEl = document.getElementById("ntFatDone");
   const calBarEl   = document.getElementById("ntCalBar");
   const protBarEl  = document.getElementById("ntProtBar");
+  const carbsBarEl = document.getElementById("ntCarbsBar");
+  const fatBarEl = document.getElementById("ntFatBar");
   if (!calDoneEl || !todayTarget.calories) return;
 
-  const calPct  = Math.min(100, Math.round((todayNutrition.calories / todayTarget.calories) * 100));
-  const protPct = Math.min(100, Math.round((todayNutrition.protein  / todayTarget.protein)  * 100));
+  const currentCalories = Number(todayNutrition.calories) || 0;
+  const currentProtein = Number(todayNutrition.protein) || 0;
+  const currentCarbs = Number(todayNutrition.carbs) || 0;
+  const currentFat = Number(todayNutrition.fat) || 0;
+  const calPct  = Math.min(100, Math.round((currentCalories / todayTarget.calories) * 100));
+  const protPct = Math.min(100, Math.round((currentProtein / todayTarget.protein)  * 100));
+  const carbsPct = Math.min(100, Math.round((currentCarbs / todayTarget.carbs) * 100));
+  const fatPct = Math.min(100, Math.round((currentFat / todayTarget.fat) * 100));
 
-  calDoneEl.textContent  = `${Math.round(todayNutrition.calories)} / ${todayTarget.calories} kcal`;
-  protDoneEl.textContent = `${Math.round(todayNutrition.protein)}g / ${todayTarget.protein}g`;
+  calDoneEl.textContent  = `${Math.round(currentCalories)} / ${todayTarget.calories} kcal`;
+  protDoneEl.textContent = `${Math.round(currentProtein)}g / ${todayTarget.protein}g`;
+  if (carbsDoneEl) carbsDoneEl.textContent = `${Math.round(currentCarbs)}g / ${todayTarget.carbs}g`;
+  if (fatDoneEl) fatDoneEl.textContent = `${Math.round(currentFat)}g / ${todayTarget.fat}g`;
+  updateNutritionStatusNotice({ currentCalories, currentProtein, currentCarbs, currentFat });
 
   setTimeout(() => {
     if (calBarEl)  { calBarEl.style.width  = calPct  + "%"; calBarEl.style.background  = calPct  >= 100 ? "#4ecdc4" : ""; }
     if (protBarEl) { protBarEl.style.width = protPct + "%"; protBarEl.style.background = protPct >= 100 ? "#4ecdc4" : ""; }
+    if (carbsBarEl) { carbsBarEl.style.width = carbsPct + "%"; carbsBarEl.style.background = carbsPct >= 100 ? "#4ecdc4" : ""; }
+    if (fatBarEl) { fatBarEl.style.width = fatPct + "%"; fatBarEl.style.background = fatPct >= 100 ? "#4ecdc4" : ""; }
   }, 50);
 
   const nutrTabsBox = document.querySelector(".nutr-tabs");
@@ -1072,6 +1115,39 @@ async function checkinExercise(planId, dayNumber, exName, completed, exEl, dayCa
   } catch (e) {
     showToast("⚠️ Mất kết nối, tiến độ chỉ mới cập nhật trên màn hình.", "error");
   }
+}
+
+function updateNutritionStatusNotice(values) {
+  const box = document.getElementById("nutritionStatusNotice");
+  if (!box) return;
+
+  const alerts = [];
+  const calDiff = Math.round(values.currentCalories - todayTarget.calories);
+  if (calDiff >= 100) {
+    alerts.push(`<strong>Đã dư năng lượng ${calDiff} kcal.</strong> Bữa tiếp theo nên ưu tiên đồ nhẹ, ít dầu và giàu rau.`);
+  } else if (calDiff >= 0) {
+    alerts.push(`<strong>Đã đủ năng lượng hôm nay.</strong> Bạn nên giữ bữa còn lại nhẹ để không vượt mục tiêu.`);
+  } else if (values.currentCalories >= todayTarget.calories * 0.9) {
+    alerts.push(`Bạn sắp đủ năng lượng, còn khoảng <strong>${Math.abs(calDiff)} kcal</strong>.`);
+  }
+
+  const macroAlerts = [
+    ["Protein", values.currentProtein, todayTarget.protein, "protein"],
+    ["Carbs", values.currentCarbs, todayTarget.carbs, "carbs"],
+    ["Fat", values.currentFat, todayTarget.fat, "fat"],
+  ]
+    .filter(([, current, target]) => target && current >= target)
+    .map(([label, current, target, cls]) => `<span class="nutr-status-chip ${cls}">${label}: ${Math.round(current)}/${target}g</span>`);
+
+  if (!alerts.length && !macroAlerts.length) {
+    box.style.display = "none";
+    box.innerHTML = "";
+    return;
+  }
+
+  box.className = `nutr-status-notice ${calDiff >= 100 ? "over" : "enough"}`;
+  box.innerHTML = `${alerts.map(text => `<div>${text}</div>`).join("")}${macroAlerts.length ? `<div class="nutr-status-chips">${macroAlerts.join("")}</div>` : ""}`;
+  box.style.display = "flex";
 }
 
 function updateDayExerciseCount(dayNumber, completedCount, totalCount) {
@@ -1172,6 +1248,71 @@ checkActivePlanOnLoad();
 // ════════════════════════════════════════
 // MODAL CHI TIẾT BÀI TẬP
 // ════════════════════════════════════════
+let exerciseImageIndex = 0;
+let exerciseModalImages = [];
+
+function resolveExerciseImageUrl(url) {
+  const value = String(url || "").trim();
+  if (!value) return "";
+  if (/^https?:\/\//i.test(value) || value.startsWith("data:")) return value;
+  if (value.includes("images/flat/") || value.includes("image/flat/") || /\.webp$/i.test(value)) {
+    const filename = value.replace(/\\/g, "/").split("/").filter(Boolean).pop();
+    return `${BACKEND_API_URL}/api/ml/exercise-image/${filename}`;
+  }
+  return `${BACKEND_API_URL}${value.startsWith("/") ? value : `/${value}`}`;
+}
+
+function getExerciseImages(ex) {
+  const list = Array.isArray(ex?.images) ? ex.images : [];
+  const images = list
+    .map((item, index) => ({
+      label: item.label || (index === 0 ? "Tư thế bắt đầu" : "Tư thế chính"),
+      url: resolveExerciseImageUrl(item.url || item.path || item.filename || item),
+    }))
+    .filter(item => item.url);
+
+  if (!images.length && ex?.image) {
+    images.push({ label: "Minh họa", url: resolveExerciseImageUrl(ex.image) });
+  }
+  return images;
+}
+
+function renderExerciseImage() {
+  const stage = document.getElementById("emImageStage");
+  const img = document.getElementById("emImage");
+  const label = document.getElementById("emImageLabel");
+  const count = document.getElementById("emImageCount");
+  const prev = document.getElementById("emImagePrev");
+  const next = document.getElementById("emImageNext");
+  if (!stage || !img || !label || !count || !prev || !next) return;
+
+  if (!exerciseModalImages.length) {
+    stage.classList.add("is-empty");
+    img.removeAttribute("src");
+    img.alt = "";
+    label.textContent = "Chưa có ảnh hướng dẫn";
+    count.textContent = "";
+    prev.disabled = true;
+    next.disabled = true;
+    return;
+  }
+
+  const current = exerciseModalImages[exerciseImageIndex] || exerciseModalImages[0];
+  stage.classList.remove("is-empty");
+  img.src = current.url;
+  img.alt = current.label;
+  label.textContent = current.label;
+  count.textContent = `${exerciseImageIndex + 1}/${exerciseModalImages.length}`;
+  prev.disabled = exerciseModalImages.length <= 1;
+  next.disabled = exerciseModalImages.length <= 1;
+}
+
+function changeExerciseImage(step) {
+  if (exerciseModalImages.length <= 1) return;
+  exerciseImageIndex = (exerciseImageIndex + step + exerciseModalImages.length) % exerciseModalImages.length;
+  renderExerciseImage();
+}
+
 (function createExerciseModal() {
   const modalHTML = `
     <div id="exModalOverlay" class="ex-modal-overlay">
@@ -1184,6 +1325,18 @@ checkActivePlanOnLoad();
             <div class="ex-modal-name" id="emName">Tên bài tập</div>
             <div class="ex-modal-badges" id="emBadges"></div>
           </div>
+        </div>
+        <div class="em-image-viewer">
+          <button class="em-image-nav" id="emImagePrev" type="button" title="Ảnh trước">‹</button>
+          <div class="em-image-stage" id="emImageStage">
+            <img id="emImage" alt="">
+            <div class="em-image-empty">Chưa có ảnh hướng dẫn</div>
+          </div>
+          <button class="em-image-nav" id="emImageNext" type="button" title="Ảnh tiếp theo">›</button>
+        </div>
+        <div class="em-image-meta">
+          <span id="emImageLabel">Minh họa</span>
+          <span id="emImageCount"></span>
         </div>
         <div class="ex-modal-stats" id="emStats"></div>
         <div class="ex-modal-tabs">
@@ -1198,6 +1351,8 @@ checkActivePlanOnLoad();
     </div>`;
   document.body.insertAdjacentHTML("beforeend", modalHTML);
   document.getElementById("exModalClose").onclick = closeExerciseModal;
+  document.getElementById("emImagePrev").onclick = () => changeExerciseImage(-1);
+  document.getElementById("emImageNext").onclick = () => changeExerciseImage(1);
   document.getElementById("exModalOverlay").addEventListener("click", e => { if (e.target === e.currentTarget) closeExerciseModal(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeExerciseModal(); });
   document.querySelectorAll(".em-tab").forEach(btn => {
@@ -1215,6 +1370,9 @@ function openExerciseModal(ex) {
   const diffCls   = { B:"badge-b", I:"badge-i", A:"badge-a" };
   const difficulty = ex.difficulty || diffLabel[ex.diff] || "Trung bình";
   const met = Number(ex.met || 0);
+  exerciseModalImages = getExerciseImages(ex);
+  exerciseImageIndex = 0;
+  renderExerciseImage();
   document.getElementById("emIcon").textContent   = ex.icon || "🏋️";
   document.getElementById("emMuscle").textContent = (ex.muscle || "").toUpperCase();
   document.getElementById("emName").textContent   = ex.name_vi || ex.name;
@@ -1361,7 +1519,8 @@ function isDayUnlocked(dayNumber) {
     .nutr-target-card{background:rgba(232,255,71,0.04);border:1px solid rgba(232,255,71,0.12);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;}
     .nutr-target-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;} .nutr-target-lbl{color:var(--text-secondary,#aaa);} .nutr-target-val{font-weight:700;color:var(--accent,#e8ff47);}
     .nutr-day-type{font-size:11px;font-weight:600;padding:6px 10px;border-radius:6px;text-align:center;letter-spacing:0.5px;} .nutr-day-type.workout{background:rgba(78,205,196,0.1);color:#4ecdc4;} .nutr-day-type.rest{background:rgba(167,139,250,0.1);color:#a78bfa;}
-    .nutr-progress-wrap{display:flex;flex-direction:column;gap:6px;} .nutr-progress-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary,#888);} .nutr-bar-bg{height:6px;background:var(--border,#2a2a2a);border-radius:3px;overflow:hidden;} .nutr-bar-fill{height:100%;border-radius:3px;transition:width 0.5s ease;} .cal-bar{background:#e8ff47;} .prot-bar{background:#4ecdc4;}
+    .nutr-progress-wrap{display:flex;flex-direction:column;gap:6px;} .nutr-progress-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary,#888);} .nutr-bar-bg{height:6px;background:var(--border,#2a2a2a);border-radius:3px;overflow:hidden;} .nutr-bar-fill{height:100%;border-radius:3px;transition:width 0.5s ease;} .cal-bar{background:#e8ff47;} .prot-bar{background:#4ecdc4;} .carbs-bar{background:#4da0ff;} .fat-bar{background:#f59e0b;}
+    .nutr-status-notice{flex-direction:column;gap:8px;border-radius:10px;padding:12px 14px;font-size:12px;line-height:1.55;border:1px solid rgba(78,205,196,0.22);background:rgba(78,205,196,0.08);color:var(--text-primary,#f0f0f0);} .nutr-status-notice.over{border-color:rgba(245,158,11,0.35);background:rgba(245,158,11,0.10);} .nutr-status-notice strong{color:#e8ff47;} .nutr-status-notice.over strong{color:#f59e0b;} .nutr-status-chips{display:flex;flex-wrap:wrap;gap:6px;} .nutr-status-chip{font-size:10px;font-weight:800;border-radius:20px;padding:4px 8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);} .nutr-status-chip.protein{color:#4ecdc4;} .nutr-status-chip.carbs{color:#4da0ff;} .nutr-status-chip.fat{color:#f59e0b;}
     .nutr-tabs{display:flex;gap:4px;background:var(--bg-secondary,#111);border-radius:10px;padding:4px;} .nutr-tab{flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:var(--text-muted,#666);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;} .nutr-tab.on{background:var(--accent,#e8ff47);color:#0a0a0a;}
     .nutr-tab-pane{display:none;flex-direction:column;gap:10px;} .nutr-tab-pane.on{display:flex;}
     .nutr-input-group{display:flex;flex-direction:column;gap:5px;} .nutr-input-group label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-muted,#666);}
@@ -1376,8 +1535,10 @@ function isDayUnlocked(dayNumber) {
     .food-analysis-result{background:var(--bg-secondary,#111);border:1px solid var(--border,#2a2a2a);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;}
     .fa-summary{font-size:12px;color:var(--text-muted,#666);line-height:1.5;font-style:italic;} .fa-items{display:flex;flex-direction:column;gap:6px;} .fa-item{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:6px 0;border-bottom:1px solid var(--border,#2a2a2a);} .fa-item:last-child{border-bottom:none;} .fa-item-name{color:var(--text-primary,#f0f0f0);font-weight:500;} .fa-item-name small{color:var(--text-muted,#666);margin-left:4px;} .fa-item-nums{color:var(--accent,#e8ff47);font-weight:600;font-size:11px;}
     .fa-total{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid var(--border,#2a2a2a);} .fa-total-row{display:flex;justify-content:space-between;font-size:13px;} .fa-total-row strong{color:var(--accent,#e8ff47);}
+    .fa-manual-note{font-size:12px;line-height:1.5;color:#f59e0b;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:10px 12px;}
     .nutr-note-box{display:flex;gap:10px;align-items:flex-start;background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.15);border-radius:8px;padding:12px;font-size:12px;color:var(--text-secondary,#aaa);line-height:1.5;} .nutr-note-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
-    .routine-item{display:flex;align-items:center;gap:14px;} .ex-checkbox-wrap{flex-shrink:0;cursor:pointer;padding:4px;} .routine-item-info{flex:1;cursor:pointer;padding:2px 0;} .routine-item-info:hover h4{color:var(--accent,#e8ff47);} .tag-rest{color:#a78bfa;background:rgba(167,139,250,0.08);}
+    .routine-item{display:flex;align-items:center;gap:14px;} .ex-checkbox-wrap{flex-shrink:0;cursor:pointer;padding:4px;} .routine-thumb{width:58px;height:58px;border-radius:8px;border:1px solid var(--border,#2a2a2a);background:var(--bg-secondary,#111);padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;color:var(--text-muted,#666);font-size:20px;} .routine-thumb img{width:100%;height:100%;object-fit:contain;display:block;background:#101827;} .routine-thumb:hover{border-color:var(--accent,#e8ff47);} .routine-thumb.no-image{background:rgba(255,255,255,0.03);}
+    .routine-item-info{flex:1;cursor:pointer;padding:2px 0;} .routine-item-info:hover h4{color:var(--accent,#e8ff47);} .tag-rest{color:#a78bfa;background:rgba(167,139,250,0.08);}
     .day-ex-count{min-width:58px;text-align:center;font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;background:rgba(77,160,255,0.1);color:#4da0ff;border:1px solid rgba(77,160,255,0.18);}
     .btn-ex-complete{border:1px solid rgba(78,205,196,0.32);background:rgba(78,205,196,0.08);color:#4ecdc4;border-radius:8px;padding:9px 12px;min-width:112px;font-size:11px;font-weight:800;cursor:pointer;transition:all 0.2s;flex-shrink:0;font-family:inherit;}
     .btn-ex-complete:hover{background:rgba(78,205,196,0.16);border-color:#4ecdc4;} .routine-item.completed .btn-ex-complete{background:#4ecdc4;color:#0a0a0a;} .btn-ex-complete:disabled{opacity:0.9;cursor:not-allowed;} .routine-item.preview-only .btn-ex-complete{opacity:0.55;cursor:not-allowed;}
@@ -1392,6 +1553,7 @@ function isDayUnlocked(dayNumber) {
     .ex-modal-icon{width:72px;height:72px;border-radius:16px;background:rgba(232,255,71,0.06);border:1px solid rgba(232,255,71,0.15);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:var(--accent,#e8ff47);flex-shrink:0;}
     .ex-modal-muscle{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--accent,#e8ff47);margin-bottom:6px;} .ex-modal-name{font-size:22px;font-weight:700;color:var(--text-primary,#f0f0f0);line-height:1.2;margin-bottom:10px;} .ex-modal-badges{display:flex;gap:6px;flex-wrap:wrap;}
     .em-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.5px;} .badge-b{background:rgba(78,205,196,0.12);color:#4ecdc4;border:1px solid rgba(78,205,196,0.25);} .badge-i{background:rgba(232,255,71,0.10);color:#e8ff47;border:1px solid rgba(232,255,71,0.25);} .badge-a{background:rgba(231,76,60,0.12);color:#e74c3c;border:1px solid rgba(231,76,60,0.25);}
+    .em-image-viewer{display:grid;grid-template-columns:38px 1fr 38px;gap:10px;align-items:center;margin:-6px 0 8px;} .em-image-stage{height:220px;border-radius:12px;border:1px solid var(--border,#2a2a2a);background:#101827;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;} .em-image-stage img{width:100%;height:100%;object-fit:contain;display:block;} .em-image-stage.is-empty img{display:none;} .em-image-empty{display:none;color:var(--text-muted,#666);font-size:13px;} .em-image-stage.is-empty .em-image-empty{display:block;} .em-image-nav{width:38px;height:38px;border-radius:8px;border:1px solid var(--border,#2a2a2a);background:var(--bg-secondary,#111);color:var(--text-primary,#f0f0f0);font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;} .em-image-nav:hover:not(:disabled){border-color:var(--accent,#e8ff47);color:var(--accent,#e8ff47);} .em-image-nav:disabled{opacity:0.35;cursor:not-allowed;} .em-image-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px;font-size:11px;font-weight:700;color:var(--text-muted,#666);letter-spacing:0.5px;}
     .ex-modal-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;} .em-stat{background:var(--bg-secondary,#111);border:1px solid var(--border,#2a2a2a);border-radius:10px;padding:14px 10px;text-align:center;} .em-stat-num{font-size:22px;font-weight:700;color:var(--accent,#e8ff47);line-height:1;margin-bottom:4px;} .em-stat-lbl{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted,#666);}
     .ex-modal-tabs{display:flex;gap:4px;background:var(--bg-secondary,#111);border-radius:10px;padding:4px;margin-bottom:20px;} .em-tab{flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:var(--text-muted,#666);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:inherit;} .em-tab.on{background:var(--accent,#e8ff47);color:#0a0a0a;}
     .em-pane{display:none;} .em-pane.on{display:block;}

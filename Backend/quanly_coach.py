@@ -134,6 +134,8 @@ def summarize_day(selected_day: dict) -> dict:
         "is_locked": bool(progress_day.get("is_locked")),
         "target_calories": progress_day.get("target_calories") or plan_day.get("target_calories"),
         "target_protein": progress_day.get("target_protein") or plan_day.get("target_protein"),
+        "target_carbs": progress_day.get("target_carbs") or plan_day.get("target_carbs"),
+        "target_fat": progress_day.get("target_fat") or plan_day.get("target_fat"),
         "exercises": exercises,
     }
 
@@ -172,6 +174,8 @@ def summarize_nutrition(nutrition: dict | None, selected_day: dict) -> dict:
         "is_locked": bool((nutrition or {}).get("is_locked")),
         "target_calories": safe_float(day.get("target_calories")),
         "target_protein": safe_float(day.get("target_protein")),
+        "target_carbs": safe_float(day.get("target_carbs")),
+        "target_fat": safe_float(day.get("target_fat")),
     }
 
 
