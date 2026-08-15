@@ -1,21 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-// class ApiConfig {
-//   // Android emulator dùng 10.0.2.2 để gọi backend Flask trên máy tính.
-//   // Chạy điện thoại thật thì đổi thành IP LAN, ví dụ: http://192.168.1.8:5000.
-//   static const baseUrl = 'http://192.168.0.101:5000';
-//   static const planAiBaseUrl = 'http://192.168.0.101:5001';
-//   static const chatAiBaseUrl = 'http://192.168.0.101:5002';
-// }
-
 class ApiConfig {
   static const host =
       String.fromEnvironment('API_HOST', defaultValue: '10.0.2.2');
 
   static String get baseUrl => 'http://$host:5000';
-  static String get planAiBaseUrl => 'http://$host:5001';
-  static String get chatAiBaseUrl => 'http://$host:5002';
 }
 
 class AppUser {
@@ -77,18 +67,6 @@ class ApiService {
   Future<ApiResult> delete(String path) => _request('DELETE', path);
   Future<ApiResult> post(String path, Map<String, Object?> body) {
     return _request('POST', path, body: body);
-  }
-
-  Future<ApiResult> postAi(String path, Map<String, Object?> body) {
-    return _request('POST', path, body: body, baseUrl: ApiConfig.chatAiBaseUrl);
-  }
-
-  Future<ApiResult> getPlanAi(String path) {
-    return _request('GET', path, baseUrl: ApiConfig.planAiBaseUrl);
-  }
-
-  Future<ApiResult> postPlanAi(String path, Map<String, Object?> body) {
-    return _request('POST', path, body: body, baseUrl: ApiConfig.planAiBaseUrl);
   }
 
   Future<ApiResult> put(String path, Map<String, Object?> body) {

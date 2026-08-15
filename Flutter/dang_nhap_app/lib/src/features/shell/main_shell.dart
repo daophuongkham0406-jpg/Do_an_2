@@ -73,7 +73,7 @@ class _MainShellState extends State<MainShell> {
           context: context,
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
-          builder: (_) => const ChatCoachSheet(),
+          builder: (_) => ChatCoachSheet(user: widget.user),
         ),
         icon: const Icon(Icons.smart_toy_outlined),
         label: const Text('AI Coach'),
@@ -92,7 +92,9 @@ class _MainShellState extends State<MainShell> {
 }
 
 class ChatCoachSheet extends StatefulWidget {
-  const ChatCoachSheet({super.key});
+  const ChatCoachSheet({required this.user, super.key});
+
+  final AppUser user;
 
   @override
   State<ChatCoachSheet> createState() => _ChatCoachSheetState();
@@ -125,14 +127,17 @@ class _ChatCoachSheetState extends State<ChatCoachSheet> {
       _loading = true;
     });
 
-    final result = await _api.postAi('/api/chat', {'message': text});
+    final result = await _api.post('/api/coach/chat', {
+      'message': text,
+      'userId': widget.user.id,
+    });
     if (!mounted) return;
     final body = _api.mapFrom(result.body);
     setState(() {
       _messages.add(_ChatMessage(
         text: result.ok
             ? (body['reply'] ?? 'Không có phản hồi.').toString()
-            : (result.message ?? 'Lỗi kết nối máy chủ AI cổng 5002.'),
+            : (result.message ?? 'Lỗi kết nối AI Coach.'),
         mine: false,
       ));
       _loading = false;

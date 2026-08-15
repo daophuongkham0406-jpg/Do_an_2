@@ -56,7 +56,7 @@ class AppCard extends StatelessWidget {
       padding: padding,
       decoration: BoxDecoration(
         color: color ?? AppColors.bgCard,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
@@ -72,7 +72,7 @@ class AppCard extends StatelessWidget {
     if (onTap == null) return card;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(8),
       child: card,
     );
   }
@@ -137,11 +137,11 @@ class AppTextField extends StatelessWidget {
               vertical: 14,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: AppColors.border),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(8),
               borderSide:
                   const BorderSide(color: AppColors.accentPurple, width: 1.4),
             ),
@@ -175,8 +175,7 @@ class PrimaryButton extends StatelessWidget {
           disabledBackgroundColor:
               AppColors.accentPurple.withValues(alpha: 0.45),
           foregroundColor: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           padding: const EdgeInsets.symmetric(horizontal: 16),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
         ),
@@ -220,7 +219,7 @@ class ScreenHeader extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: AppColors.accentYellow.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Text(
                     'FIT ME • MOBILE',
@@ -317,7 +316,7 @@ void showAppSnack(BuildContext context, String message, {bool error = false}) {
         behavior: SnackBarBehavior.floating,
         showCloseIcon: true,
         closeIconColor: AppColors.textMuted,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
 }
