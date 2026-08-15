@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/api_service.dart';
 import '../../core/app_colors.dart';
+import '../../shared/exercise_images.dart';
 import '../../shared/ui.dart';
 
 class PlanScreen extends StatefulWidget {
@@ -1525,6 +1526,8 @@ class _ExerciseRow extends StatelessWidget {
     final name = exercise['name_vi']?.toString().isNotEmpty == true
         ? exercise['name_vi'].toString()
         : (exercise['name'] ?? 'Bài tập').toString();
+    final images = exerciseImagesFrom(exercise);
+    final image = images.isEmpty ? '' : images.first.url;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -1543,6 +1546,16 @@ class _ExerciseRow extends StatelessWidget {
           Icon(
             done ? Icons.check_circle : Icons.circle_outlined,
             color: done ? AppColors.success : AppColors.textMuted,
+          ),
+          const SizedBox(width: 10),
+          SizedBox(
+            width: 54,
+            height: 54,
+            child: ExerciseImageView(
+              url: image,
+              icon: '${exercise['icon'] ?? '🏋️'}',
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -1703,6 +1716,7 @@ class _ExerciseDetailSheet extends StatelessWidget {
     final name = exercise['name_vi']?.toString().isNotEmpty == true
         ? exercise['name_vi'].toString()
         : (exercise['name'] ?? 'Bài tập').toString();
+    final images = exerciseImagesFrom(exercise);
     return Container(
       height: MediaQuery.of(context).size.height * 0.86,
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
@@ -1714,6 +1728,14 @@ class _ExerciseDetailSheet extends StatelessWidget {
         top: false,
         child: ListView(
           children: [
+            SizedBox(
+              height: 190,
+              child: _PlanExerciseImages(
+                images: images,
+                icon: '${exercise['icon'] ?? '🏋️'}',
+              ),
+            ),
+            const SizedBox(height: 14),
             Row(
               children: [
                 Expanded(
@@ -1801,6 +1823,67 @@ class _ExerciseDetailSheet extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _PlanExerciseImages extends StatelessWidget {
+  const _PlanExerciseImages({required this.images, required this.icon});
+
+  final List<ExerciseImageItem> images;
+  final String icon;
+
+  @override
+  Widget build(BuildContext context) {
+    if (images.isEmpty) {
+      return ExerciseImageView(
+        url: '',
+        icon: icon,
+        borderRadius: BorderRadius.circular(8),
+      );
+    }
+    return ListView.separated(
+      scrollDirection: Axis.horizontal,
+      itemCount: images.length,
+      separatorBuilder: (_, __) => const SizedBox(width: 10),
+      itemBuilder: (context, index) {
+        final item = images[index];
+        return SizedBox(
+          width: images.length == 1
+              ? MediaQuery.sizeOf(context).width - 40
+              : MediaQuery.sizeOf(context).width * 0.68,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: ExerciseImageView(
+                  url: item.url,
+                  icon: icon,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              Positioned(
+                left: 10,
+                bottom: 10,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.58),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    item.label,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

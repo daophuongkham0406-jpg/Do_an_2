@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/api_service.dart';
 import '../../core/app_colors.dart';
+import '../../shared/exercise_images.dart';
 import '../../shared/ui.dart';
 
 class ExercisesScreen extends StatefulWidget {
@@ -515,7 +516,8 @@ class _ExerciseGridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final image = '${exercise['image'] ?? ''}';
+    final images = exerciseImagesFrom(exercise);
+    final image = images.isEmpty ? '' : images.first.url;
     return InkWell(
       onTap: () => _openDetail(context, exercise),
       borderRadius: BorderRadius.circular(16),
@@ -530,25 +532,12 @@ class _ExerciseGridCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColors.bgInput,
-                  image: image.isEmpty
-                      ? null
-                      : DecorationImage(
-                          image: NetworkImage(image),
-                          fit: BoxFit.contain,
-                          onError: (_, __) {},
-                        ),
-                ),
-                child: Stack(
+              child: ExerciseImageView(
+                url: image,
+                icon: '${exercise['icon'] ?? '🏋️'}',
+                overlay: true,
+                foreground: Stack(
                   children: [
-                    if (image.isEmpty)
-                      Center(
-                        child: Text('${exercise['icon'] ?? '🏋️'}',
-                            style: const TextStyle(fontSize: 42)),
-                      ),
                     Positioned(
                       top: 10,
                       left: 10,
@@ -597,12 +586,20 @@ class _ExerciseListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final images = exerciseImagesFrom(exercise);
+    final image = images.isEmpty ? '' : images.first.url;
     return AppCard(
       child: ListTile(
         contentPadding: EdgeInsets.zero,
-        leading: CircleAvatar(
-            backgroundColor: AppColors.bgInput,
-            child: Text('${exercise['icon'] ?? '🏋️'}')),
+        leading: SizedBox(
+          width: 54,
+          height: 54,
+          child: ExerciseImageView(
+            url: image,
+            icon: '${exercise['icon'] ?? '🏋️'}',
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
         title: Text('${exercise['name'] ?? 'Bài tập'}',
             style: const TextStyle(fontWeight: FontWeight.w900)),
         subtitle: Text(
@@ -666,11 +663,15 @@ class ExerciseDetailSheet extends StatefulWidget {
 
 class _ExerciseDetailSheetState extends State<ExerciseDetailSheet> {
   int _tab = 0;
+  int _imageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     final ex = widget.exercise;
-    final image = '${ex['image'] ?? ''}';
+    final images = exerciseImagesFrom(ex);
+    final safeImageIndex =
+        images.isEmpty ? 0 : _imageIndex.clamp(0, images.length - 1).toInt();
+    final image = images.isEmpty ? '' : images[safeImageIndex].url;
     return Container(
       height: MediaQuery.of(context).size.height * 0.88,
       decoration: const BoxDecoration(
@@ -684,23 +685,19 @@ class _ExerciseDetailSheetState extends State<ExerciseDetailSheet> {
             Container(
               height: 180,
               width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.bgInput,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(24)),
-                image: image.isEmpty
-                    ? null
-                    : DecorationImage(
-                        image: NetworkImage(image),
-                        fit: BoxFit.contain,
-                        onError: (_, __) {}),
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: Stack(
                 children: [
-                  if (image.isEmpty)
-                    Center(
-                        child: Text('${ex['icon'] ?? '🏋️'}',
-                            style: const TextStyle(fontSize: 64))),
+                  Positioned.fill(
+                    child: ExerciseImageView(
+                      url: image,
+                      icon: '${ex['icon'] ?? '🏋️'}',
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(24)),
+                    ),
+                  ),
                   Positioned(
                     top: 12,
                     right: 12,
@@ -732,6 +729,28 @@ class _ExerciseDetailSheetState extends State<ExerciseDetailSheet> {
                       _SmallBadge('${ex['equip'] ?? ''}'),
                     ],
                   ),
+                  if (images.length > 1) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 36,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: images.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          final selected = safeImageIndex == index;
+                          return ChoiceChip(
+                            label: Text(images[index].label),
+                            selected: selected,
+                            onSelected: (_) =>
+                                setState(() => _imageIndex = index),
+                            selectedColor:
+                                AppColors.accentYellow.withValues(alpha: 0.18),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   Row(
                     children: [
