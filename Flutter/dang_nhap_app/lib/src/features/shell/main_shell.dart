@@ -29,10 +29,19 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomeScreen(user: widget.user),
+      HomeScreen(
+        user: widget.user,
+        onOpenExercises: () => setState(() => _index = 1),
+        onOpenPlan: () => setState(() => _index = 2),
+        onOpenCoach: _openCoach,
+      ),
       ExercisesScreen(user: widget.user),
       PlanScreen(user: widget.user),
-      ProfileScreen(user: widget.user, onLogout: widget.onLogout),
+      ProfileScreen(
+        user: widget.user,
+        onLogout: widget.onLogout,
+        onOpenPlan: () => setState(() => _index = 2),
+      ),
       const FaqScreen(),
       if (widget.user.isAdmin) const AdminScreen(),
     ];
@@ -69,12 +78,7 @@ class _MainShellState extends State<MainShell> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.accentYellow,
         foregroundColor: Colors.black,
-        onPressed: () => showModalBottomSheet<void>(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (_) => ChatCoachSheet(user: widget.user),
-        ),
+        onPressed: _openCoach,
         icon: const Icon(Icons.smart_toy_outlined),
         label: const Text('AI Coach'),
       ),
@@ -87,6 +91,15 @@ class _MainShellState extends State<MainShell> {
         destinations: items,
         height: 68,
       ),
+    );
+  }
+
+  void _openCoach() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ChatCoachSheet(user: widget.user),
     );
   }
 }
