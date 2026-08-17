@@ -27,6 +27,26 @@ users_col   = _db["user"]
 payment_col = _db["payments"]
 
 
+def normalize_premium_status(user):
+    is_premium = bool(user.get("isPremium", False))
+    expired = False
+    expire_date = user.get("premiumExpire")
+
+    if is_premium and (not expire_date or datetime.now() > expire_date):
+        users_col.update_one(
+            {"_id": user["_id"]},
+            {"$set": {"isPremium": False, "premiumExpiredNotified": False}}
+        )
+        is_premium = False
+        expired = True
+
+    expire_str = ""
+    if expire_date:
+        expire_str = expire_date.strftime('%d/%m/%Y')
+
+    return is_premium, expired, expire_str
+
+
 # ═══════════════════════════════════════════════════════
 # HELPER: Tạo mã nội dung chuyển khoản duy nhất
 # ═══════════════════════════════════════════════════════
@@ -299,24 +319,14 @@ def get_premium_status(user_id):
         if not user:
             return jsonify({"isPremium": False}), 404
 
-        is_premium = user.get("isPremium", False)
-
-        if is_premium and user.get("premiumExpire"):
-            if datetime.now() > user["premiumExpire"]:
-                users_col.update_one(
-                    {"_id": ObjectId(user_id)},
-                    {"$set": {"isPremium": False}}
-                )
-                is_premium = False
-
-        expire_str = ""
-        if is_premium and user.get("premiumExpire"):
-            expire_str = user["premiumExpire"].strftime('%d/%m/%Y')
+        is_premium, expired, expire_str = normalize_premium_status(user)
 
         return jsonify({
             "isPremium":  is_premium,
             "plan":       user.get("premiumPlan", ""),
             "expireDate": expire_str,
+            "expired":    expired,
+            "message":    "Gói Premium của bạn đã hết hạn. Trạng thái Premium đã được khóa." if expired else "",
         })
 
     except Exception as e:

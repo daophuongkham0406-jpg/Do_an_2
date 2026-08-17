@@ -49,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (userStr && loginBtn) {
     const user = JSON.parse(userStr);
+    refreshLoggedInUser(user);
 
     const userMenu = document.createElement("div");
     userMenu.style.display = "flex";
@@ -60,6 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
             <a href="Tcn.html" id="profile-link" style="color: #ffffff; font-weight: 600; font-size: 14px; text-decoration: none; cursor: pointer; transition: 0.3s;">
                 <span style="color:var(--accent)">${user.fullName}</span>
             </a>
+            ${user.role === "admin" ? `
+            <button id="admin-switch-btn" style="background: var(--accent); border: 1px solid var(--accent); color:#000; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 700; transition: all 0.3s;">
+                Quản trị
+            </button>` : ""}
             <button id="logout-btn" style="background: transparent; border: 1px solidvar(--accent); color:var(--accent); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
                 Đăng xuất
             </button>
@@ -67,6 +72,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Thay nút Đăng nhập bằng Menu User
     loginBtn.parentNode.replaceChild(userMenu, loginBtn);
+
+    // Hiệu ứng hover cho nút Đăng xuất
+    const adminSwitchBtn = document.getElementById("admin-switch-btn");
+    if (adminSwitchBtn) {
+      adminSwitchBtn.addEventListener("click", () => {
+        window.location.href = "admin.html";
+      });
+    }
 
     // Hiệu ứng hover cho nút Đăng xuất
     const logoutBtn = document.getElementById("logout-btn");
@@ -91,6 +104,25 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = "index.html";
       }, 1000);
     });
+  }
+
+  async function refreshLoggedInUser(user) {
+    const userId = user?.id || user?._id;
+    if (!userId) return;
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/api/users/${userId}`, {
+        headers: { "X-User-Id": userId },
+      });
+      if (!res.ok) return;
+      const freshUser = await res.json();
+      const mergedUser = { ...user, ...freshUser };
+      localStorage.setItem("loggedInUser", JSON.stringify(mergedUser));
+      if (mergedUser.role === "admin" && !document.getElementById("admin-switch-btn")) {
+        location.reload();
+      }
+    } catch (e) {
+      console.warn("Không làm mới được quyền tài khoản:", e);
+    }
   }
 
   // ========================================================================

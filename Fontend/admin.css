@@ -112,15 +112,16 @@ body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-
 
 /* ── TABLE ── */
 .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
-.table-head{display:grid;grid-template-columns:50px 60px 1fr 100px 110px 90px 120px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);gap:12px;}
+.table-head{display:grid;grid-template-columns:50px 70px 1fr 140px 130px 110px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border);gap:12px;}
 .th{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
 .table-body{max-height:520px;overflow-y:auto;}
-.tr{display:grid;grid-template-columns:50px 60px 1fr 100px 110px 90px 120px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center;gap:12px;transition:background 0.15s;cursor:pointer;}
+.tr{display:grid;grid-template-columns:50px 70px 1fr 140px 130px 110px;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center;gap:12px;transition:background 0.15s;}
 .tr:last-child{border-bottom:none;}
 .tr:hover{background:var(--card-hover);}
 .td{font-size:13px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .td.name{color:var(--text);font-weight:600;}
 .td.icon-cell{font-size:24px;text-align:center;}
+.admin-ex-thumb{width:34px;height:34px;border-radius:8px;object-fit:cover;border:1px solid var(--border);}
 .td.id-cell{font-family:monospace;font-size:11px;color:var(--text3);}
 .badge{display:inline-flex;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
 .badge-B{background:rgba(100,220,100,0.12);border:1px solid rgba(100,220,100,0.25);color:#5de085;}

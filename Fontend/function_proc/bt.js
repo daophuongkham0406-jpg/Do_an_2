@@ -2,55 +2,69 @@
 // Đây là File Bt.js
 // ════════════════════════════════════════════════════════════════
 // ════════════════════════════════════════════════════════════════
-// 1. DATA TỪ MONGODB & BIẾN TRẠNG THÁI (STATE)
+// 1. DATA TỪ AI/exercises.csv & BIẾN TRẠNG THÁI (STATE)
 // ════════════════════════════════════════════════════════════════
 let EX = []; 
 const state = { muscle: "all", diff: "all", equip: "all", search: "", sort: "default" };
 const favs = new Set();
 let currentEx = null;
 
+const BACKEND_API_URL = "http://localhost:5000";
 const diffMap = { B: "Beginner", I: "Intermediate", A: "Advanced" };
 const diffLabel = { B: "Người mới", I: "Trung bình", A: "Nâng cao" };
 const diffCls = { B: "badge-b", I: "badge-i", A: "badge-a" };
 const diffOrder = { B: 0, I: 1, A: 2 };
 
 // ════════════════════════════════════════════════════════════════
-// 2. GỌI API LẤY DỮ LIỆU TỪ MÁY CHỦ
+// 2. GỌI API LẤY DỮ LIỆU TỪ AI/exercises.csv
 // ════════════════════════════════════════════════════════════════
 async function fetchExercises() {
     const grid = document.getElementById("exerciseGrid");
-    grid.innerHTML = `<div class="no-results"><p>Đang tải dữ liệu từ máy chủ...</p></div>`;
-    
-    // ── Lấy userId từ localStorage ──
-    const userId = localStorage.getItem("userId") || "";
-    const url = `http://127.0.0.1:5000/api/exercises/?userId=${userId}`;
+    grid.innerHTML = `<div class="no-results"><p>Đang tải thư viện bài tập AI...</p></div>`;
 
     try {
-        const response = await fetch(url); 
-        if (response.ok) {
-            const result = await response.json(); 
-            
-            // ── ĐOẠN SỬA LỖI: Phân biệt tài khoản VIP và Thường ──
-            if (Array.isArray(result)) {
-                // TÀI KHOẢN VIP / ADMIN: Backend trả thẳng mảng bài tập
-                EX = result; 
-                showPremiumBanner(false, 0); // Ẩn banner đi
-            } else {
-                // TÀI KHOẢN THƯỜNG: Backend trả về Object { data: [...], isLimited: true }
-                EX = result.data || []; 
-                showPremiumBanner(result.isLimited, result.limitPerMuscle); // Hiện banner
-            }
-            // ── KẾT THÚC ĐOẠN SỬA LỖI ──
-
-            buildDynamicFilters();
-            render();
-        } else {
+        const response = await fetch(`${BACKEND_API_URL}/api/ml/exercises`); 
+        if (!response.ok) {
             grid.innerHTML = `<div class="no-results"><span class="nr-icon">⚠️</span><p>Lỗi máy chủ: Không thể tải bài tập.</p></div>`;
+            return;
         }
+        const result = await response.json(); 
+        EX = (result.data || []).map(normalizeExercise);
+        showPremiumBanner(false, 0);
+        buildDynamicFilters();
+        render();
     } catch (error) {
         console.error("Lỗi kết nối API:", error);
         grid.innerHTML = `<div class="no-results"><span class="nr-icon">🔌</span><p>Mất kết nối tới Backend. Hãy kiểm tra python app.py!</p></div>`;
     }
+}
+
+function normalizeExercise(ex) {
+    const difficultyText = String(ex.difficulty || "").toLowerCase();
+    const diff = difficultyText.includes("mới") ? "B" : difficultyText.includes("nâng") ? "A" : "I";
+    return {
+        ...ex,
+        id: ex.exercise_id || ex.id || ex.name,
+        name: ex.name_vi || ex.name || "Bài tập",
+        muscle: ex.muscle || ex.body_part || "Toàn thân",
+        diff,
+        equip: ex.category || "Bài tập",
+        sets: ex.sets || 3,
+        reps: ex.reps || "8-12",
+        rest: ex.rest ? `${ex.rest}s` : "60s",
+        image: resolveExerciseImage(ex.image),
+        images: Array.isArray(ex.images) ? ex.images : [],
+        steps: ex.steps || [],
+        tips: ex.tips || [],
+        sec: ex.muscle_keys ? String(ex.muscle_keys).split("|").filter(Boolean) : [],
+    };
+}
+
+function resolveExerciseImage(url) {
+    const value = String(url || "").trim();
+    if (!value) return "";
+    if (/^https?:\/\//i.test(value) || value.startsWith("data:")) return value;
+    return `${BACKEND_API_URL}${value.startsWith("/") ? value : `/${value}`}`;
 }
 
 // ── HÀM: Hiển thị banner Premium ──

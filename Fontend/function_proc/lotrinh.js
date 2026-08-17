@@ -14,6 +14,7 @@ const WEEKDAY_LABELS = {
   6: "Thứ 7",
   7: "Chủ nhật",
 };
+const DEFAULT_TRAINING_WEEKDAYS = [1, 3, 5, 2, 4, 6, 7];
 
 let USER_ID = "guest";
 try {
@@ -49,6 +50,7 @@ function selectDur(el, days) {
   document.querySelectorAll(".dur-btn").forEach(b => b.classList.remove("active"));
   el.classList.add("active");
   selectedDays = days;
+  renderWeeklyPicker();
   updateWeekdayHint();
 }
 
@@ -67,11 +69,48 @@ function unlockLongPlans(planType) {
   }
 }
 
+function lockLongPlans(expiredMessage = "") {
+  document.querySelectorAll(".dur-btn").forEach(b => {
+    const days = parseInt(b.dataset.days);
+    if (days > 14) {
+      b.classList.add("disabled");
+      b.onclick = null;
+      if (!b.querySelector(".lock")) {
+        const lock = document.createElement("span");
+        lock.className = "lock";
+        lock.textContent = "🔒 Premium";
+        b.appendChild(lock);
+      }
+    }
+  });
+  if (selectedDays > 14) {
+    const first = document.querySelector('.dur-btn[data-days="7"]');
+    if (first) selectDur(first, 7);
+  }
+  const hint = document.getElementById("durationHint");
+  if (hint) {
+    hint.innerHTML = expiredMessage || "🔒 Gói 21/30 ngày chỉ dành cho tài khoản Premium.";
+  }
+}
+
+function clearExpiredPremium(data = {}) {
+  const userStr = localStorage.getItem("loggedInUser");
+  if (userStr) {
+    const user = JSON.parse(userStr);
+    user.isPremium = false;
+    if (user.role === "premium") user.role = "user";
+    localStorage.setItem("loggedInUser", JSON.stringify(user));
+  }
+  if (data.expired && !sessionStorage.getItem(`premium_expired_notice_${USER_ID}`)) {
+    sessionStorage.setItem(`premium_expired_notice_${USER_ID}`, "1");
+    alert(data.message || "Gói Premium của bạn đã hết hạn. Vui lòng gia hạn để tiếp tục dùng gói 21/30 ngày.");
+  }
+}
+
 async function checkPremiumStatus() {
   const userStr = localStorage.getItem("loggedInUser");
   if (!userStr) return;
   const localUser = JSON.parse(userStr);
-  const isPremium = localUser.isPremium === true || localUser.role === "premium";
 
   try {
     const uid = localUser._id || localUser.id;
@@ -80,16 +119,21 @@ async function checkPremiumStatus() {
       const data = await res.json();
       if (data.isPremium) {
         localUser.isPremium = true;
+        localUser.premiumPlan = data.plan;
+        localUser.premiumExpire = data.expireDate || "";
         localStorage.setItem("loggedInUser", JSON.stringify(localUser));
         unlockLongPlans(data.plan);
         return;
       }
+      clearExpiredPremium(data);
+      lockLongPlans(data.expired ? "⚠️ Gói Premium của bạn đã hết hạn. Vui lòng gia hạn để mở lại gói 21/30 ngày." : "");
+      return;
     }
   } catch (e) {
     console.warn("Không kiểm tra được premium:", e);
   }
 
-  if (isPremium) unlockLongPlans();
+  lockLongPlans();
 }
 checkPremiumStatus();
 
@@ -115,8 +159,15 @@ function updateBmiPreview() {
 document.addEventListener("DOMContentLoaded", () => {
   const hInput = document.getElementById("height");
   const wInput = document.getElementById("weight");
+  const trainingDaysInput = document.getElementById("trainingDays");
   if (hInput) hInput.addEventListener("input", updateBmiPreview);
   if (wInput) wInput.addEventListener("input", updateBmiPreview);
+  if (trainingDaysInput) {
+    trainingDaysInput.addEventListener("change", () => {
+      syncWeekdaysToTrainingDays(Number(trainingDaysInput.value || 3));
+      renderWeeklyPicker();
+    });
+  }
   setupWeekdayPicker();
 });
 
@@ -136,7 +187,14 @@ document.getElementById("btn-generate").addEventListener("click", async () => {
     showToast("⚠️ Vui lòng nhập chiều cao, cân nặng và tuổi!", "error");
     return;
   }
-  if (!survey.available_training_day_numbers.length) {
+  if (shouldUseWeeklyPicker()) {
+    const invalidWeek = !survey.weekly_available_training_day_numbers.length ||
+      survey.weekly_available_training_day_numbers.some(week => !week.length);
+    if (invalidWeek) {
+      showToast("⚠️ Vui lòng chọn ít nhất 1 ngày rảnh cho mỗi tuần!", "error");
+      return;
+    }
+  } else if (!survey.available_training_day_numbers.length) {
     showToast("⚠️ Vui lòng chọn ít nhất 1 ngày rảnh trong tuần!", "error");
     return;
   }
@@ -170,11 +228,16 @@ document.getElementById("btn-generate").addEventListener("click", async () => {
 function collectSurveyPayload() {
   const valueOf = (id, fallback = "") => document.getElementById(id)?.value || fallback;
   const selectedWeekdays = getSelectedWeekdays();
+  const weeklyWeekdays = getWeeklySelectedWeekdays();
+  const trainingDaysCount = weeklyWeekdays.length
+    ? Math.max(...weeklyWeekdays.map(week => week.length), 1)
+    : selectedWeekdays.length || Number(valueOf("trainingDays", 3));
   return {
     gender: valueOf("gender", "Prefer not to say"),
-    training_days_per_week: selectedWeekdays.length || Number(valueOf("trainingDays", 3)),
+    training_days_per_week: trainingDaysCount,
     available_training_days: selectedWeekdays.map(day => WEEKDAY_LABELS[day]),
     available_training_day_numbers: selectedWeekdays,
+    weekly_available_training_day_numbers: weeklyWeekdays,
     session_duration_minutes: Number(valueOf("sessionMinutes", 60)),
     intensity_preference: valueOf("intensityPreference", "Vừa phải"),
     priority_muscles: valueOf("priorityMuscles", ""),
@@ -183,19 +246,38 @@ function collectSurveyPayload() {
 }
 
 function setupWeekdayPicker() {
-  document.querySelectorAll(".weekday-btn").forEach(btn => {
+  document.querySelectorAll("#weekdayPicker > .weekday-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-      btn.classList.toggle("active");
-      const trainingDaysInput = document.getElementById("trainingDays");
-      if (trainingDaysInput) trainingDaysInput.value = Math.max(1, getSelectedWeekdays().length);
+      const selected = getSelectedWeekdays();
+      const day = Number(btn.dataset.weekday);
+      const isActive = btn.classList.contains("active");
+      const minDays = getTrainingDayBounds().min;
+      const maxDays = getTrainingDayBounds().max;
+
+      if (isActive && selected.length <= minDays) {
+        showToast(`⚠️ Cần chọn ít nhất ${minDays} buổi/tuần.`, "error");
+        return;
+      }
+      if (!isActive && selected.length >= maxDays) {
+        showToast(`⚠️ Tối đa ${maxDays} buổi/tuần theo lựa chọn hiện tại.`, "error");
+        return;
+      }
+
+      const nextDays = isActive
+        ? selected.filter(item => item !== day)
+        : [...selected, day].sort((a, b) => a - b);
+      setSelectedWeekdays(nextDays);
+      renderWeeklyPicker();
       updateWeekdayHint();
     });
   });
+  syncWeekdaysToTrainingDays(Number(document.getElementById("trainingDays")?.value || 3));
+  renderWeeklyPicker();
   updateWeekdayHint();
 }
 
 function getSelectedWeekdays() {
-  return [...document.querySelectorAll(".weekday-btn.active")]
+  return [...document.querySelectorAll("#weekdayPicker > .weekday-btn.active")]
     .map(btn => Number(btn.dataset.weekday))
     .filter(day => day >= 1 && day <= 7)
     .sort((a, b) => a - b);
@@ -203,17 +285,165 @@ function getSelectedWeekdays() {
 
 function setSelectedWeekdays(days) {
   const normalized = new Set((days || []).map(Number).filter(day => day >= 1 && day <= 7));
-  document.querySelectorAll(".weekday-btn").forEach(btn => {
+  document.querySelectorAll("#weekdayPicker > .weekday-btn").forEach(btn => {
     btn.classList.toggle("active", normalized.has(Number(btn.dataset.weekday)));
   });
   const trainingDaysInput = document.getElementById("trainingDays");
-  if (trainingDaysInput) trainingDaysInput.value = Math.max(1, normalized.size || Number(trainingDaysInput.value || 3));
+  if (trainingDaysInput && normalized.size) {
+    trainingDaysInput.value = String(clampTrainingDayCount(normalized.size));
+  }
   updateWeekdayHint();
+}
+
+function weekCountForDuration(days = selectedDays) {
+  return Math.max(1, Math.floor(Number(days || 7) / 7));
+}
+
+function shouldUseWeeklyPicker() {
+  return selectedDays >= 14;
+}
+
+function renderWeeklyPicker() {
+  const wrap = document.getElementById("weeklyPicker");
+  const basePicker = document.getElementById("weekdayPicker");
+  const sectionLabel = document.getElementById("weekdaySectionLabel");
+  const trainingDaysGroup = document.getElementById("trainingDaysGroup");
+  if (!wrap) return;
+  if (!shouldUseWeeklyPicker()) {
+    if (basePicker) basePicker.style.display = "";
+    if (sectionLabel) sectionLabel.textContent = "Ngày rảnh trong tuần";
+    if (trainingDaysGroup) trainingDaysGroup.style.display = "";
+    wrap.style.display = "none";
+    wrap.innerHTML = "";
+    return;
+  }
+
+  if (basePicker) basePicker.style.display = "none";
+  if (sectionLabel) sectionLabel.textContent = "Lịch rảnh theo từng tuần";
+  if (trainingDaysGroup) trainingDaysGroup.style.display = "none";
+  const weekCount = weekCountForDuration();
+  const baseDays = getSelectedWeekdays();
+  const previous = getWeeklySelectedWeekdays();
+  const weeks = [];
+
+  for (let week = 0; week < weekCount; week++) {
+    const current = previous[week]?.length ? previous[week] : baseDays;
+    weeks.push(normalizeWeekDays(current));
+  }
+
+  wrap.style.display = "flex";
+  wrap.innerHTML = weeks.map((days, index) => `
+    <div class="week-row" data-week-index="${index}">
+      <div class="week-row-title">
+        <span>Tuần ${index + 1}</span>
+        <span class="week-row-sub">${days.length} buổi</span>
+      </div>
+      <div class="weekday-picker">
+        ${[1,2,3,4,5,6,7].map(day => `
+          <button type="button" class="weekday-btn week-day-btn ${days.includes(day) ? "active" : ""}" data-week-index="${index}" data-weekday="${day}">
+            ${WEEKDAY_LABELS[day].replace("Thứ ", "T").replace("Chủ nhật", "CN")}
+          </button>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+
+  wrap.querySelectorAll(".week-day-btn").forEach(btn => {
+    btn.addEventListener("click", () => toggleWeeklyDay(btn));
+  });
+}
+
+function normalizeWeekDays(days, targetCount = shouldUseWeeklyPicker() ? 7 : Number(document.getElementById("trainingDays")?.value || 3)) {
+  const next = [];
+  (days || []).map(Number).filter(day => day >= 1 && day <= 7).forEach(day => {
+    if (!next.includes(day) && next.length < targetCount) next.push(day);
+  });
+  DEFAULT_TRAINING_WEEKDAYS.forEach(day => {
+    if (!next.includes(day) && next.length < targetCount) next.push(day);
+  });
+  return next.sort((a, b) => a - b);
+}
+
+function toggleWeeklyDay(btn) {
+  const weekRow = btn.closest(".week-row");
+  if (!weekRow) return;
+  const activeButtons = [...weekRow.querySelectorAll(".week-day-btn.active")];
+  const isActive = btn.classList.contains("active");
+
+  if (isActive && activeButtons.length <= 1) {
+    showToast("⚠️ Mỗi tuần cần chọn ít nhất 1 ngày rảnh.", "error");
+    return;
+  }
+
+  btn.classList.toggle("active");
+  const count = weekRow.querySelectorAll(".week-day-btn.active").length;
+  const sub = weekRow.querySelector(".week-row-sub");
+  if (sub) sub.textContent = `${count} buổi`;
+  updateWeekdayHint();
+}
+
+function getWeeklySelectedWeekdays() {
+  if (!shouldUseWeeklyPicker()) return [];
+  return [...document.querySelectorAll("#weeklyPicker .week-row")].map(row =>
+    [...row.querySelectorAll(".week-day-btn.active")]
+      .map(btn => Number(btn.dataset.weekday))
+      .filter(day => day >= 1 && day <= 7)
+      .sort((a, b) => a - b)
+  );
+}
+
+function setWeeklySelectedWeekdays(weeks = []) {
+  if (!shouldUseWeeklyPicker()) return;
+  [...document.querySelectorAll("#weeklyPicker .week-row")].forEach((row, index) => {
+    const days = normalizeWeekDays(weeks[index] || getSelectedWeekdays());
+    row.querySelectorAll(".week-day-btn").forEach(btn => {
+      btn.classList.toggle("active", days.includes(Number(btn.dataset.weekday)));
+    });
+    const sub = row.querySelector(".week-row-sub");
+    if (sub) sub.textContent = `${days.length} buổi`;
+  });
+}
+
+function syncWeekdaysToTrainingDays(count) {
+  const targetCount = clampTrainingDayCount(count);
+  const current = getSelectedWeekdays();
+  const next = [];
+
+  current.forEach(day => {
+    if (next.length < targetCount && !next.includes(day)) next.push(day);
+  });
+  DEFAULT_TRAINING_WEEKDAYS.forEach(day => {
+    if (next.length < targetCount && !next.includes(day)) next.push(day);
+  });
+
+  setSelectedWeekdays(next.slice(0, targetCount));
+}
+
+function getTrainingDayBounds() {
+  const options = [...document.querySelectorAll("#trainingDays option")]
+    .map(option => Number(option.value))
+    .filter(value => Number.isFinite(value));
+  return {
+    min: Math.min(...options, 2),
+    max: Math.max(...options, 6),
+  };
+}
+
+function clampTrainingDayCount(count) {
+  const bounds = getTrainingDayBounds();
+  return Math.min(bounds.max, Math.max(bounds.min, Number(count) || bounds.min));
 }
 
 function updateWeekdayHint() {
   const hint = document.getElementById("weekdayHint");
   if (!hint) return;
+  if (shouldUseWeeklyPicker()) {
+    const weekly = getWeeklySelectedWeekdays();
+    if (weekly.length) {
+      hint.textContent = `Lộ trình ${selectedDays} ngày dùng lịch rảnh riêng cho ${weekly.length} tuần. Số buổi mỗi tuần được tính theo số ngày bạn chọn.`;
+      return;
+    }
+  }
   const selectedWeekdays = getSelectedWeekdays();
   if (!selectedWeekdays.length) {
     hint.textContent = "Chọn ít nhất 1 ngày rảnh để AI xếp lịch tập.";
@@ -454,7 +684,6 @@ function applyDraft() {
     if (fi.goal)      document.getElementById("goal").value      = fi.goal;
     if (fi.level)     document.getElementById("level").value     = fi.level;
     if (fi.userInfo)  document.getElementById("userInfo").value  = fi.userInfo;
-    if (fi.survey?.available_training_day_numbers) setSelectedWeekdays(fi.survey.available_training_day_numbers);
     updateBmiPreview();
   }
 
@@ -467,6 +696,14 @@ function applyDraft() {
       b.classList.add("active");
     }
   });
+  if (draft.formInputs?.survey?.available_training_day_numbers) {
+    setSelectedWeekdays(draft.formInputs.survey.available_training_day_numbers);
+  }
+  renderWeeklyPicker();
+  if (draft.formInputs?.survey?.weekly_available_training_day_numbers) {
+    setWeeklySelectedWeekdays(draft.formInputs.survey.weekly_available_training_day_numbers);
+  }
+  updateWeekdayHint();
 
   document.getElementById("plan-title").innerText = draft.planData.plan_name || `LỘ TRÌNH ${totalDays} NGÀY`;
 

@@ -69,17 +69,36 @@ async function checkAndUpdateVipButton() {
           const uObj = JSON.parse(uStr);
           uObj.isPremium   = true;
           uObj.premiumPlan = data.plan;
+          uObj.premiumExpire = data.expireDate || "";
           localStorage.setItem("loggedInUser", JSON.stringify(uObj));
         }
       } catch(e) {}
 
       renderVipActiveButton(btn, data);
     } else {
+      handlePremiumExpired(data);
       renderVipUpgradeButton(btn);
     }
   } catch (e) {
     console.warn("Không kiểm tra được VIP status:", e);
     renderVipUpgradeButton(btn);
+  }
+}
+
+function handlePremiumExpired(data = {}) {
+  try {
+    const uStr = localStorage.getItem("loggedInUser");
+    if (uStr) {
+      const uObj = JSON.parse(uStr);
+      uObj.isPremium = false;
+      if (uObj.role === "premium") uObj.role = "user";
+      localStorage.setItem("loggedInUser", JSON.stringify(uObj));
+    }
+  } catch(e) {}
+
+  if (data.expired && !sessionStorage.getItem(`premium_expired_notice_${CURRENT_UID}`)) {
+    sessionStorage.setItem(`premium_expired_notice_${CURRENT_UID}`, "1");
+    toast(data.message || "Gói Premium của bạn đã hết hạn. Vui lòng gia hạn để tiếp tục dùng tính năng Premium.", "err");
   }
 }
 
@@ -152,6 +171,7 @@ function startVipCountdown(btn, data) {
       btn.style.background = "#334155";
       btn.style.color = "#94a3b8";
       btn.onclick = () => openPaymentModal();
+      checkAndUpdateVipButton();
       return;
     }
 

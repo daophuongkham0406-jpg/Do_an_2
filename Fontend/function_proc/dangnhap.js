@@ -142,6 +142,9 @@ async function handleLogin(e) {
         localStorage.setItem("loggedInUser", JSON.stringify(result.user));
       if (result.user)
         localStorage.setItem("userId", result.user._id || result.user.id);
+      if (result.user && result.user.premiumExpired) {
+        showToast("⚠️ Gói Premium của bạn đã hết hạn và đã được khóa.", "error");
+      }
 
       setTimeout(() => {
         if (result.user && result.user.role === "admin") {

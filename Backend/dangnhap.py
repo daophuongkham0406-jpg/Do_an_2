@@ -9,6 +9,19 @@ from ketnoidb import db
 # Tạo một Blueprint thay vì App
 auth_bp = Blueprint('auth', __name__)
 
+
+def normalize_login_premium(user):
+    is_premium = bool(user.get("isPremium", False))
+    expire_date = user.get("premiumExpire")
+    if is_premium and (not expire_date or datetime.now() > expire_date):
+        db.user.update_one(
+            {"_id": user["_id"]},
+            {"$set": {"isPremium": False, "premiumExpiredNotified": False}}
+        )
+        user["isPremium"] = False
+        return False, True
+    return is_premium, False
+
 # ==============================================================================
 # HÀM TIỆN ÍCH: GỬI MÃ OTP QUA EMAIL
 # ==============================================================================
@@ -160,12 +173,15 @@ def login():
         if not is_password_correct:
             return jsonify({"message": "Email hoặc mật khẩu không chính xác."}), 401
 
+        is_premium, premium_expired = normalize_login_premium(user)
+
         user_info = {
             "id": str(user['_id']),
             "fullName": user['fullName'],
             "username": user['username'],
-            "isPremium": user['isPremium'],
-            "role": user.get('role', 'user')
+            "isPremium": is_premium,
+            "role": user.get('role', 'user'),
+            "premiumExpired": premium_expired,
         }
 
         return jsonify({

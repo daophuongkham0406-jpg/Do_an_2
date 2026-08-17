@@ -174,15 +174,6 @@
             </div>
             <select class="sel" id="filterMuscle" onchange="renderTable()">
               <option value="">Tất cả nhóm cơ</option>
-              <option>Ngực</option>
-              <option>Lưng</option>
-              <option>Vai</option>
-              <option>Tay trước</option>
-              <option>Tay sau</option>
-              <option>Chân</option>
-              <option>Mông</option>
-              <option>Bụng</option>
-              <option>Toàn thân</option>
             </select>
             <select class="sel" id="filterDiff" onchange="renderTable()">
               <option value="">Tất cả độ khó</option>
@@ -198,9 +189,8 @@
               <div class="th">ID</div>
               <div class="th">Tên bài tập</div>
               <div class="th">Nhóm cơ</div>
-              <div class="th">Thiết bị</div>
+              <div class="th">Loại bài</div>
               <div class="th">Độ khó</div>
-              <div class="th">Thao tác</div>
             </div>
             <div class="table-body" id="tableBody">
               <div class="empty-row">Đang tải…</div>
@@ -590,15 +580,6 @@
               </select>
             </div>
             <div class="form-row">
-              <label>Icon (Emoji) <span class="req">*</span></label>
-              <input
-                type="text"
-                id="f_icon"
-                placeholder="VD: 🏋️"
-                maxlength="4"
-              />
-            </div>
-            <div class="form-row">
               <label>Độ khó <span class="req">*</span></label>
               <select id="f_diff">
                 <option value="">Chọn độ khó…</option>
@@ -608,28 +589,34 @@
               </select>
             </div>
             <div class="form-row">
-              <label>Thiết bị <span class="req">*</span></label>
+              <label>Loại bài <span class="req">*</span></label>
               <select id="f_equip">
-                <option value="">Chọn thiết bị…</option>
-                <option>Barbell</option>
-                <option>Dumbbell</option>
-                <option>Cable</option>
-                <option>Machine</option>
-                <option>Bodyweight</option>
-                <option>Kettlebell</option>
+                <option value="">Chọn loại bài…</option>
+                <option value="strength">Sức mạnh</option>
+                <option value="cardio">Tim mạch</option>
+                <option value="stretching">Giãn cơ / linh hoạt</option>
+                <option value="plyometrics">Bùng nổ</option>
+                <option value="strongman">Sức mạnh chức năng</option>
               </select>
             </div>
             <div class="form-row">
-              <label>Sets <span class="req">*</span></label>
-              <input type="text" id="f_sets" placeholder="VD: 4" />
+              <label>Mục tiêu phù hợp <span class="req">*</span></label>
+              <select id="f_goals" multiple>
+                <option value="hypertrophy">Tăng cơ</option>
+                <option value="strength">Tăng sức mạnh</option>
+                <option value="endurance">Tăng sức bền</option>
+                <option value="fat_loss">Giảm mỡ</option>
+                <option value="mobility">Linh hoạt</option>
+                <option value="rehabilitation">Phục hồi</option>
+              </select>
             </div>
             <div class="form-row">
-              <label>Reps <span class="req">*</span></label>
-              <input type="text" id="f_reps" placeholder="VD: 8-12" />
+              <label>MET <span class="req">*</span></label>
+              <input type="number" id="f_met" min="1" max="15" step="0.1" placeholder="VD: 6.0" />
             </div>
             <div class="form-row span2">
-              <label>Thời gian nghỉ <span class="req">*</span></label>
-              <input type="text" id="f_rest" placeholder="VD: 90 giây" />
+              <label>Mô tả ngắn</label>
+              <input type="text" id="f_description" placeholder="VD: Bài tập thân trên tập trung vào cơ ngực và tay sau" />
             </div>
           </div>
 
@@ -731,6 +718,20 @@
               />
             </div>
             <div class="form-row">
+              <label>ID MongoDB</label>
+              <input
+                type="text"
+                id="u_mongo_id"
+                readonly
+                style="
+                  background: var(--bg3);
+                  color: var(--text2);
+                  border-color: transparent;
+                  font-family: monospace;
+                "
+              />
+            </div>
+            <div class="form-row">
               <label>Email</label>
               <input
                 type="text"
@@ -784,9 +785,24 @@
                 "
               />
             </div>
+            <div class="form-row">
+              <label>Vai trò tài khoản</label>
+              <select id="u_role_select">
+                <option value="user">User thường</option>
+                <option value="premium">Premium</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="modal-footer" style="justify-content: center">
+          <button
+            class="btn btn-primary"
+            onclick="saveUserRole()"
+            style="width: 100%"
+          >
+            💾 Lưu quyền tài khoản
+          </button>
           <button
             class="btn btn-ghost"
             onclick="closeUserModal()"

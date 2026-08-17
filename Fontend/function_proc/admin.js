@@ -2,6 +2,8 @@
 // 1. CẤU HÌNH API & BIẾN TOÀN CỤC
 // ════════════════════════════════════════════════════════════════
 const API_URL = 'http://127.0.0.1:5000/api/exercises/';
+const BACKEND_API_URL = 'http://127.0.0.1:5000';
+const AI_EXERCISE_API_URL = 'http://127.0.0.1:5000/api/ml/exercises';
 const USER_API_URL = 'http://127.0.0.1:5000/api/users/';
 const API_TIPS = 'http://127.0.0.1:5000/api/tips';
 const API_WORKOUTS = 'http://127.0.0.1:5000/api/sample-workouts';
@@ -15,11 +17,17 @@ const API_HERO_STATS = 'http://127.0.0.1:5000/api/hero-stats';
 let exercises = [];
 let usersList = []; 
 let editingId = null;
+let editingUserId = null;
 let deleteId = null;
 let deleteType = null; 
+let currentAdmin = null;
+let canManageUsers = false;
 
 function getHeaders() {
-    return { 'Content-Type': 'application/json' };
+    const headers = { 'Content-Type': 'application/json' };
+    const userId = currentAdmin?.id || currentAdmin?._id;
+    if (userId) headers['X-User-Id'] = userId;
+    return headers;
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -49,20 +57,53 @@ function showErrorToast(error, actionName) {
 // ════════════════════════════════════════════════════════════════
 async function apiGet() {
     try {
-        const r = await fetch(API_URL, { headers: getHeaders() });
+        const r = await fetch(AI_EXERCISE_API_URL, { headers: getHeaders() });
         const res = await checkResponse(r);
-        
-        // MA THUẬT Ở ĐÂY: Nếu API trả về mảng thì lấy luôn, nếu trả về Object thì bóc lấy lõi 'data'
-        return Array.isArray(res) ? res : (res.data || []);
+
+        const raw = Array.isArray(res) ? res : (res.data || []);
+        return raw.map(normalizeAdminExercise);
     } catch (e) {
         showErrorToast(e, 'Tải danh sách bài tập');
         return [];
     }
 }
 
+function normalizeAdminExercise(ex) {
+    const difficulty = String(ex.difficulty || ex.level || '').toLowerCase();
+    let diff = 'I';
+    if (difficulty.includes('mới') || difficulty.includes('beginner')) diff = 'B';
+    else if (difficulty.includes('nâng') || difficulty.includes('advanced')) diff = 'A';
+
+    const images = Array.isArray(ex.images) ? ex.images.filter(Boolean) : [];
+    const image = resolveBackendUrl(ex.image || (images[0] && images[0].url) || '');
+
+    return {
+        id: String(ex.exercise_id || ex.id || ex.name || crypto.randomUUID()),
+        icon: ex.icon || '🏋️',
+        name: ex.name_vi || ex.name || ex.name_en || 'Bài tập',
+        nameEn: ex.name_en || ex.name || '',
+        muscle: ex.muscle || ex.body_part || ex.primary_muscles || 'Chưa phân loại',
+        equip: ex.category || ex.type || ex.goal || 'Bài tập',
+        diff,
+        difficulty: ex.difficulty || diffLabel[diff],
+        goal: ex.goal || '',
+        met: ex.met || '',
+        image,
+        images,
+        steps: ex.steps || [],
+        tips: ex.tips || []
+    };
+}
+
+function resolveBackendUrl(url) {
+    if (!url) return '';
+    if (/^https?:\/\//i.test(url) || url.startsWith('data:')) return url;
+    return `${BACKEND_API_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
 async function apiPost(data) {
     try {
-        const r = await fetch(API_URL, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) });
+        const r = await fetch(AI_EXERCISE_API_URL, { method: 'POST', headers: getHeaders(), body: JSON.stringify(data) });
         return await checkResponse(r);
     } catch (e) {
         showErrorToast(e, 'Them bai tap');
@@ -92,6 +133,10 @@ async function apiDelete(id) {
 }
 
 async function fetchUsers() {
+    if (!canManageUsers) {
+        showToast('Chỉ admin gốc mới được quản lý người dùng', 'error');
+        return;
+    }
     try {
         const r = await fetch(USER_API_URL, { headers: getHeaders() });
         usersList = await checkResponse(r);
@@ -114,6 +159,7 @@ async function init() {
         return;
     }
     const user = JSON.parse(userStr);
+    currentAdmin = user;
     
     if (user.role !== 'admin') {
         showToast('⛔ Bạn không có quyền truy cập trang Quản trị!', 'error');
@@ -123,23 +169,42 @@ async function init() {
 
     const adminNameEl = document.getElementById('adminName');
     if (adminNameEl) adminNameEl.textContent = `${user.fullName}`;
+    await loadAdminPermissions(user);
 
     exercises = await apiGet();
 
     document.getElementById('statusDot').className = 'status-dot connected';
-    document.getElementById('statusText').textContent = 'Da ket noi MongoDB';
+    document.getElementById('statusText').textContent = 'Đã kết nối dữ liệu';
 
     renderStats();
+    buildExerciseFilters();
     renderTable();
     
     // GỌI HÀM NÀY ĐỂ TẢI TRƯỚC SỐ LƯỢNG CHO TẤT CẢ BADGE TRÊN SIDEBAR KHI F5
     loadAllSidebarBadges(); 
 }
 
+async function loadAdminPermissions(user) {
+    const userId = user?.id || user?._id;
+    canManageUsers = false;
+    if (!userId) return;
+    try {
+        const r = await fetch(`${USER_API_URL}${userId}/permissions`, { headers: getHeaders() });
+        const permissions = await checkResponse(r);
+        canManageUsers = Boolean(permissions.canManageUsers);
+    } catch (e) {
+        canManageUsers = false;
+    }
+
+    const navUsers = document.getElementById('nav-users');
+    const userCountBadge = document.getElementById('userCountBadge');
+    if (navUsers) navUsers.style.display = canManageUsers ? '' : 'none';
+    if (userCountBadge && !canManageUsers) userCountBadge.textContent = '0';
+}
+
 // HÀM MỚI: Tải trước con số cho tất cả Sidebar để không bị 0 khi reload
 function loadAllSidebarBadges() {
     const endpoints = [
-        { url: USER_API_URL, id: 'userCountBadge' },
         { url: API_TIPS, id: 'badge-tips' },
         { url: API_WORKOUTS, id: 'badge-workouts' },
         { url: API_FEATURED, id: 'badge-featured' },
@@ -149,6 +214,7 @@ function loadAllSidebarBadges() {
         { url: API_CONTACTS, id: 'badge-contacts' },
         { url: API_HERO_STATS, id: 'badge-hero-stats' }
     ];
+    if (canManageUsers) endpoints.unshift({ url: USER_API_URL, id: 'userCountBadge' });
     
     endpoints.forEach(ep => {
         // Luôn kèm ?admin=true để đếm cả mục bị ẩn
@@ -166,6 +232,10 @@ function loadAllSidebarBadges() {
 }
 
 function switchSection(sectionId) {
+    if (sectionId === 'users' && !canManageUsers) {
+        showToast('Chỉ admin gốc mới được quản lý người dùng', 'error');
+        return;
+    }
     document.querySelectorAll('.sidebar .s-item').forEach(el => el.classList.remove('active'));
     
     const navItem = document.getElementById('nav-' + sectionId);
@@ -206,7 +276,21 @@ function renderStats() {
     document.getElementById('exCountBadge').textContent = t;
 }
 
-const diffLabel = { B: 'Nguoi moi', I: 'Trung binh', A: 'Nang cao' };
+const diffLabel = { B: 'Người mới', I: 'Trung bình', A: 'Nâng cao' };
+
+function buildExerciseFilters() {
+    const select = document.getElementById('filterMuscle');
+    if (!select) return;
+
+    const current = select.value;
+    const muscles = [...new Set(exercises.map(e => e.muscle).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, 'vi'));
+
+    select.innerHTML = '<option value="">Tất cả nhóm cơ</option>' +
+        muscles.map(m => `<option value="${escHtml(m)}">${escHtml(m)}</option>`).join('');
+
+    if (muscles.includes(current)) select.value = current;
+}
 
 function renderTable() {
     const q = document.getElementById('adminSearch').value.toLowerCase();
@@ -214,7 +298,13 @@ function renderTable() {
     const d = document.getElementById('filterDiff').value;
 
     let data = [...exercises];
-    if (q) data = data.filter(e => e.name.toLowerCase().includes(q));
+    if (q) {
+        data = data.filter(e =>
+            e.name.toLowerCase().includes(q) ||
+            String(e.nameEn || '').toLowerCase().includes(q) ||
+            String(e.id || '').toLowerCase().includes(q)
+        );
+    }
     if (m) data = data.filter(e => e.muscle === m);
     if (d) data = data.filter(e => e.diff === d);
 
@@ -222,17 +312,13 @@ function renderTable() {
     if (!data.length) { tbody.innerHTML = '<div class="empty-row">Khong tim thay bai tap nao.</div>'; return; }
 
     tbody.innerHTML = data.map(e => `
-        <div class="tr" style="cursor:pointer;" onclick="openEdit('${e.id}')">
-            <div class="td icon-cell">${e.icon || '❓'}</div>
-            <div class="td id-cell">${String(e.id).slice(-6)}</div>
+        <div class="tr">
+            <div class="td icon-cell">${e.image ? `<img src="${escHtml(e.image)}" alt="${escHtml(e.name)}" class="admin-ex-thumb">` : (e.icon || '🏋️')}</div>
+            <div class="td id-cell" title="${escHtml(e.id)}">${String(e.id).slice(-6)}</div>
             <div class="td name">${e.name}</div>
             <div class="td equip">${e.muscle}</div>
             <div class="td equip">${e.equip}</div>
             <div class="td"><span class="badge badge-${e.diff}">${diffLabel[e.diff] || e.diff}</span></div>
-            <div class="td actions" onclick="event.stopPropagation()">
-                <button class="icon-btn edit" onclick="openEdit('${e.id}')" title="Sua">✏️</button>
-                <button class="icon-btn del" onclick="askDelete('${e.id}')" title="Xoa">🗑️</button>
-            </div>
         </div>
     `).join('');
 }
@@ -299,9 +385,9 @@ function handleExerciseImageUpload(event) {
 
 function openAdd() {
     editingId = null;
-    document.getElementById('formTitle').textContent = 'THEM BAI TAP MOI';
+    document.getElementById('formTitle').textContent = 'THÊM BÀI TẬP MỚI';
     clearForm();
-    addStep(); addStep(); addTip();
+    addStep(); addStep(); addSec();
     document.getElementById('formOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -335,10 +421,12 @@ function openEdit(id) {
 }
 
 function clearForm() {
-    ['f_name', 'f_muscle', 'f_icon', 'f_diff', 'f_equip', 'f_sets', 'f_reps', 'f_rest'].forEach(id => {
+    ['f_name', 'f_muscle', 'f_diff', 'f_equip', 'f_met', 'f_description'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
+    const goals = document.getElementById('f_goals');
+    if (goals) [...goals.options].forEach(option => { option.selected = false; });
     ['secList', 'stepList', 'tipList'].forEach(id => document.getElementById(id).innerHTML = '');
     currentExImage = '';
     const preview = document.getElementById('f_image_preview');
@@ -358,7 +446,7 @@ function closeForm() {
 function addSec(val = '') {
     const div = document.createElement('div');
     div.className = 'dynamic-item';
-    div.innerHTML = `<input type="text" placeholder="VD: Vai truoc" value="${val}"><button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
+    div.innerHTML = `<input type="text" placeholder="VD: cơ vai trước, cơ tay sau..." value="${escHtml(val)}"><button class="remove-btn" onclick="this.parentElement.remove()">✕</button>`;
     document.getElementById('secList').appendChild(div);
 }
 
@@ -390,11 +478,12 @@ async function submitForm() {
     try {
         const name = document.getElementById('f_name').value.trim();
         const muscle = document.getElementById('f_muscle').value;
-        const icon = document.getElementById('f_icon').value.trim();
         const diff = document.getElementById('f_diff').value;
-        const equip = document.getElementById('f_equip').value;
+        const category = document.getElementById('f_equip').value;
+        const goals = [...document.getElementById('f_goals').selectedOptions].map(option => option.value);
+        const met = document.getElementById('f_met').value.trim();
 
-        if (!name || !muscle || !icon || !diff || !equip) {
+        if (!name || !muscle || !diff || !category || !goals.length || !met) {
             showToast('Vui lòng điền đầy đủ các trường bắt buộc (*)', 'error');
             return;
         }
@@ -407,11 +496,16 @@ async function submitForm() {
         const tips = [...document.querySelectorAll('#tipList .dynamic-item input')].map(i => i.value.trim()).filter(Boolean);
 
         const payload = {
-            name, muscle, icon, diff, equip,
-            sets: document.getElementById('f_sets') ? document.getElementById('f_sets').value.trim() : '',
-            reps: document.getElementById('f_reps') ? document.getElementById('f_reps').value.trim() : '',
-            rest: document.getElementById('f_rest') ? document.getElementById('f_rest').value.trim() : '',
-            sec, steps, tips,
+            name,
+            muscle,
+            diff,
+            category,
+            goals,
+            met,
+            description: document.getElementById('f_description').value.trim(),
+            sec,
+            steps,
+            tips,
             image: currentExImage
         };
 
@@ -420,8 +514,9 @@ async function submitForm() {
             exercises = exercises.map(e => e.id === editingId ? { ...e, ...updated } : e);
             showToast('Cập nhật bài tập thành công', 'success');
         } else {
-            const created = await apiPost(payload);
-            exercises.push(created);
+            await apiPost(payload);
+            exercises = await apiGet();
+            buildExerciseFilters();
             showToast('Thêm bài tập mới thành công', 'success');
         }
 
@@ -505,12 +600,14 @@ document.getElementById('confirmOverlay').addEventListener('click', e => { if (e
 function openUserModal(id) {
     const u = usersList.find(e => e.id === id);
     if (!u) return;
+    editingUserId = id;
 
     document.getElementById('u_fullName').textContent = u.fullName || 'Chưa cập nhật';
     const roleBadge = document.getElementById('u_role');
     roleBadge.textContent = u.role.toUpperCase();
     roleBadge.className = `badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}`;
     document.getElementById('u_username').value = '@' + (u.username || 'N/A');
+    document.getElementById('u_mongo_id').value = u.id || 'N/A';
     document.getElementById('u_email').value = u.email || 'N/A';
     document.getElementById('u_age').value = u.age || 'N/A';
     
@@ -526,6 +623,8 @@ function openUserModal(id) {
         dateStr = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} lúc ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
     }
     document.getElementById('u_created').value = dateStr;
+    const roleSelect = document.getElementById('u_role_select');
+    if (roleSelect) roleSelect.value = u.role || 'user';
 
     document.getElementById('userModalOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -534,6 +633,42 @@ function openUserModal(id) {
 function closeUserModal() {
     document.getElementById('userModalOverlay').classList.remove('open');
     document.body.style.overflow = '';
+    editingUserId = null;
+}
+
+async function saveUserRole() {
+    if (!editingUserId) return;
+    const role = document.getElementById('u_role_select')?.value || 'user';
+    try {
+        const r = await fetch(`${USER_API_URL}${editingUserId}`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                role,
+                isPremium: role === 'premium',
+            }),
+        });
+        const updated = await checkResponse(r);
+        usersList = usersList.map(user => user.id === editingUserId ? { ...user, ...updated } : user);
+
+        const localUserRaw = localStorage.getItem('loggedInUser');
+        if (localUserRaw) {
+            const localUser = JSON.parse(localUserRaw);
+            const localId = localUser.id || localUser._id;
+            if (localId === editingUserId) {
+                localUser.role = updated.role;
+                localUser.isPremium = updated.isPremium;
+                localStorage.setItem('loggedInUser', JSON.stringify(localUser));
+            }
+        }
+
+        renderUserTable();
+        const refreshedUserId = editingUserId;
+        if (refreshedUserId) openUserModal(refreshedUserId);
+        showToast('Đã cập nhật quyền tài khoản', 'success');
+    } catch (e) {
+        showErrorToast(e, 'Cập nhật quyền tài khoản');
+    }
 }
 document.getElementById('userModalOverlay').addEventListener('click', e => { 
     if (e.target === e.currentTarget) closeUserModal(); 

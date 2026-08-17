@@ -50,12 +50,19 @@ class MLIntegrationService:
 
         split = self._build_split(goal, training_days, payload)
         training_weekdays = self._available_weekdays(payload) or self._training_weekdays(training_days)
+        weekly_training_weekdays = self._weekly_available_weekdays(payload)
         days = []
         training_index = 0
 
         for day_number in range(1, duration_days + 1):
             weekday = ((day_number - 1) % 7) + 1
-            is_rest = weekday not in training_weekdays
+            week_index = (day_number - 1) // 7
+            active_weekdays = (
+                weekly_training_weekdays[min(week_index, len(weekly_training_weekdays) - 1)]
+                if weekly_training_weekdays
+                else training_weekdays
+            )
+            is_rest = weekday not in active_weekdays
             if is_rest:
                 days.append(self._rest_day(day_number, nutrition))
                 continue
@@ -403,6 +410,20 @@ class MLIntegrationService:
             values = str(values).replace(";", ",").split(",")
         weekdays = {self._safe_int(value, 0) for value in values}
         return {day for day in weekdays if 1 <= day <= 7}
+
+    def _weekly_available_weekdays(self, payload):
+        values = payload.get("weekly_available_training_day_numbers") or []
+        if not isinstance(values, list):
+            return []
+        weeks = []
+        for week in values:
+            if not isinstance(week, list):
+                week = str(week).replace(";", ",").split(",")
+            weekdays = {self._safe_int(value, 0) for value in week}
+            valid = {day for day in weekdays if 1 <= day <= 7}
+            if valid:
+                weeks.append(valid)
+        return weeks
 
     def _avoid_text(self, payload):
         return " ".join(str(payload.get(key, "")) for key in ["avoid_notes", "note", "userInfo", "injuries", "health_notes"])

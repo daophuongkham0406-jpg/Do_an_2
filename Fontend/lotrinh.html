@@ -168,7 +168,7 @@
                     <option value="Other">Khác</option>
                   </select>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="trainingDaysGroup">
                   <label>Số buổi / tuần</label>
                   <select id="trainingDays">
                     <option value="2">2 buổi</option>
@@ -176,6 +176,7 @@
                     <option value="4">4 buổi</option>
                     <option value="5">5 buổi</option>
                     <option value="6">6 buổi</option>
+                    <option value="7">7 buổi</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -198,7 +199,7 @@
                 </div>
               </div>
               <div class="form-group">
-                <label>Ngày rảnh trong tuần</label>
+                <label id="weekdaySectionLabel">Ngày rảnh trong tuần</label>
                 <div class="weekday-picker" id="weekdayPicker">
                   <button type="button" class="weekday-btn active" data-weekday="1">T2</button>
                   <button type="button" class="weekday-btn" data-weekday="2">T3</button>
@@ -211,6 +212,7 @@
                 <div class="weekday-hint" id="weekdayHint">
                   Lộ trình sẽ xếp ngày tập vào các ngày bạn chọn và lặp lại qua từng tuần.
                 </div>
+                <div class="weekly-picker" id="weeklyPicker" style="display: none;"></div>
               </div>
               <div class="form-group">
                 <label>Nhóm cơ ưu tiên</label>
