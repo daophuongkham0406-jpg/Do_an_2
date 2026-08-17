@@ -2,8 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 class ApiConfig {
-  static const host =
-      String.fromEnvironment('API_HOST', defaultValue: '10.0.2.2');
+  static const _configuredHost =
+      String.fromEnvironment('API_HOST', defaultValue: '');
+
+  static String get host {
+    if (_configuredHost.isNotEmpty) return _configuredHost;
+    return Platform.isAndroid ? '10.0.2.2' : '127.0.0.1';
+  }
 
   static String get baseUrl => 'http://$host:5000';
 }

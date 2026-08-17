@@ -112,11 +112,10 @@ class _PlanScreenState extends State<PlanScreen> {
     final pay = _api.mapFrom(results[0].body);
     final activeBody = _api.mapFrom(results[1].body);
     final activePlan = _api.mapFrom(activeBody['plan']);
+    final expired = pay['expired'] == true;
 
     setState(() {
-      _premium = pay['isPremium'] == true ||
-          widget.user.isPremium ||
-          widget.user.isAdmin;
+      _premium = pay['isPremium'] == true;
       if (results[1].ok && activePlan.isNotEmpty) {
         _activePlan = _normalizeSavedPlan(activePlan);
         _activePlanId = (activePlan['id'] ?? activePlan['_id'])?.toString();
@@ -129,6 +128,10 @@ class _PlanScreenState extends State<PlanScreen> {
       }
       _loading = false;
     });
+    if (expired && mounted) {
+      showAppSnack(context, 'Gói Premium đã hết hạn, tài khoản đã về thường.',
+          error: true);
+    }
     await _loadNutrition();
   }
 
@@ -298,8 +301,12 @@ class _PlanScreenState extends State<PlanScreen> {
         'level': _level,
         'gender': _gender,
         'duration_days': _duration,
-        'training_days_per_week': _trainingDays,
-        'available_training_day_numbers': _orderedWeekdays(_weekdays),
+        'training_days_per_week': _trainingDaysCountForPayload,
+        'available_training_day_numbers': _duration > 7
+            ? _orderedWeekdays(
+                _weeklyWeekdayNumbers().expand((days) => days).toSet(),
+              )
+            : _orderedWeekdays(_weekdays),
         'weekly_available_training_day_numbers': _weeklyWeekdayNumbers(),
         'session_duration_minutes': _sessionMinutes,
         'intensity_preference': _intensity,
@@ -737,35 +744,29 @@ class _PlanScreenState extends State<PlanScreen> {
               _BmiStrip(bmi: bmi, category: _bmiCategory(bmi)),
             ],
             const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: _SelectField(
-                    label: 'Buổi / tuần',
-                    value: '$_trainingDays',
-                    values: const ['2', '3', '4', '5', '6'],
-                    labelOf: (value) => '$value buổi',
-                    onChanged: (value) {
-                      final count = int.parse(value);
-                      setState(() {
-                        _setTrainingDays(count);
-                      });
-                    },
+            if (_duration > 7)
+              _sessionField()
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: _SelectField(
+                      label: 'Buổi / tuần',
+                      value: '$_trainingDays',
+                      values: const ['2', '3', '4', '5', '6', '7'],
+                      labelOf: (value) => '$value buổi',
+                      onChanged: (value) {
+                        final count = int.parse(value);
+                        setState(() {
+                          _setTrainingDays(count);
+                        });
+                      },
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _SelectField(
-                    label: 'Thời lượng',
-                    value: '$_sessionMinutes',
-                    values: const ['30', '45', '60', '75', '90'],
-                    labelOf: (value) => '$value phút',
-                    onChanged: (value) =>
-                        setState(() => _sessionMinutes = int.parse(value)),
-                  ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 10),
+                  Expanded(child: _sessionField()),
+                ],
+              ),
             const SizedBox(height: 12),
             _SelectField(
               label: 'Cường độ',
@@ -845,7 +846,7 @@ class _PlanScreenState extends State<PlanScreen> {
                 minimumSelection: 1,
                 onChanged: (days) => setState(() {
                   _weekdays = days;
-                  _trainingDays = days.length.clamp(1, 6);
+                  _trainingDays = days.length.clamp(1, 7).toInt();
                 }),
               ),
             const SizedBox(height: 14),
@@ -1170,6 +1171,7 @@ class _PlanScreenState extends State<PlanScreen> {
       4: {1, 2, 4, 6},
       5: {1, 2, 3, 5, 6},
       6: {1, 2, 3, 4, 5, 6},
+      7: {1, 2, 3, 4, 5, 6, 7},
     };
     return {...(schedules[count] ?? schedules[3]!)};
   }
@@ -1202,6 +1204,15 @@ class _PlanScreenState extends State<PlanScreen> {
     return _weeklyWeekdaySets().map((days) => _orderedWeekdays(days)).toList();
   }
 
+  int get _trainingDaysCountForPayload {
+    final weekly = _weeklyWeekdayNumbers();
+    if (weekly.isEmpty) return _orderedWeekdays(_weekdays).length;
+    return weekly.fold<int>(
+      1,
+      (max, week) => week.length > max ? week.length : max,
+    );
+  }
+
   void _setTrainingDays(int count) {
     _trainingDays = count;
     _weekdays = _defaultWeekdays(count);
@@ -1221,6 +1232,17 @@ class _PlanScreenState extends State<PlanScreen> {
     for (var index = 0; index < weekCount; index++) {
       _weeklyWeekdays.putIfAbsent(index, () => {..._weekdays});
     }
+  }
+
+  Widget _sessionField() {
+    return _SelectField(
+      label: 'Thời lượng',
+      value: '$_sessionMinutes',
+      values: const ['30', '45', '60', '75', '90'],
+      labelOf: (value) => '$value phút',
+      onChanged: (value) =>
+          setState(() => _sessionMinutes = int.parse(value)),
+    );
   }
 
   String _genderLabel(String value) {

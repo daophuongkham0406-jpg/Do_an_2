@@ -46,7 +46,7 @@ class _MainShellState extends State<MainShell> {
         onOpenPlan: () => setState(() => _index = 2),
       ),
       const FaqScreen(),
-      if (widget.user.isAdmin) const AdminScreen(),
+      if (widget.user.isAdmin) AdminScreen(user: widget.user),
     ];
     final items = [
       const NavigationDestination(

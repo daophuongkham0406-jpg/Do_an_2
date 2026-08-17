@@ -152,8 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               final safeData = data ?? _ProfileData.empty();
               final profile = safeData.profile;
               final overview = safeData.overview;
-              final premium = safeData.premium['isPremium'] == true ||
-                  widget.user.isPremium;
+              final premium = safeData.premium['isPremium'] == true;
               final allWorkouts = _mapsFrom(overview['allWorkouts']);
 
               return RefreshIndicator(

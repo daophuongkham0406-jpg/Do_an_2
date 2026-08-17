@@ -47,12 +47,13 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   }
 
   Future<_ExercisePayload> _load() async {
-    final result = await _api.get('/api/exercises/?userId=${widget.user.id}');
-    final body = result.body;
-    final items = _api.listFrom(body);
-    final limited = body is Map && body['isLimited'] == true;
-    final limit =
-        body is Map ? int.tryParse('${body['limitPerMuscle'] ?? 0}') ?? 0 : 0;
+    final result = await _api.get('/api/ml/exercises');
+    final items = _api
+        .listFrom(result.body)
+        .map(_normalizeExercise)
+        .toList(growable: false);
+    const limited = false;
+    const limit = 0;
     _all = items;
     _limited = limited;
     _limitPerMuscle = limit;
@@ -346,8 +347,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     return switch (v) {
       'all' => 'Tất cả',
       'B' || 'F' => 'Người mới',
+      'beginner' => 'Người mới',
       'I' => 'Trung bình',
+      'intermediate' => 'Trung bình',
       'A' => 'Nâng cao',
+      'advanced' => 'Nâng cao',
       _ => v,
     };
   }
@@ -358,6 +362,37 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       _favorites.contains(id) ? _favorites.remove(id) : _favorites.add(id);
     });
   }
+}
+
+Map<String, dynamic> _normalizeExercise(Map<String, dynamic> item) {
+  final diff = (item['diff'] ??
+          item['difficulty'] ??
+          item['level'] ??
+          item['difficulty_vi'] ??
+          '')
+      .toString();
+  final name = (item['name_vi'] ?? item['name'] ?? item['exercise_name'] ?? '')
+      .toString();
+  return {
+    ...item,
+    'id': item['id'] ?? item['exercise_id'] ?? item['_id'] ?? name,
+    'name': name,
+    'muscle': item['muscle'] ?? item['primary_muscle_vi'] ?? item['primary_muscle'] ?? '',
+    'diff': _normalizeDifficulty(diff),
+    'equip': item['equip'] ?? item['equipment_vi'] ?? item['equipment'] ?? 'Không yêu cầu',
+    'sets': item['sets'] ?? item['default_sets'] ?? 3,
+    'reps': item['reps'] ?? item['default_reps'] ?? item['duration_reps'] ?? '8-12',
+    'rest': item['rest'] ?? item['rest_seconds'] ?? '45s',
+    'image': item['image'] ?? item['image_url'] ?? item['image_1'] ?? '',
+  };
+}
+
+String _normalizeDifficulty(String value) {
+  final lower = value.toLowerCase();
+  if (lower.contains('người mới') || lower.contains('beginner')) return 'B';
+  if (lower.contains('nâng cao') || lower.contains('advanced')) return 'A';
+  if (lower.contains('trung') || lower.contains('intermediate')) return 'I';
+  return value;
 }
 
 String _exerciseKey(Map<String, dynamic> exercise) {
