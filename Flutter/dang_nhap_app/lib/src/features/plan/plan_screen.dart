@@ -46,6 +46,7 @@ class _PlanScreenState extends State<PlanScreen> {
   Map<String, dynamic> _nutrition = {};
   String? _activePlanId;
   Set<int> _weekdays = {1, 3, 5};
+  final Map<int, Set<int>> _weeklyWeekdays = {};
 
   @override
   void initState() {
@@ -202,9 +203,35 @@ class _PlanScreenState extends State<PlanScreen> {
           error: true);
       return;
     }
-    if (_weekdays.isEmpty) {
+    final weeklyWeekdays = _weeklyWeekdayNumbers();
+    final selectedWeekdays = _duration > 7
+        ? _orderedWeekdays(weeklyWeekdays.expand((days) => days).toSet())
+        : _orderedWeekdays(_weekdays);
+    if (_duration > 7 && weeklyWeekdays.any((days) => days.isEmpty)) {
+      showAppSnack(context, 'Vui lòng chọn ít nhất 1 ngày rảnh cho mỗi tuần.',
+          error: true);
+      return;
+    }
+    if (selectedWeekdays.isEmpty) {
       showAppSnack(context, 'Vui lòng chọn ít nhất 1 ngày rảnh.', error: true);
       return;
+    }
+    final trainingDaysCount = weeklyWeekdays.isEmpty
+        ? selectedWeekdays.length
+        : weeklyWeekdays.fold<int>(
+            1, (max, days) => days.length > max ? days.length : max);
+    var goalForRequest = _goal;
+    final bmi = w / ((h / 100) * (h / 100));
+    final suggestedGoal = _suggestGoalForBmi(bmi, goalForRequest);
+    if (suggestedGoal != null) {
+      final choice = await _confirmBmiGoal(
+        bmi: bmi,
+        currentGoal: goalForRequest,
+        suggestedGoal: suggestedGoal,
+      );
+      if (!mounted || choice == null) return;
+      goalForRequest = choice;
+      if (choice != _goal) setState(() => _goal = choice);
     }
 
     setState(() {
@@ -216,15 +243,16 @@ class _PlanScreenState extends State<PlanScreen> {
         .where((text) => text.isNotEmpty)
         .join('. ');
     final result = await _api.post('/api/ml/generate-plan', {
-      'goal': _goal,
+      'goal': goalForRequest,
       'level': _level,
       'height': h,
       'weight': w,
       'age': a,
       'gender': _gender,
       'duration_days': _duration,
-      'training_days_per_week': _weekdays.length,
-      'available_training_day_numbers': _weekdays.toList()..sort(),
+      'training_days_per_week': trainingDaysCount,
+      'available_training_day_numbers': selectedWeekdays,
+      'weekly_available_training_day_numbers': weeklyWeekdays,
       'session_duration_minutes': _sessionMinutes,
       'intensity_preference': _intensity,
       'priority_muscles': _priorityMuscles.text.trim(),
@@ -270,8 +298,9 @@ class _PlanScreenState extends State<PlanScreen> {
         'level': _level,
         'gender': _gender,
         'duration_days': _duration,
-        'training_days_per_week': _weekdays.length,
-        'available_training_day_numbers': _weekdays.toList()..sort(),
+        'training_days_per_week': _trainingDays,
+        'available_training_day_numbers': _orderedWeekdays(_weekdays),
+        'weekly_available_training_day_numbers': _weeklyWeekdayNumbers(),
         'session_duration_minutes': _sessionMinutes,
         'intensity_preference': _intensity,
         'priority_muscles': _priorityMuscles.text.trim(),
@@ -503,6 +532,57 @@ class _PlanScreenState extends State<PlanScreen> {
     );
   }
 
+  Future<String?> _confirmBmiGoal({
+    required double bmi,
+    required String currentGoal,
+    required String suggestedGoal,
+  }) {
+    return showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+          decoration: const BoxDecoration(
+            color: AppColors.bgCard,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text(
+                  'Gợi ý mục tiêu theo BMI',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 10),
+                _BmiStrip(bmi: bmi, category: _bmiCategory(bmi)),
+                const SizedBox(height: 12),
+                Text(
+                  'Mục tiêu hiện tại là "$currentGoal". Với chỉ số này, app gợi ý đổi sang "$suggestedGoal" để lộ trình hợp lý hơn.',
+                  style:
+                      const TextStyle(color: AppColors.textMuted, height: 1.45),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => Navigator.pop(context, suggestedGoal),
+                  child: Text('Đổi sang $suggestedGoal'),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: () => Navigator.pop(context, currentGoal),
+                  child: const Text('Giữ mục tiêu hiện tại'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final plan = _draftPlan ?? _activePlan;
@@ -668,8 +748,7 @@ class _PlanScreenState extends State<PlanScreen> {
                     onChanged: (value) {
                       final count = int.parse(value);
                       setState(() {
-                        _trainingDays = count;
-                        _weekdays = _defaultWeekdays(count);
+                        _setTrainingDays(count);
                       });
                     },
                   ),
@@ -699,16 +778,6 @@ class _PlanScreenState extends State<PlanScreen> {
               onChanged: (value) => setState(() => _intensity = value),
             ),
             const SizedBox(height: 14),
-            const _FieldLabel('Ngày rảnh trong tuần'),
-            const SizedBox(height: 8),
-            _WeekdayPicker(
-              selected: _weekdays,
-              onChanged: (days) => setState(() {
-                _weekdays = days;
-                _trainingDays = days.length.clamp(1, 6);
-              }),
-            ),
-            const SizedBox(height: 14),
             const _FieldLabel('Độ dài lộ trình'),
             const SizedBox(height: 8),
             GridView.count(
@@ -723,25 +792,25 @@ class _PlanScreenState extends State<PlanScreen> {
                   days: 7,
                   selected: _duration == 7,
                   locked: false,
-                  onTap: () => setState(() => _duration = 7),
+                  onTap: () => setState(() => _setDuration(7)),
                 ),
                 _DurationButton(
                   days: 14,
                   selected: _duration == 14,
                   locked: false,
-                  onTap: () => setState(() => _duration = 14),
+                  onTap: () => setState(() => _setDuration(14)),
                 ),
                 _DurationButton(
                   days: 21,
                   selected: _duration == 21,
                   locked: !canLong,
-                  onTap: () => setState(() => _duration = 21),
+                  onTap: () => setState(() => _setDuration(21)),
                 ),
                 _DurationButton(
                   days: 30,
                   selected: _duration == 30,
                   locked: !canLong,
-                  onTap: () => setState(() => _duration = 30),
+                  onTap: () => setState(() => _setDuration(30)),
                 ),
               ],
             ),
@@ -752,6 +821,33 @@ class _PlanScreenState extends State<PlanScreen> {
                 style: TextStyle(color: AppColors.textMuted, fontSize: 12),
               ),
             ],
+            const SizedBox(height: 14),
+            _FieldLabel(
+              _duration > 7
+                  ? 'Lịch rảnh theo từng tuần'
+                  : 'Ngày rảnh trong tuần',
+            ),
+            const SizedBox(height: 8),
+            if (_duration > 7)
+              _WeeklyWeekdayPicker(
+                weeks: _weeklyWeekdaySets(),
+                onChanged: (index, days) => setState(() {
+                  _weeklyWeekdays[index] = days;
+                  _trainingDays = _weeklyWeekdayNumbers().fold<int>(
+                    1,
+                    (max, week) => week.length > max ? week.length : max,
+                  );
+                }),
+              )
+            else
+              _WeekdayPicker(
+                selected: _weekdays,
+                minimumSelection: 1,
+                onChanged: (days) => setState(() {
+                  _weekdays = days;
+                  _trainingDays = days.length.clamp(1, 6);
+                }),
+              ),
             const SizedBox(height: 14),
             AppTextField(
               controller: _priorityMuscles,
@@ -1078,6 +1174,55 @@ class _PlanScreenState extends State<PlanScreen> {
     return {...(schedules[count] ?? schedules[3]!)};
   }
 
+  int get _weekCount {
+    final count = (_duration / 7).ceil();
+    if (count < 1) return 1;
+    if (count > 4) return 4;
+    return count;
+  }
+
+  List<int> _orderedWeekdays(Iterable<int> days) {
+    final values = days.where((day) => day >= 1 && day <= 7).toSet().toList()
+      ..sort();
+    return values;
+  }
+
+  List<Set<int>> _weeklyWeekdaySets() {
+    return List.generate(_weekCount, (index) {
+      final days = _weeklyWeekdays[index];
+      if (days != null && days.isNotEmpty) return {...days};
+      return _weekdays.isEmpty
+          ? _defaultWeekdays(_trainingDays)
+          : {..._weekdays};
+    });
+  }
+
+  List<List<int>> _weeklyWeekdayNumbers() {
+    if (_duration <= 7) return const [];
+    return _weeklyWeekdaySets().map((days) => _orderedWeekdays(days)).toList();
+  }
+
+  void _setTrainingDays(int count) {
+    _trainingDays = count;
+    _weekdays = _defaultWeekdays(count);
+    _weeklyWeekdays
+      ..clear()
+      ..addEntries(List.generate(
+        _weekCount,
+        (index) => MapEntry(index, {..._weekdays}),
+      ));
+  }
+
+  void _setDuration(int days) {
+    _duration = days;
+    if (days <= 7) return;
+    final weekCount = _weekCount;
+    _weeklyWeekdays.removeWhere((index, _) => index >= weekCount);
+    for (var index = 0; index < weekCount; index++) {
+      _weeklyWeekdays.putIfAbsent(index, () => {..._weekdays});
+    }
+  }
+
   String _genderLabel(String value) {
     return switch (value) {
       'Male' => 'Nam',
@@ -1085,6 +1230,16 @@ class _PlanScreenState extends State<PlanScreen> {
       'Other' => 'Khác',
       _ => 'Không nêu',
     };
+  }
+
+  String? _suggestGoalForBmi(double bmi, String goal) {
+    if (bmi < 18.5 && (goal == 'Giảm mỡ' || goal == 'Sức bền')) {
+      return 'Tăng cân';
+    }
+    if (bmi >= 27 && (goal == 'Tăng cân' || goal == 'Tăng cơ')) {
+      return 'Giảm mỡ';
+    }
+    return null;
   }
 
   int _safeInt(dynamic value, int fallback) {
@@ -1292,10 +1447,15 @@ class _FieldLabel extends StatelessWidget {
 }
 
 class _WeekdayPicker extends StatelessWidget {
-  const _WeekdayPicker({required this.selected, required this.onChanged});
+  const _WeekdayPicker({
+    required this.selected,
+    required this.onChanged,
+    this.minimumSelection = 0,
+  });
 
   final Set<int> selected;
   final ValueChanged<Set<int>> onChanged;
+  final int minimumSelection;
 
   @override
   Widget build(BuildContext context) {
@@ -1319,11 +1479,81 @@ class _WeekdayPicker extends StatelessWidget {
           selectedColor: AppColors.accentYellow.withValues(alpha: 0.16),
           onSelected: (_) {
             final next = {...selected};
-            active ? next.remove(entry.key) : next.add(entry.key);
+            if (active) {
+              if (next.length <= minimumSelection) {
+                showAppSnack(
+                  context,
+                  minimumSelection <= 1
+                      ? 'Cần chọn ít nhất 1 ngày rảnh.'
+                      : 'Cần chọn ít nhất $minimumSelection ngày rảnh.',
+                  error: true,
+                );
+                return;
+              }
+              next.remove(entry.key);
+            } else {
+              next.add(entry.key);
+            }
             onChanged(next);
           },
         );
       }).toList(),
+    );
+  }
+}
+
+class _WeeklyWeekdayPicker extends StatelessWidget {
+  const _WeeklyWeekdayPicker({
+    required this.weeks,
+    required this.onChanged,
+  });
+
+  final List<Set<int>> weeks;
+  final void Function(int index, Set<int> days) onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(weeks.length, (index) {
+        final days = weeks[index];
+        return Container(
+          margin: EdgeInsets.only(bottom: index == weeks.length - 1 ? 0 : 10),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.bgInput,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Tuần ${index + 1}',
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${days.length} buổi',
+                    style: const TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              _WeekdayPicker(
+                selected: days,
+                minimumSelection: 1,
+                onChanged: (next) => onChanged(index, next),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

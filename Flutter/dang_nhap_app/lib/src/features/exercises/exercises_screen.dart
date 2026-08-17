@@ -6,9 +6,14 @@ import '../../shared/exercise_images.dart';
 import '../../shared/ui.dart';
 
 class ExercisesScreen extends StatefulWidget {
-  const ExercisesScreen({required this.user, super.key});
+  const ExercisesScreen({
+    required this.user,
+    required this.onOpenPlan,
+    super.key,
+  });
 
   final AppUser user;
+  final VoidCallback onOpenPlan;
 
   @override
   State<ExercisesScreen> createState() => _ExercisesScreenState();
@@ -27,6 +32,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   bool _listMode = false;
   bool _limited = false;
   int _limitPerMuscle = 0;
+  final Set<String> _favorites = {};
 
   @override
   void initState() {
@@ -286,7 +292,14 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                     .map((e) => Padding(
                                         padding:
                                             const EdgeInsets.only(bottom: 10),
-                                        child: _ExerciseListTile(exercise: e)))
+                                        child: _ExerciseListTile(
+                                          exercise: e,
+                                          favorite: _favorites
+                                              .contains(_exerciseKey(e)),
+                                          onToggleFavorite: () =>
+                                              _toggleFavorite(e),
+                                          onOpenPlan: widget.onOpenPlan,
+                                        )))
                                     .toList())
                             : GridView.builder(
                                 shrinkWrap: true,
@@ -299,8 +312,17 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                                   mainAxisSpacing: 12,
                                   childAspectRatio: 0.72,
                                 ),
-                                itemBuilder: (_, i) =>
-                                    _ExerciseGridCard(exercise: items[i]),
+                                itemBuilder: (_, i) {
+                                  final exercise = items[i];
+                                  return _ExerciseGridCard(
+                                    exercise: exercise,
+                                    favorite: _favorites
+                                        .contains(_exerciseKey(exercise)),
+                                    onToggleFavorite: () =>
+                                        _toggleFavorite(exercise),
+                                    onOpenPlan: widget.onOpenPlan,
+                                  );
+                                },
                               ),
                       ),
                   ],
@@ -329,6 +351,17 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       _ => v,
     };
   }
+
+  void _toggleFavorite(Map<String, dynamic> exercise) {
+    final id = _exerciseKey(exercise);
+    setState(() {
+      _favorites.contains(id) ? _favorites.remove(id) : _favorites.add(id);
+    });
+  }
+}
+
+String _exerciseKey(Map<String, dynamic> exercise) {
+  return '${exercise['id'] ?? exercise['_id'] ?? exercise['name'] ?? ''}';
 }
 
 class _ExercisePayload {
@@ -510,16 +543,30 @@ class _ChipSection extends StatelessWidget {
 }
 
 class _ExerciseGridCard extends StatelessWidget {
-  const _ExerciseGridCard({required this.exercise});
+  const _ExerciseGridCard({
+    required this.exercise,
+    required this.favorite,
+    required this.onToggleFavorite,
+    required this.onOpenPlan,
+  });
 
   final Map<String, dynamic> exercise;
+  final bool favorite;
+  final VoidCallback onToggleFavorite;
+  final VoidCallback onOpenPlan;
 
   @override
   Widget build(BuildContext context) {
     final images = exerciseImagesFrom(exercise);
     final image = images.isEmpty ? '' : images.first.url;
     return InkWell(
-      onTap: () => _openDetail(context, exercise),
+      onTap: () => _openDetail(
+        context,
+        exercise,
+        favorite: favorite,
+        onToggleFavorite: onToggleFavorite,
+        onOpenPlan: onOpenPlan,
+      ),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         clipBehavior: Clip.antiAlias,
@@ -542,6 +589,14 @@ class _ExerciseGridCard extends StatelessWidget {
                       top: 10,
                       left: 10,
                       child: _DiffBadge(diff: '${exercise['diff'] ?? ''}'),
+                    ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: _FavoriteButton(
+                        favorite: favorite,
+                        onPressed: onToggleFavorite,
+                      ),
                     ),
                   ],
                 ),
@@ -580,9 +635,17 @@ class _ExerciseGridCard extends StatelessWidget {
 }
 
 class _ExerciseListTile extends StatelessWidget {
-  const _ExerciseListTile({required this.exercise});
+  const _ExerciseListTile({
+    required this.exercise,
+    required this.favorite,
+    required this.onToggleFavorite,
+    required this.onOpenPlan,
+  });
 
   final Map<String, dynamic> exercise;
+  final bool favorite;
+  final VoidCallback onToggleFavorite;
+  final VoidCallback onOpenPlan;
 
   @override
   Widget build(BuildContext context) {
@@ -604,9 +667,42 @@ class _ExerciseListTile extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.w900)),
         subtitle: Text(
             '${exercise['muscle'] ?? ''} • ${exercise['equip'] ?? ''} • ${exercise['sets'] ?? ''}x${exercise['reps'] ?? ''}'),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () => _openDetail(context, exercise),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _FavoriteButton(favorite: favorite, onPressed: onToggleFavorite),
+            const Icon(Icons.chevron_right),
+          ],
+        ),
+        onTap: () => _openDetail(
+          context,
+          exercise,
+          favorite: favorite,
+          onToggleFavorite: onToggleFavorite,
+          onOpenPlan: onOpenPlan,
+        ),
       ),
+    );
+  }
+}
+
+class _FavoriteButton extends StatelessWidget {
+  const _FavoriteButton({
+    required this.favorite,
+    required this.onPressed,
+  });
+
+  final bool favorite;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.filledTonal(
+      tooltip: favorite ? 'Đã yêu thích' : 'Yêu thích',
+      visualDensity: VisualDensity.compact,
+      onPressed: onPressed,
+      icon: Icon(favorite ? Icons.favorite : Icons.favorite_border),
+      color: favorite ? AppColors.danger : AppColors.textMain,
     );
   }
 }
@@ -643,19 +739,39 @@ class _DiffBadge extends StatelessWidget {
   }
 }
 
-void _openDetail(BuildContext context, Map<String, dynamic> exercise) {
+void _openDetail(
+  BuildContext context,
+  Map<String, dynamic> exercise, {
+  required bool favorite,
+  required VoidCallback onToggleFavorite,
+  required VoidCallback onOpenPlan,
+}) {
   showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => ExerciseDetailSheet(exercise: exercise),
+    builder: (_) => ExerciseDetailSheet(
+      exercise: exercise,
+      favorite: favorite,
+      onToggleFavorite: onToggleFavorite,
+      onOpenPlan: onOpenPlan,
+    ),
   );
 }
 
 class ExerciseDetailSheet extends StatefulWidget {
-  const ExerciseDetailSheet({required this.exercise, super.key});
+  const ExerciseDetailSheet({
+    required this.exercise,
+    required this.favorite,
+    required this.onToggleFavorite,
+    required this.onOpenPlan,
+    super.key,
+  });
 
   final Map<String, dynamic> exercise;
+  final bool favorite;
+  final VoidCallback onToggleFavorite;
+  final VoidCallback onOpenPlan;
 
   @override
   State<ExerciseDetailSheet> createState() => _ExerciseDetailSheetState();
@@ -664,6 +780,13 @@ class ExerciseDetailSheet extends StatefulWidget {
 class _ExerciseDetailSheetState extends State<ExerciseDetailSheet> {
   int _tab = 0;
   int _imageIndex = 0;
+  late bool _favorite;
+
+  @override
+  void initState() {
+    super.initState();
+    _favorite = widget.favorite;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -777,6 +900,40 @@ class _ExerciseDetailSheetState extends State<ExerciseDetailSheet> {
                     1 => _MusclesPane(exercise: ex),
                     _ => _TipsPane(tips: ex['tips']),
                   },
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            widget.onToggleFavorite();
+                            setState(() => _favorite = !_favorite);
+                          },
+                          icon: Icon(_favorite
+                              ? Icons.favorite
+                              : Icons.favorite_border),
+                          label: Text(
+                            _favorite ? 'Đã yêu thích' : 'Yêu thích',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            widget.onOpenPlan();
+                          },
+                          icon: const Icon(Icons.add_road),
+                          label: const Text(
+                            'Thêm vào lộ trình',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

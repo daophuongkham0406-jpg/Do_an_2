@@ -35,7 +35,10 @@ class _MainShellState extends State<MainShell> {
         onOpenPlan: () => setState(() => _index = 2),
         onOpenCoach: _openCoach,
       ),
-      ExercisesScreen(user: widget.user),
+      ExercisesScreen(
+        user: widget.user,
+        onOpenPlan: () => setState(() => _index = 2),
+      ),
       PlanScreen(user: widget.user),
       ProfileScreen(
         user: widget.user,
